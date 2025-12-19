@@ -1,4 +1,4 @@
-.order-form-container {
+.help-form-container {
   min-height: 100vh;
   background: #ffe8e8;
   padding: 0;
@@ -146,20 +146,8 @@ mat-card-content {
       padding: 1em 0 1em 0;
     }
 
-    .mat-form-field-prefix {
-      top: 0.5em !important;
-      left: 0.75em !important;
-      
-      .mat-icon {
-        width: 24px !important;
-        height: 24px !important;
-        font-size: 24px !important;
-        line-height: 1 !important;
-        display: block !important;
-      }
-    }
-
-    input.mat-input-element {
+    input.mat-input-element,
+    textarea.mat-input-element {
       padding-left: 0.5em;
       line-height: 1.5;
       margin: 0;
@@ -169,77 +157,6 @@ mat-card-content {
     // Ensure proper spacing
     .mat-form-field-outline-start {
       border-left-width: 0 !important;
-    }
-  }
-}
-
-.books-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.book-card {
-  padding: 0;
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-  cursor: pointer;
-  background: #fff;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
-    border-color: #d32f2f;
-  }
-
-  .book-image-container {
-    position: relative;
-    width: 100%;
-    height: 150px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-
-    .book-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .book-level-badge {
-      position: absolute;
-      top: 0.4rem;
-      right: 0.4rem;
-      background: #d32f2f;
-      color: white;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-  }
-
-  &:hover .book-image-container .book-image {
-    transform: scale(1.05);
-  }
-
-  .book-checkbox {
-    padding: 0.75rem;
-    margin: 0;
-    width: 100%;
-
-    .book-name {
-      font-weight: 500;
-      font-size: 0.85rem;
-      color: #333;
-      line-height: 1.3;
-      display: block;
-      margin-top: 0.2rem;
     }
   }
 }
@@ -268,9 +185,33 @@ mat-card-content {
   }
 }
 
-// Özet Ekranı Stilleri
-.summary-section {
+// Success Message Section
+.success-section {
   animation: fadeIn 0.5s ease-in;
+  text-align: center;
+  padding: 3rem 2rem;
+
+  .success-message {
+    background: #f1f8e9;
+    border: 2px solid #8bc34a;
+    border-radius: 12px;
+    padding: 2rem;
+    color: #333;
+
+    h3 {
+      color: #689f38;
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0.5rem 0;
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -284,108 +225,9 @@ mat-card-content {
   }
 }
 
-.summary-title {
-  color: #d32f2f;
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.summary-card {
-  margin-bottom: 2rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-}
-
-.summary-item {
-  padding: 1rem 0;
-  border-bottom: 1px solid #f0f0f0;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .summary-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-
-    strong {
-      color: #333;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    span {
-      color: #666;
-      font-size: 1.1rem;
-    }
-  }
-
-  &.books-summary {
-    .summary-content {
-      strong {
-        margin-bottom: 0.5rem;
-      }
-    }
-  }
-}
-
-.books-list {
-  margin-top: 0.5rem;
-
-  mat-list-item {
-    height: auto;
-    padding: 0.5rem 0;
-  }
-}
-
-.summary-actions {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 2rem;
-
-  .back-button {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    border-color: #d32f2f;
-    color: #d32f2f;
-
-    &:hover {
-      background: #ffebee;
-    }
-
-    mat-icon {
-      margin-right: 0.5rem;
-    }
-  }
-
-  .confirm-button {
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    background: #d32f2f;
-    color: white;
-
-    &:hover {
-      background: #b71c1c;
-    }
-
-    mat-icon {
-      margin-right: 0.5rem;
-    }
-  }
-}
-
 // Responsive Design
 @media (max-width: 768px) {
-  .order-form-container {
+  .help-form-container {
     padding: 0;
   }
 
@@ -416,30 +258,12 @@ mat-card-content {
     grid-template-columns: 1fr;
   }
 
-  .books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.75rem;
-  }
+  .success-section {
+    padding: 2rem 1rem;
 
-  .book-card {
-    .book-image-container {
-      height: 130px;
-    }
-
-    .book-checkbox {
-      padding: 0.5rem;
-
-      .book-name {
-        font-size: 0.8rem;
-      }
-    }
-  }
-
-  .summary-actions {
-    flex-direction: column;
-
-    button {
-      width: 100%;
+    .success-message {
+      padding: 1.5rem;
     }
   }
 }
+

@@ -19,11 +19,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 
 import { OrderFormComponent } from './order-form/order-form.component';
+import { HelpFormComponent } from './help-form/help-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    OrderFormComponent
+    OrderFormComponent,
+    HelpFormComponent
   ],
   imports: [
     BrowserModule,
