@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/book_db
+    username: book_user
+    password: book_pass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  sql:
+    init:
+      mode: never
+
+jwt:
+  secret: "N4pFv0mYkYyKzN9v+6xQp2mYk6l2r9b0J1zR8mZpA7E="
+  expiration: 86400000
