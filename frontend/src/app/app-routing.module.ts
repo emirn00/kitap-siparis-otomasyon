@@ -5,6 +5,7 @@ import { HelpFormComponent } from './help-form/help-form.component';
 import { AdminComponent } from './admin/admin.component';
 import {LoginComponent} from "./auth/login/login.component";
 import {AuthGuard} from "./auth/auth.guard";
+import {RoleGuard} from "./auth/role.guard";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -18,11 +19,9 @@ const routes: Routes = [
   {
     path: 'admin',
     component: AdminComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
   },
-
-  { path: 'yardim', component: HelpFormComponent },
-  { path: 'help', component: HelpFormComponent },
 
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
