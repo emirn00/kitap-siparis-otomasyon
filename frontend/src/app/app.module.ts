@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -22,13 +23,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
 import { AdminComponent } from './admin/admin.component';
+import { LoginComponent } from './auth/login/login.component';
+import {AuthInterceptor} from "./auth/auth.interceptor";
 
 @NgModule({
   declarations: [
     AppComponent,
     OrderFormComponent,
     HelpFormComponent,
-    AdminComponent
+    AdminComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -46,9 +50,16 @@ import { AdminComponent } from './admin/admin.component';
     MatIconModule,
     MatToolbarModule,
     MatDividerModule,
-    MatSelectModule
+    MatSelectModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
