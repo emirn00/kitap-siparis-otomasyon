@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {AuthService} from "../auth.service";
+import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
-
 
 @Component({
   selector: 'app-login',
@@ -10,26 +8,35 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+
   email = '';
   password = '';
-  error = '';
+  errorMessage: string | null = null;
 
   constructor(
     private authService: AuthService,
     private router: Router
   ) {}
 
-
   login() {
-    this.authService.login(this.email, this.password)
-      .subscribe({
-        next: (res) => {
-          this.authService.saveToken(res.token);
-          this.router.navigate(['/dashboard']);
-        },
-        error: () => {
-          this.error = 'Email or password is incorrect';
+    const loginRequest = {
+      email: this.email,
+      password: this.password
+    };
+
+    this.authService.login(loginRequest).subscribe({
+      next: () => {
+        const role = this.authService.getUserRole();
+
+        if (role === 'ADMIN') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/order']);
         }
-      });
+      },
+      error: () => {
+        this.errorMessage = 'Email veya şifre hatalı';
+      }
+    });
   }
 }
