@@ -6,6 +6,7 @@ import { AdminComponent } from './admin/admin.component';
 import {LoginComponent} from "./auth/login/login.component";
 import {AuthGuard} from "./auth/auth.guard";
 import {RoleGuard} from "./auth/role.guard";
+import {RegisterComponent} from "./auth/register/register.component";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,7 +23,7 @@ const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'ADMIN' }
   },
-
+  { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];

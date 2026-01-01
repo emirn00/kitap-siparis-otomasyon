@@ -19,6 +19,9 @@ export class AuthService {
     );
   }
 
+  register(request: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, request);
+  }
 
 
   getUserRole(): string | null {

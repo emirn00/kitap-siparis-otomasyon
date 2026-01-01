@@ -25,6 +25,7 @@ import { HelpFormComponent } from './help-form/help-form.component';
 import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './auth/login/login.component';
 import {AuthInterceptor} from "./auth/auth.interceptor";
+import { RegisterComponent } from './auth/register/register.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {AuthInterceptor} from "./auth/auth.interceptor";
     OrderFormComponent,
     HelpFormComponent,
     AdminComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
