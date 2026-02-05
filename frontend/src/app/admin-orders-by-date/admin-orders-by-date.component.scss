@@ -1,0 +1,155 @@
+.admin-container {
+  min-height: 100vh;
+  background: #ffe8e8;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+// Hueber Header with Red Background
+.hueber-header {
+  width: 100%;
+  background: #d32f2f;
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+
+  .logo-container {
+    text-align: center;
+
+    .hueber-logo {
+      color: white;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.2rem;
+      margin: 0 0 0.5rem 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-subtitle {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin: 0 0 1rem 0;
+      letter-spacing: 0.05rem;
+      opacity: 0.95;
+    }
+
+    .help-link {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 0.5rem 1.5rem;
+      border: 2px solid white;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      display: inline-block;
+      margin-top: 0.5rem;
+
+      &:hover {
+        background: white;
+        color: #d32f2f;
+      }
+    }
+  }
+}
+
+.form-card {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 2rem 2rem 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+mat-card-content {
+  padding: 2rem;
+}
+
+.section-title {
+  color: #d32f2f;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.info-text {
+  color: #666;
+  margin-top: 1rem;
+}
+
+.date-filters {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+
+  mat-form-field {
+    flex: 1;
+  }
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: white;
+}
+
+.orders-table th,
+.orders-table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.orders-table th {
+  background: #f5f5f5;
+  color: #333;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 0;
+  }
+
+  .hueber-header {
+    padding: 1.5rem 0;
+
+    .logo-container {
+      .hueber-logo {
+        font-size: 2rem;
+      }
+
+      .header-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+    }
+  }
+
+  .form-card {
+    margin: 0 1rem 1rem 1rem;
+  }
+
+  mat-card-content {
+    padding: 1.5rem;
+  }
+
+  .date-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.85rem;
+  }
+}

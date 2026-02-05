@@ -19,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
@@ -26,6 +27,12 @@ import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './auth/login/login.component';
 import {AuthInterceptor} from "./auth/auth.interceptor";
 import { RegisterComponent } from './auth/register/register.component';
+import { ProfileComponent } from './profile/profile.component';
+import { AdminOrdersAllComponent } from './admin-orders-all/admin-orders-all.component';
+import { AdminOrdersByDateComponent } from './admin-orders-by-date/admin-orders-by-date.component';
+import { AdminCustomOrderComponent } from './admin-custom-order/admin-custom-order.component';
+import { AdminUsersComponent } from './admin-users/admin-users.component';
+import { AdminLogsComponent } from './admin-logs/admin-logs.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +41,13 @@ import { RegisterComponent } from './auth/register/register.component';
     HelpFormComponent,
     AdminComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    ProfileComponent,
+    AdminOrdersAllComponent,
+    AdminOrdersByDateComponent,
+    AdminCustomOrderComponent,
+    AdminUsersComponent,
+    AdminLogsComponent
   ],
   imports: [
     BrowserModule,
@@ -53,6 +66,7 @@ import { RegisterComponent } from './auth/register/register.component';
     MatToolbarModule,
     MatDividerModule,
     MatSelectModule,
+    MatProgressSpinnerModule,
     HttpClientModule
   ],
   providers: [

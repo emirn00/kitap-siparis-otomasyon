@@ -5,6 +5,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+}
+
+// Profile Button - Sağ üst köşede yuvarlak buton
+.profile-button {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: white;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  vertical-align: middle;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    color: white;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  &:hover {
+    background: #b71c1c;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 // Hueber Header with Red Background
@@ -20,6 +66,8 @@
 
   .logo-container {
     text-align: center;
+    width: 100%;
+    padding: 0 1rem;
 
     .hueber-logo {
       color: white;
@@ -27,7 +75,10 @@
       font-weight: 700;
       letter-spacing: 0.2rem;
       margin: 0 0 0.5rem 0;
+      padding: 0;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      line-height: 1.2;
+      display: block;
     }
 
     .header-subtitle {
@@ -35,8 +86,11 @@
       font-size: 1.2rem;
       font-weight: 400;
       margin: 0 0 1rem 0;
+      padding: 0;
       letter-spacing: 0.05rem;
       opacity: 0.95;
+      line-height: 1.4;
+      display: block;
     }
 
     .help-link {
@@ -164,6 +218,18 @@ mat-card-content {
       line-height: 1.5;
       margin: 0;
       vertical-align: middle;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    textarea.mat-input-element {
+      padding-left: 0.5em;
+      line-height: 1.5;
+      margin: 0;
+      vertical-align: middle;
+      width: 100%;
+      box-sizing: border-box;
+      resize: vertical;
     }
 
     // Ensure proper spacing
@@ -387,6 +453,20 @@ mat-card-content {
 @media (max-width: 768px) {
   .order-form-container {
     padding: 0;
+  }
+
+  .profile-button {
+    top: 1rem;
+    right: 1rem;
+    width: 48px;
+    height: 48px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+    }
   }
 
   .hueber-header {

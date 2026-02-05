@@ -1,0 +1,202 @@
+<div class="admin-container">
+
+  <!-- Header -->
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Admin Paneli - Orders (Tüm)</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+
+      <!-- Title -->
+      <h2 class="section-title">Tüm Siparişler</h2>
+
+      <!-- Loading & Error -->
+      <div *ngIf="loading" class="info-text">Yükleniyor...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+
+      <!-- Filters -->
+      <div class="filters-section">
+
+        <div class="action-buttons">
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="toggleAddOrderForm()">
+            {{ showAddOrderForm ? 'İptal / Abbrechen' : 'Özel Sipariş Ekle / Spezielle Bestellung hinzufügen' }}
+          </button>
+        </div>
+
+        <div class="filters-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Ara / Suchen</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="onSearch()"
+              placeholder="İsim, e-posta, okul veya şehir">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="status-field">
+            <mat-label>Durum / Status</mat-label>
+            <mat-select
+              [(ngModel)]="statusFilter"
+              [ngModelOptions]="{ standalone: true }"
+              (selectionChange)="onStatusFilterChange()">
+              <mat-option value="all">Tümü</mat-option>
+              <mat-option value="pending">Beklemede</mat-option>
+              <mat-option value="processed">İşleniyor</mat-option>
+              <mat-option value="completed">Tamamlandı</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">{{ getTotalOrders() }}</div>
+            <div class="stat-label">Toplam</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getPendingOrders() }}</div>
+            <div class="stat-label">Beklemede</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getProcessedOrders() }}</div>
+            <div class="stat-label">İşleniyor</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getCompletedOrders() }}</div>
+            <div class="stat-label">Tamamlandı</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Add Custom Order -->
+      <div class="add-order-section" *ngIf="showAddOrderForm">
+        <h3>Özel Sipariş Ekle</h3>
+
+        <form [formGroup]="newOrderForm">
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Ad Soyad *</mat-label>
+              <input matInput formControlName="fullName">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>E-posta *</mat-label>
+              <input matInput type="email" formControlName="email">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Telefon *</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Okul *</mat-label>
+              <input matInput formControlName="school">
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Şehir *</mat-label>
+              <input matInput formControlName="city">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Durum</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="pending">Beklemede</mat-option>
+                <mat-option value="processed">İşleniyor</mat-option>
+                <mat-option value="completed">Tamamlandı</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Çalışılan Kitaplar *</mat-label>
+            <textarea matInput rows="2" formControlName="workingBooks"></textarea>
+          </mat-form-field>
+
+          <!-- Book Selection -->
+          <div class="books-selection-grid">
+            <mat-checkbox
+              *ngFor="let book of availableBooks"
+              [checked]="isBookSelectedInNewOrder(book)"
+              (change)="toggleBookInNewOrder(book)"
+              class="book-checkbox-item">
+              {{ book }}
+            </mat-checkbox>
+          </div>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            [disabled]="newOrderForm.invalid"
+            (click)="addCustomOrder()">
+            Sipariş Ekle
+          </button>
+
+        </form>
+      </div>
+
+      <!-- Orders -->
+      <div class="orders-list" *ngIf="filteredOrders.length > 0">
+        <mat-card *ngFor="let order of filteredOrders" class="order-card">
+
+          <mat-card-header>
+            <div class="order-header">
+              <h3>{{ order.fullName }}</h3>
+              <span class="order-status"
+                [style.backgroundColor]="getStatusColor(order.status)">
+                {{ getStatusLabel(order.status) }}
+              </span>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <p><strong>E-posta:</strong> {{ order.email }}</p>
+            <p><strong>Telefon:</strong> {{ order.phone }}</p>
+            <p><strong>Okul:</strong> {{ order.school }}</p>
+            <p><strong>Şehir:</strong> {{ order.city }}</p>
+            <p><strong>Tarih:</strong> {{ formatDate(order.createdAt) }}</p>
+
+            <div class="books-list">
+              <span *ngFor="let book of order.selectedBooks" class="book-tag">
+                {{ book }}
+                <button
+                  mat-icon-button
+                  type="button"
+                  color="warn"
+                  (click)="removeBookFromOrder(order.id, book)">
+                  ×
+                </button>
+              </span>
+            </div>
+
+          </mat-card-content>
+
+        </mat-card>
+      </div>
+
+      <!-- Empty -->
+      <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
+        Sonuç bulunamadı
+      </div>
+
+    </mat-card-content>
+  </mat-card>
+</div>

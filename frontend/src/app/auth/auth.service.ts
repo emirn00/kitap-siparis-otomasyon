@@ -59,4 +59,17 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
   }
+
+  getCurrentUser(): Observable<any> {
+    return this.http.get<any>('http://localhost:8080/users/me');
+  }
+
+  updateProfile(profileData: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+  }): Observable<any> {
+    return this.http.put<any>('http://localhost:8080/users/me', profileData);
+  }
 }

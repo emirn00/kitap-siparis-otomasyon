@@ -1,0 +1,330 @@
+.profile-container {
+  min-height: 100vh;
+  background: #ffe8e8;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+// Back Button - Sol üst köşede yuvarlak buton
+.back-button {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #d32f2f;
+  color: white;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  vertical-align: middle;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    color: white;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  &:hover {
+    background: #b71c1c;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Hueber Header with Red Background
+.hueber-header {
+  width: 100%;
+  background: #d32f2f;
+  padding: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+
+  .logo-container {
+    text-align: center;
+    width: 100%;
+    padding: 0 1rem;
+
+    .hueber-logo {
+      color: white;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.2rem;
+      margin: 0 0 0.5rem 0;
+      padding: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      line-height: 1.2;
+      display: block;
+    }
+
+    .header-subtitle {
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+      letter-spacing: 0.05rem;
+      opacity: 0.95;
+      line-height: 1.4;
+      display: block;
+    }
+  }
+}
+
+.profile-card {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 2rem 2rem 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+mat-card-content {
+  padding: 2rem;
+}
+
+.profile-header {
+  margin-bottom: 2rem;
+  text-align: center;
+
+  .profile-title {
+    color: #d32f2f;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .profile-subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+  }
+}
+
+// Alert Messages
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+
+  mat-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  &.alert-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #4caf50;
+
+    mat-icon {
+      color: #2e7d32;
+    }
+  }
+
+  &.alert-error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef5350;
+
+    mat-icon {
+      color: #c62828;
+    }
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+
+  p {
+    color: #666;
+    margin: 0;
+  }
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.form-field {
+  width: 100%;
+
+  ::ng-deep .mat-form-field-outline {
+    color: #d32f2f;
+  }
+
+  ::ng-deep .mat-form-field-label {
+    color: #d32f2f;
+  }
+
+  ::ng-deep .mat-focused .mat-form-field-label {
+    color: #b71c1c;
+  }
+
+  ::ng-deep .mat-form-field-outline-thick {
+    color: #d32f2f;
+  }
+
+  ::ng-deep .mat-form-field-appearance-outline {
+    .mat-form-field-infix {
+      padding: 1em 0 1em 0;
+    }
+
+    .mat-form-field-prefix {
+      top: 0.5em !important;
+      left: 0.75em !important;
+      position: absolute !important;
+      
+      .mat-icon {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 24px !important;
+        line-height: 24px !important;
+        display: inline-block !important;
+        color: #d32f2f;
+        vertical-align: middle;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    input.mat-input-element {
+      padding-left: 2.5em !important;
+      line-height: 1.5;
+      margin: 0;
+      vertical-align: middle;
+      width: 100%;
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  .submit-button {
+    padding: 0.75rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    background: #d32f2f;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    &:hover {
+      background: #b71c1c;
+    }
+
+    &:disabled {
+      background: #ccc;
+      color: #666;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 0;
+  }
+
+  .back-button {
+    top: 1rem;
+    left: 1rem;
+    width: 48px;
+    height: 48px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+    }
+  }
+
+  .hueber-header {
+    padding: 1.5rem 0;
+
+    .logo-container {
+      .hueber-logo {
+        font-size: 2rem;
+      }
+
+      .header-subtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+      }
+    }
+  }
+
+  .profile-card {
+    margin: 0 1rem 1rem 1rem;
+  }
+
+  mat-card-content {
+    padding: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    .submit-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+

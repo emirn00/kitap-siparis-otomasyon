@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface Book {
   id: number;
@@ -87,7 +88,10 @@ export class OrderFormComponent implements OnInit {
     }
   ];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.orderForm = this.fb.group({
@@ -173,6 +177,10 @@ export class OrderFormComponent implements OnInit {
     if (img) {
       img.src = 'assets/book-placeholder.png';
     }
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
   }
 }
 
