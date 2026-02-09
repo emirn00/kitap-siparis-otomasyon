@@ -33,6 +33,8 @@ import { AdminOrdersByDateComponent } from './admin-orders-by-date/admin-orders-
 import { AdminCustomOrderComponent } from './admin-custom-order/admin-custom-order.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminLogsComponent } from './admin-logs/admin-logs.component';
+import { AdminOrderFormBuilderComponent } from './admin-order-form-builder/admin-order-form-builder.component';
+import { AdminAssistantComponent } from './admin-assistant/admin-assistant.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,9 @@ import { AdminLogsComponent } from './admin-logs/admin-logs.component';
     AdminOrdersByDateComponent,
     AdminCustomOrderComponent,
     AdminUsersComponent,
-    AdminLogsComponent
+    AdminLogsComponent,
+    AdminOrderFormBuilderComponent,
+    AdminAssistantComponent
   ],
   imports: [
     BrowserModule,

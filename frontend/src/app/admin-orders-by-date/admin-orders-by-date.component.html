@@ -1,57 +1,124 @@
 <div class="admin-container">
-  <!-- Hueber Header with Logo -->
+  <!-- Header -->
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Admin Paneli - Orders (Tarih Seç)</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa</a>
+      <h2 class="header-subtitle">Siparişler (Tarih Seç) / Bestellungen (Datum wählen)</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
     </div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Tarihe Göre Siparişler</h2>
+      <h2 class="section-title">Tarihe Göre Siparişler / Bestellungen nach Datum</h2>
+      <p class="section-description">
+        Belirli bir tarih aralığındaki siparişleri görüntülemek için başlangıç ve bitiş tarihlerini seçin. 
+        / Wählen Sie Start- und Enddatum, um Bestellungen in einem bestimmten Zeitraum anzuzeigen.
+      </p>
 
-      <div class="date-filters">
-        <mat-form-field appearance="outline">
-          <mat-label>Başlangıç Tarihi</mat-label>
-          <input matInput type="date" [(ngModel)]="startDate">
-        </mat-form-field>
+      <!-- Date Filters -->
+      <div class="date-filters-section">
+        <div class="date-filters">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Başlangıç Tarihi / Startdatum *</mat-label>
+            <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+            <mat-icon matPrefix>event</mat-icon>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Bitiş Tarihi</mat-label>
-          <input matInput type="date" [(ngModel)]="endDate">
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Bitiş Tarihi / Enddatum *</mat-label>
+            <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+            <mat-icon matPrefix>event</mat-icon>
+          </mat-form-field>
 
-        <button mat-raised-button color="primary" (click)="fetchOrdersByDate()">
-          Getir
-        </button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            (click)="fetchOrdersByDate()"
+            [disabled]="!startDate || !endDate || loading"
+            class="fetch-button">
+            <mat-icon>search</mat-icon>
+            <span>Siparişleri Getir / Bestellungen abrufen</span>
+          </button>
+        </div>
       </div>
 
-      <div *ngIf="loading" class="info-text">Yükleniyor...</div>
-      <div *ngIf="error" class="error">{{ error }}</div>
+      <!-- Loading & Error -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Yükleniyor... / Wird geladen...</p>
+      </div>
+      <div *ngIf="error" class="alert alert-error">
+        <mat-icon>error</mat-icon>
+        <span>{{ error }}</span>
+      </div>
 
-      <table *ngIf="!loading && !error && orders.length" class="orders-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Kullanıcı</th>
-            <th>Kitap Sayısı</th>
-            <th>Oluşturulma Tarihi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let order of orders">
-            <td>{{ order.id }}</td>
-            <td>{{ order.userName }}</td>
-            <td>{{ order.books?.length || 0 }}</td>
-            <td>{{ formatDate(order.createdAt) }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Orders List -->
+      <div class="orders-list" *ngIf="!loading && !error && orders.length > 0">
+        <div class="results-info">
+          <p>
+            <strong>{{ orders.length }}</strong> sipariş bulundu / 
+            <strong>{{ orders.length }}</strong> Bestellungen gefunden
+            <span *ngIf="startDate && endDate">
+              ({{ startDate }} - {{ endDate }})
+            </span>
+          </p>
+        </div>
 
-      <div *ngIf="!loading && !error && !orders.length" class="info-text">
-        Seçilen tarihlerde sipariş bulunamadı.
+        <mat-card *ngFor="let order of orders" class="order-card">
+          <mat-card-header>
+            <div class="order-header">
+              <div class="order-title-section">
+                <h3 class="order-name">{{ order.userName }}</h3>
+                <span class="order-id">#{{ order.id }}</span>
+              </div>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="order-details-grid">
+              <div class="detail-item">
+                <strong>Kullanıcı ID / Benutzer-ID:</strong>
+                <span>{{ order.userId }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Kitap Sayısı / Anzahl Bücher:</strong>
+                <span>{{ order.books?.length || 0 }}</span>
+              </div>
+              <div class="detail-item full-width">
+                <strong>Kitaplar / Bücher:</strong>
+                <div class="books-list">
+                  <span *ngFor="let book of order.books" class="book-tag">
+                    {{ book.title || 'Kitap ID: ' + book.id }}
+                  </span>
+                  <span *ngIf="!order.books || order.books.length === 0" class="no-books">
+                    Kitap yok / Keine Bücher
+                  </span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <strong>Oluşturulma Tarihi / Erstellungsdatum:</strong>
+                <span>{{ formatDate(order.createdAt) }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Güncellenme Tarihi / Aktualisierungsdatum:</strong>
+                <span>{{ formatDate(order.updatedAt) }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!loading && !error && orders.length === 0 && startDate && endDate">
+        <mat-icon>event_busy</mat-icon>
+        <p>Seçilen tarihlerde sipariş bulunamadı. / Keine Bestellungen im ausgewählten Zeitraum gefunden.</p>
+        <p class="empty-hint">Farklı bir tarih aralığı seçmeyi deneyin. / Versuchen Sie, einen anderen Zeitraum auszuwählen.</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && !error && orders.length === 0 && !startDate && !endDate">
+        <mat-icon>calendar_today</mat-icon>
+        <p>Lütfen tarih aralığı seçin. / Bitte wählen Sie einen Zeitraum.</p>
       </div>
     </mat-card-content>
   </mat-card>

@@ -1,0 +1,90 @@
+<div class="admin-container">
+  <!-- Header -->
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Asistan / Assistent</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Yapay Zeka Destekli Asistan / KI-gestützter Assistent</h2>
+      <p class="section-description">
+        Asistan ile sipariş yönetimi, kullanıcı desteği ve sistem analizi konularında yardım alabilirsiniz. 
+        Sorularınızı sorun veya hızlı işlemler butonlarını kullanın.
+        / Mit dem Assistenten können Sie Hilfe bei der Bestellungsverwaltung, Benutzerunterstützung und 
+        Systemanalyse erhalten. Stellen Sie Ihre Fragen oder verwenden Sie die Schnellaktionen-Buttons.
+      </p>
+
+      <div class="assistant-section">
+        <!-- Chat Container -->
+        <div class="chat-container">
+          <div class="chat-messages" #chatMessages>
+            <div 
+              *ngFor="let message of messages" 
+              class="message"
+              [class.user-message]="message.type === 'user'"
+              [class.assistant-message]="message.type === 'assistant'">
+              <div class="message-icon" *ngIf="message.type === 'assistant'">
+                <mat-icon>support_agent</mat-icon>
+              </div>
+              <div class="message-content">
+                <p>{{ message.content }}</p>
+                <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+              </div>
+              <div class="message-icon" *ngIf="message.type === 'user'">
+                <mat-icon>person</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-container">
+            <mat-form-field appearance="outline" class="chat-input">
+              <mat-label>Mesajınızı yazın... / Schreiben Sie Ihre Nachricht...</mat-label>
+              <input 
+                matInput 
+                [(ngModel)]="userMessage" 
+                [ngModelOptions]="{ standalone: true }"
+                (keyup.enter)="sendMessage()"
+                placeholder="Sorunuzu buraya yazın...">
+            </mat-form-field>
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="sendMessage()"
+              [disabled]="!userMessage.trim()"
+              class="send-button">
+              <mat-icon>send</mat-icon>
+              <span>Gönder / Senden</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <h3 class="subsection-title">Hızlı İşlemler / Schnellaktionen</h3>
+          <div class="actions-grid">
+            <button mat-stroked-button (click)="quickAction('orders')" class="action-button">
+              <mat-icon>list_alt</mat-icon>
+              <span>Siparişleri Listele / Bestellungen auflisten</span>
+            </button>
+            <button mat-stroked-button (click)="quickAction('users')" class="action-button">
+              <mat-icon>people</mat-icon>
+              <span>Kullanıcıları Listele / Benutzer auflisten</span>
+            </button>
+            <button mat-stroked-button (click)="quickAction('stats')" class="action-button">
+              <mat-icon>bar_chart</mat-icon>
+              <span>İstatistikleri Göster / Statistiken anzeigen</span>
+            </button>
+            <button mat-stroked-button (click)="quickAction('help')" class="action-button">
+              <mat-icon>help</mat-icon>
+              <span>Yardım Al / Hilfe erhalten</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

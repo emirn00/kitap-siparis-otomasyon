@@ -13,6 +13,8 @@ import { AdminOrdersByDateComponent } from './admin-orders-by-date/admin-orders-
 import { AdminCustomOrderComponent } from './admin-custom-order/admin-custom-order.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminLogsComponent } from './admin-logs/admin-logs.component';
+import { AdminOrderFormBuilderComponent } from './admin-order-form-builder/admin-order-form-builder.component';
+import { AdminAssistantComponent } from './admin-assistant/admin-assistant.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -61,6 +63,18 @@ const routes: Routes = [
   {
     path: 'admin/logs',
     component: AdminLogsComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
+  },
+  {
+    path: 'admin/order-form-builder',
+    component: AdminOrderFormBuilderComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
+  },
+  {
+    path: 'admin/assistant',
+    component: AdminAssistantComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'ADMIN' }
   },

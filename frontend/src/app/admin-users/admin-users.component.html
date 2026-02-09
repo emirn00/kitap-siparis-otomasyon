@@ -1,4 +1,115 @@
-<div class="admin-page">
-  <h2>Users (Arama)</h2>
-  <p>Burada kullanıcıları arayıp listeleyebileceğiniz bir arayüz olacak. (Frontend tasarım placeholder)</p>
+<div class="admin-container">
+  <!-- Header -->
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Kullanıcılar (Arama) / Benutzer (Suche)</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Kullanıcı Yönetimi / Benutzerverwaltung</h2>
+      <p class="section-description">
+        Bu sayfada sistemdeki tüm kullanıcıları görüntüleyebilir, arayabilir ve yönetebilirsiniz. 
+        Kullanıcı bilgilerini görüntüleyebilir ve gerekirse düzenleyebilirsiniz.
+        / Auf dieser Seite können Sie alle Benutzer im System anzeigen, suchen und verwalten. 
+        Sie können Benutzerinformationen anzeigen und bei Bedarf bearbeiten.
+      </p>
+
+      <!-- Loading & Error -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>Yükleniyor... / Wird geladen...</p>
+      </div>
+      <div *ngIf="error" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters-section" *ngIf="!loading">
+        <div class="filters-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Ara / Suchen</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="onSearch()"
+              placeholder="Ad, soyad, e-posta veya telefon / Name, Nachname, E-Mail oder Telefon">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="role-field">
+            <mat-label>Rol / Rolle</mat-label>
+            <mat-select
+              [(ngModel)]="roleFilter"
+              [ngModelOptions]="{ standalone: true }"
+              (selectionChange)="onRoleFilterChange()">
+              <mat-option value="all">Tümü / Alle</mat-option>
+              <mat-option value="USER">Kullanıcı / Benutzer</mat-option>
+              <mat-option value="ADMIN">Yönetici / Administrator</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">{{ getTotalUsers() }}</div>
+            <div class="stat-label">Toplam Kullanıcı / Gesamt Benutzer</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getAdminUsers() }}</div>
+            <div class="stat-label">Yönetici / Administrator</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getNormalUsers() }}</div>
+            <div class="stat-label">Kullanıcı / Benutzer</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Users List -->
+      <div class="users-list" *ngIf="!loading && filteredUsers.length > 0">
+        <mat-card *ngFor="let user of filteredUsers" class="user-card">
+          <mat-card-header>
+            <div class="user-header">
+              <div class="user-title-section">
+                <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
+                <span class="user-id">#{{ user.id }}</span>
+              </div>
+              <span class="user-role"
+                [style.backgroundColor]="getRoleColor(user.role)">
+                {{ getRoleLabel(user.role) }}
+              </span>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="user-details-grid">
+              <div class="detail-item">
+                <strong>E-posta / E-Mail:</strong>
+                <span>{{ user.email }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Telefon / Telefon:</strong>
+                <span>{{ user.phone }}</span>
+              </div>
+              <div class="detail-item">
+                <strong>Kayıt Tarihi / Registrierungsdatum:</strong>
+                <span>{{ formatDate(user.createdAt) }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!loading && filteredUsers.length === 0">
+        <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
+        <p class="empty-hint">Arama kriterlerinizi değiştirerek tekrar deneyin. / Versuchen Sie es erneut, indem Sie Ihre Suchkriterien ändern.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>

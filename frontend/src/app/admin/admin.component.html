@@ -8,27 +8,58 @@
     </div>
   </div>
 
-  <mat-card class="form-card">
-    <!-- Admin Navigation Buttons -->
-    <div class="admin-nav-buttons">
-      <button mat-raised-button color="primary" routerLink="/admin/orders">
-        Orders (Tüm)
-      </button>
-      <button mat-raised-button color="primary" routerLink="/admin/orders-by-date">
-        Orders (Tarih Seç)
-      </button>
-      <button mat-raised-button color="primary" routerLink="/admin/custom-order">
-        Özel Sipariş Ekle
-      </button>
-      <button mat-raised-button color="primary" routerLink="/admin/users">
-        Users (Arama)
-      </button>
-      <button mat-raised-button color="primary" routerLink="/admin/logs">
-        Loglar / Sipariş Formu
-      </button>
+  <div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h2 class="welcome-title">Hoş Geldiniz / Willkommen</h2>
+      <p class="welcome-subtitle">Yönetim paneline hoş geldiniz. Aşağıdaki seçeneklerden birini seçerek işlemlerinize devam edebilirsiniz.</p>
     </div>
 
+    <!-- Admin Navigation Cards -->
+    <div class="admin-cards-grid">
+      
+      <!-- Orders (Tüm) Card -->
+      <mat-card class="admin-card" routerLink="/admin/orders">
+        <h3 class="card-title">Siparişler (Tümü) / Bestellungen (Alle)</h3>
+        <p class="card-description">Tüm siparişleri görüntüleyin ve yönetin / Alle Bestellungen anzeigen und verwalten</p>
+      </mat-card>
 
-  </mat-card>
+      <!-- Orders (Tarih Seç) Card -->
+      <mat-card class="admin-card" routerLink="/admin/orders-by-date">
+        <h3 class="card-title">Siparişler (Tarih Seç) / Bestellungen (Datum wählen)</h3>
+        <p class="card-description">Tarih aralığına göre siparişleri filtreleyin / Bestellungen nach Datumsbereich filtern</p>
+      </mat-card>
+
+      <!-- Özel Sipariş Ekle Card -->
+      <mat-card class="admin-card" routerLink="/admin/custom-order">
+        <h3 class="card-title">Özel Sipariş Ekle / Spezielle Bestellung hinzufügen</h3>
+        <p class="card-description">Manuel olarak yeni sipariş oluşturun / Manuell neue Bestellung erstellen</p>
+      </mat-card>
+
+      <!-- Users (Arama) Card -->
+      <mat-card class="admin-card" routerLink="/admin/users">
+        <h3 class="card-title">Kullanıcılar (Arama) / Benutzer (Suche)</h3>
+        <p class="card-description">Kullanıcıları arayın ve yönetin / Benutzer suchen und verwalten</p>
+      </mat-card>
+
+      <!-- Loglar Card -->
+      <mat-card class="admin-card" routerLink="/admin/logs">
+        <h3 class="card-title">Loglar / Logs</h3>
+        <p class="card-description">Sistem loglarını ve geçmişi görüntüleyin / Systemprotokolle und Verlauf anzeigen</p>
+      </mat-card>
+
+      <!-- Sipariş Formu Oluştur Card -->
+      <mat-card class="admin-card" routerLink="/admin/order-form-builder">
+        <h3 class="card-title">Sipariş Formu Oluştur / Bestellformular erstellen</h3>
+        <p class="card-description">Yeni sipariş formu şablonu oluşturun / Neue Bestellformularvorlage erstellen</p>
+      </mat-card>
+
+      <!-- Asistan Card -->
+      <mat-card class="admin-card" routerLink="/admin/assistant">
+        <h3 class="card-title">Asistan / Assistent</h3>
+        <p class="card-description">Yapay zeka destekli asistan ile çalışın / Mit KI-gestütztem Assistenten arbeiten</p>
+      </mat-card>
+
+    </div>
+  </div>
 </div>
-

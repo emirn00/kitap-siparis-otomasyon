@@ -1,4 +1,159 @@
-<div class="admin-page">
-  <h2>Özel Sipariş Ekle</h2>
-  <p>Burada manuel özel sipariş oluşturma formu olacak. (Frontend tasarım placeholder)</p>
+<div class="admin-container">
+  <!-- Header -->
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Özel Sipariş Ekle / Spezielle Bestellung hinzufügen</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Özel Sipariş Oluştur / Spezielle Bestellung erstellen</h2>
+      <p class="section-description">
+        Bu sayfada manuel olarak özel sipariş oluşturabilirsiniz. Tüm gerekli bilgileri doldurarak 
+        yeni bir sipariş kaydı ekleyebilirsiniz. 
+        / Auf dieser Seite können Sie manuell eine spezielle Bestellung erstellen. Sie können einen 
+        neuen Bestellungsdatensatz hinzufügen, indem Sie alle erforderlichen Informationen ausfüllen.
+      </p>
+
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="customOrderForm" (ngSubmit)="onSubmit()">
+        <div class="form-section">
+          <h3 class="subsection-title">Kişisel Bilgiler / Persönliche Informationen</h3>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Ad-Soyad / Name-Nachname *</mat-label>
+              <input matInput formControlName="fullName" placeholder="Ad ve soyad giriniz">
+              <mat-icon matPrefix>person</mat-icon>
+              <mat-error *ngIf="fullName?.hasError('required')">
+                Ad-Soyad zorunludur / Name-Nachname ist erforderlich
+              </mat-error>
+              <mat-error *ngIf="fullName?.hasError('minlength')">
+                Ad-Soyad en az 3 karakter olmalıdır / Mindestens 3 Zeichen erforderlich
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>E-posta / E-Mail *</mat-label>
+              <input matInput formControlName="email" type="email" placeholder="ornek@email.com">
+              <mat-icon matPrefix>email</mat-icon>
+              <mat-error *ngIf="email?.hasError('required')">
+                E-posta zorunludur / E-Mail ist erforderlich
+              </mat-error>
+              <mat-error *ngIf="email?.hasError('email')">
+                Geçerli bir e-posta giriniz / Gültige E-Mail eingeben
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Telefon / Telefonnummer *</mat-label>
+              <input matInput formControlName="phone" type="tel" placeholder="05XX XXX XX XX">
+              <mat-icon matPrefix>phone</mat-icon>
+              <mat-error *ngIf="phone?.hasError('required')">
+                Telefon zorunludur / Telefon ist erforderlich
+              </mat-error>
+              <mat-error *ngIf="phone?.hasError('pattern')">
+                Geçerli telefon numarası giriniz / Gültige Telefonnummer eingeben
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Okul ve Kampüs / Schule und Kampus *</mat-label>
+              <input matInput formControlName="school" placeholder="Okul adı giriniz">
+              <mat-icon matPrefix>school</mat-icon>
+              <mat-error *ngIf="school?.hasError('required')">
+                Okul zorunludur / Schule ist erforderlich
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Şehir / Stadt *</mat-label>
+              <input matInput formControlName="city" placeholder="Şehir adı giriniz">
+              <mat-icon matPrefix>location_city</mat-icon>
+              <mat-error *ngIf="city?.hasError('required')">
+                Şehir zorunludur / Stadt ist erforderlich
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Durum / Status</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="pending">Beklemede / Ausstehend</mat-option>
+                <mat-option value="processed">İşleniyor / In Bearbeitung</mat-option>
+                <mat-option value="completed">Tamamlandı / Abgeschlossen</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="subsection-title">Kitap Bilgileri / Buchinformationen</h3>
+          
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Hangi ders kitaplarıyla çalışıyor? / Mit welchen Lehrwerken arbeiten Sie? *</mat-label>
+            <textarea matInput formControlName="workingBooks" rows="3" 
+              placeholder="z.B. Beste Freunde 1,2,3 - Schritte International Neu 1 und 2"></textarea>
+            <mat-error *ngIf="workingBooks?.hasError('required')">
+              Bu alan zorunludur / Dieses Feld ist erforderlich
+            </mat-error>
+          </mat-form-field>
+
+          <div class="books-selection-section">
+            <label class="field-label">Seçilen Kitaplar / Ausgewählte Lehrwerke:</label>
+            <div class="books-selection-grid">
+              <mat-checkbox
+                *ngFor="let book of availableBooks"
+                [checked]="isBookSelected(book)"
+                (change)="toggleBookSelection(book)"
+                color="primary"
+                class="book-checkbox-item">
+                {{ book }}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="subsection-title">Ek Notlar / Zusätzliche Notizen</h3>
+          
+          <mat-form-field appearance="outline" class="form-field full-width">
+            <mat-label>Notlar / Notizen</mat-label>
+            <textarea matInput formControlName="notes" rows="3" 
+              placeholder="Ek bilgiler veya notlar... / Zusätzliche Informationen oder Notizen..."></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit"
+            [disabled]="customOrderForm.invalid"
+            class="submit-button">
+            <mat-icon>add_shopping_cart</mat-icon>
+            <span>Sipariş Oluştur / Bestellung erstellen</span>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>

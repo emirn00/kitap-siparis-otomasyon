@@ -1,8 +1,105 @@
-<div class="admin-page">
-  <h2>Loglar</h2>
-  <p>Burada sistem logları ve sipariş geçmişi gösterilecek. (Frontend tasarım placeholder)</p>
+<div class="admin-container">
+  <!-- Header -->
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Loglar / Logs</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
 
-  <button mat-raised-button color="primary" routerLink="/order">
-    Sipariş Formu Oluştur
-  </button>
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Sistem Logları ve Geçmiş / Systemprotokolle und Verlauf</h2>
+      <p class="section-description">
+        Bu sayfada sistemdeki tüm log kayıtlarını görüntüleyebilirsiniz. Sistem aktivitelerini, 
+        hataları ve önemli olayları buradan takip edebilirsiniz.
+        / Auf dieser Seite können Sie alle Protokolleinträge im System anzeigen. Sie können 
+        Systemaktivitäten, Fehler und wichtige Ereignisse hier verfolgen.
+      </p>
+
+      <!-- Filters -->
+      <div class="filters-section">
+        <div class="filters-row">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Ara / Suchen</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="onSearch()"
+              placeholder="Mesaj, detay veya kullanıcı ara / Nachricht, Details oder Benutzer suchen">
+            <mat-icon matPrefix>search</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="level-field">
+            <mat-label>Seviye / Level</mat-label>
+            <mat-select
+              [(ngModel)]="levelFilter"
+              [ngModelOptions]="{ standalone: true }"
+              (selectionChange)="onLevelFilterChange()">
+              <mat-option value="all">Tümü / Alle</mat-option>
+              <mat-option value="INFO">Bilgi / Information</mat-option>
+              <mat-option value="WARNING">Uyarı / Warnung</mat-option>
+              <mat-option value="ERROR">Hata / Fehler</mat-option>
+              <mat-option value="SUCCESS">Başarılı / Erfolgreich</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">{{ getTotalLogs() }}</div>
+            <div class="stat-label">Toplam Log / Gesamt Logs</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-value">{{ getInfoLogs() }}</div>
+            <div class="stat-label">Bilgi / Information</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-value">{{ getWarningLogs() }}</div>
+            <div class="stat-label">Uyarı / Warnung</div>
+          </div>
+          <div class="stat-card error">
+            <div class="stat-value">{{ getErrorLogs() }}</div>
+            <div class="stat-label">Hata / Fehler</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logs List -->
+      <div class="logs-container" *ngIf="filteredLogs.length > 0">
+        <div class="log-entry" *ngFor="let log of filteredLogs" [class]="'log-' + log.level.toLowerCase()">
+          <div class="log-header">
+            <span class="log-level" [class]="'level-' + log.level.toLowerCase()">
+              {{ getLevelLabel(log.level) }}
+            </span>
+            <span class="log-date">{{ formatDate(log.timestamp) }}</span>
+          </div>
+          <div class="log-message">{{ log.message }}</div>
+          <div class="log-details" *ngIf="log.details">
+            <strong>Detaylar / Details:</strong> {{ log.details }}
+          </div>
+          <div class="log-meta" *ngIf="log.user || log.action">
+            <span *ngIf="log.user" class="log-user">
+              <mat-icon>person</mat-icon>
+              {{ log.user }}
+            </span>
+            <span *ngIf="log.action" class="log-action">
+              <mat-icon>settings</mat-icon>
+              {{ log.action }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="filteredLogs.length === 0">
+        <mat-icon>description</mat-icon>
+        <p>Log kaydı bulunamadı / Keine Protokolleinträge gefunden</p>
+        <p class="empty-hint">Filtreleri değiştirerek tekrar deneyin. / Versuchen Sie es erneut, indem Sie die Filter ändern.</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
