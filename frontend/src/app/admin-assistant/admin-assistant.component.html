@@ -10,78 +10,157 @@
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Yapay Zeka Destekli Asistan / KI-gestützter Assistent</h2>
-      <p class="section-description">
-        Asistan ile sipariş yönetimi, kullanıcı desteği ve sistem analizi konularında yardım alabilirsiniz. 
-        Sorularınızı sorun veya hızlı işlemler butonlarını kullanın.
-        / Mit dem Assistenten können Sie Hilfe bei der Bestellungsverwaltung, Benutzerunterstützung und 
-        Systemanalyse erhalten. Stellen Sie Ihre Fragen oder verwenden Sie die Schnellaktionen-Buttons.
-      </p>
+      <div class="chatbot-header">
+        <div class="header-info">
+          <h2 class="section-title">Yapay Zeka Destekli Asistan / KI-gestützter Assistent</h2>
+          <p class="section-description">
+            Sipariş yönetimi, kullanıcı desteği ve sistem analizi konularında yardım alın.
+            / Erhalten Sie Hilfe bei der Bestellungsverwaltung, Benutzerunterstützung und Systemanalyse.
+          </p>
+        </div>
+        <div class="header-actions">
+          <button mat-icon-button (click)="clearChat()" matTooltip="Sohbeti Temizle / Chat löschen" class="action-icon-btn">
+            <span class="icon-text">Temizle</span>
+          </button>
+        </div>
+      </div>
 
-      <div class="assistant-section">
-        <!-- Chat Container -->
-        <div class="chat-container">
-          <div class="chat-messages" #chatMessages>
-            <div 
-              *ngFor="let message of messages" 
-              class="message"
-              [class.user-message]="message.type === 'user'"
-              [class.assistant-message]="message.type === 'assistant'">
-              <div class="message-icon" *ngIf="message.type === 'assistant'">
-                <mat-icon>support_agent</mat-icon>
+      <div class="chatbot-container">
+        <!-- Sidebar -->
+        <div class="chatbot-sidebar">
+          <!-- Search -->
+          <div class="sidebar-section">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Mesajlarda Ara / In Nachrichten suchen</mat-label>
+              <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{ standalone: true }" placeholder="Ara...">
+            </mat-form-field>
+          </div>
+
+          <!-- Categories -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Kategoriler / Kategorien</h3>
+            <div class="category-list">
+              <button 
+                *ngFor="let cat of categories"
+                class="category-btn"
+                [class.active]="selectedCategory === cat.value"
+                (click)="filterByCategory(cat.value)">
+                <span class="category-label">{{ cat.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Suggestions -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Hızlı Öneriler / Schnellvorschläge</h3>
+            <div class="quick-suggestions">
+              <button 
+                *ngFor="let suggestion of quickSuggestions"
+                class="suggestion-btn"
+                (click)="quickAction(suggestion.action)">
+                <span class="suggestion-text">{{ suggestion.text }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div class="chatbot-main">
+          <!-- Chat Messages -->
+          <div class="chat-messages-container" #chatMessages>
+            <div class="messages-wrapper">
+              <div 
+                *ngFor="let message of searchFilteredMessages; trackBy: trackByMessageId"
+                class="message-wrapper"
+                [class.user-msg-wrapper]="message.type === 'user'"
+                [class.assistant-msg-wrapper]="message.type === 'assistant'">
+                
+                <!-- Date Separator -->
+                <div *ngIf="shouldShowDateSeparator(message)" class="date-separator">
+                  <span>{{ formatDate(message.timestamp) }}</span>
+                </div>
+
+                <div class="message-bubble" [class.user-bubble]="message.type === 'user'" [class.assistant-bubble]="message.type === 'assistant'">
+                  <div class="message-header">
+                    <span class="message-sender">
+                      {{ message.type === 'user' ? 'Siz / Sie' : 'Asistan / Assistent' }}
+                    </span>
+                    <div class="message-actions">
+                      <button 
+                        mat-icon-button 
+                        (click)="copyMessage(message.content)"
+                        matTooltip="Kopyala / Kopieren"
+                        class="msg-action-btn">
+                        <span class="icon-text">Kopyala</span>
+                      </button>
+                      <button 
+                        *ngIf="message.type === 'user'"
+                        mat-icon-button 
+                        (click)="deleteMessage(message.id)"
+                        matTooltip="Sil / Löschen"
+                        class="msg-action-btn delete-btn">
+                        <span class="icon-text">Sil</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="message-body">
+                    <div class="message-text" [innerHTML]="formatMessageContent(message.content)"></div>
+                    <span class="message-time">{{ formatTime(message.timestamp) }}</span>
+                  </div>
+
+                  <!-- Suggestions -->
+                  <div *ngIf="message.suggestions && message.suggestions.length > 0 && message.type === 'assistant'" class="message-suggestions">
+                    <div class="suggestions-label">Öneriler / Vorschläge:</div>
+                    <div class="suggestions-list">
+                      <button 
+                        *ngFor="let suggestion of message.suggestions"
+                        class="suggestion-chip"
+                        (click)="useSuggestion(suggestion)">
+                        {{ suggestion }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="message-content">
-                <p>{{ message.content }}</p>
-                <span class="message-time">{{ formatTime(message.timestamp) }}</span>
-              </div>
-              <div class="message-icon" *ngIf="message.type === 'user'">
-                <mat-icon>person</mat-icon>
+
+              <!-- Typing Indicator -->
+              <div *ngIf="isTyping" class="typing-indicator">
+                <div class="typing-dots">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+                <span class="typing-text">Asistan yazıyor... / Assistent schreibt...</span>
               </div>
             </div>
           </div>
 
+          <!-- Chat Input -->
           <div class="chat-input-container">
-            <mat-form-field appearance="outline" class="chat-input">
-              <mat-label>Mesajınızı yazın... / Schreiben Sie Ihre Nachricht...</mat-label>
-              <input 
-                matInput 
-                [(ngModel)]="userMessage" 
+            <div class="input-wrapper">
+              <textarea
+                #messageInput
+                [(ngModel)]="userMessage"
                 [ngModelOptions]="{ standalone: true }"
-                (keyup.enter)="sendMessage()"
-                placeholder="Sorunuzu buraya yazın...">
-            </mat-form-field>
-            <button 
-              mat-raised-button 
-              color="primary" 
-              (click)="sendMessage()"
-              [disabled]="!userMessage.trim()"
-              class="send-button">
-              <mat-icon>send</mat-icon>
-              <span>Gönder / Senden</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-          <h3 class="subsection-title">Hızlı İşlemler / Schnellaktionen</h3>
-          <div class="actions-grid">
-            <button mat-stroked-button (click)="quickAction('orders')" class="action-button">
-              <mat-icon>list_alt</mat-icon>
-              <span>Siparişleri Listele / Bestellungen auflisten</span>
-            </button>
-            <button mat-stroked-button (click)="quickAction('users')" class="action-button">
-              <mat-icon>people</mat-icon>
-              <span>Kullanıcıları Listele / Benutzer auflisten</span>
-            </button>
-            <button mat-stroked-button (click)="quickAction('stats')" class="action-button">
-              <mat-icon>bar_chart</mat-icon>
-              <span>İstatistikleri Göster / Statistiken anzeigen</span>
-            </button>
-            <button mat-stroked-button (click)="quickAction('help')" class="action-button">
-              <mat-icon>help</mat-icon>
-              <span>Yardım Al / Hilfe erhalten</span>
-            </button>
+                (keydown)="onEnterKey($event)"
+                placeholder="Mesajınızı yazın... / Schreiben Sie Ihre Nachricht..."
+                class="message-textarea"
+                rows="1"></textarea>
+              <div class="input-actions">
+                <button 
+                  mat-raised-button 
+                  color="primary" 
+                  (click)="sendMessage()"
+                  [disabled]="!userMessage.trim() || isTyping"
+                  class="send-btn">
+                  <span>Gönder / Senden</span>
+                </button>
+              </div>
+            </div>
+            <div class="input-hint">
+              Enter tuşu ile gönder, Shift+Enter ile yeni satır / Mit Enter senden, mit Shift+Enter neue Zeile
+            </div>
           </div>
         </div>
       </div>
