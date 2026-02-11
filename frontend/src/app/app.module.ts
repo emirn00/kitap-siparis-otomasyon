@@ -29,12 +29,13 @@ import {AuthInterceptor} from "./auth/auth.interceptor";
 import { RegisterComponent } from './auth/register/register.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AdminOrdersAllComponent } from './admin-orders-all/admin-orders-all.component';
-import { AdminOrdersByDateComponent } from './admin-orders-by-date/admin-orders-by-date.component';
 import { AdminCustomOrderComponent } from './admin-custom-order/admin-custom-order.component';
 import { AdminUsersComponent } from './admin-users/admin-users.component';
 import { AdminLogsComponent } from './admin-logs/admin-logs.component';
 import { AdminOrderFormBuilderComponent } from './admin-order-form-builder/admin-order-form-builder.component';
 import { AdminAssistantComponent } from './admin-assistant/admin-assistant.component';
+import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
+import { AdminBooksComponent } from './admin-books/admin-books.component';
 
 @NgModule({
   declarations: [
@@ -46,12 +47,13 @@ import { AdminAssistantComponent } from './admin-assistant/admin-assistant.compo
     RegisterComponent,
     ProfileComponent,
     AdminOrdersAllComponent,
-    AdminOrdersByDateComponent,
     AdminCustomOrderComponent,
     AdminUsersComponent,
     AdminLogsComponent,
     AdminOrderFormBuilderComponent,
-    AdminAssistantComponent
+    AdminAssistantComponent,
+    AdminAddBookComponent,
+    AdminBooksComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,165 @@
+<div class="admin-container">
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Kitaplar / Bücher</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Kitap Yönetimi / Buchverwaltung</h2>
+      <p class="section-description">
+        Bu sayfada kitapları görüntüleyebilir, arayabilir ve özelliklerini (Request Name, Order Name, Lisencode Name, ISBN) düzenleyebilirsiniz.
+        / Auf dieser Seite können Sie Bücher anzeigen, suchen und deren Eigenschaften bearbeiten.
+      </p>
+
+      <div *ngIf="addSuccess" class="alert alert-success">
+        <span>{{ addSuccess }}</span>
+      </div>
+      <div *ngIf="updateSuccess" class="alert alert-success">
+        <span>{{ updateSuccess }}</span>
+      </div>
+      <div *ngIf="updateError" class="alert alert-error">
+        <span>{{ updateError }}</span>
+      </div>
+      <div *ngIf="deleteError" class="alert alert-error">
+        <span>{{ deleteError }}</span>
+      </div>
+
+      <div class="filters-section">
+        <div class="filters-row filters-row-with-button">
+          <mat-form-field appearance="outline" class="search-field">
+            <mat-label>Ara / Suchen</mat-label>
+            <input
+              matInput
+              [(ngModel)]="searchTerm"
+              [ngModelOptions]="{ standalone: true }"
+              (input)="onSearch()"
+              placeholder="Request Name, Order Name, Lisencode, ISBN">
+          </mat-form-field>
+          <a mat-raised-button color="primary" routerLink="/admin/add-book" class="add-book-btn">
+            Kitap Ekle / Buch hinzufügen
+          </a>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-value">{{ getTotalBooks() }}</div>
+            <div class="stat-label">Toplam Kitap / Gesamt Bücher</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="books-list" *ngIf="filteredBooks.length > 0">
+        <mat-card *ngFor="let book of filteredBooks" class="book-card">
+          <mat-card-header>
+            <div class="book-header">
+              <div class="book-title-section">
+                <h3 class="book-title">{{ book.requestName }}</h3>
+                <span class="book-id">#{{ book.id }}</span>
+              </div>
+            </div>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="book-details-grid">
+              <div class="detail-item" *ngIf="editingBook && editingBook.id === book.id">
+                <strong>Request Name / Anfrage-Name:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingBook.requestName"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Request Name">
+              </div>
+              <div class="detail-item" *ngIf="editingBook && editingBook.id === book.id">
+                <strong>Order Name / Bestell-Name:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingBook.orderName"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Order Name">
+              </div>
+              <div class="detail-item" *ngIf="editingBook && editingBook.id === book.id">
+                <strong>Lisencode Name / Lizenzcode-Name:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingBook.lisencodeName"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Lisencode Name">
+              </div>
+              <div class="detail-item" *ngIf="editingBook && editingBook.id === book.id">
+                <strong>ISBN:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingBook.isbn"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="ISBN">
+              </div>
+
+              <div class="detail-item" *ngIf="!editingBook || editingBook.id !== book.id">
+                <strong>Request Name / Anfrage-Name:</strong>
+                <span>{{ book.requestName }}</span>
+              </div>
+              <div class="detail-item" *ngIf="!editingBook || editingBook.id !== book.id">
+                <strong>Order Name / Bestell-Name:</strong>
+                <span>{{ book.orderName }}</span>
+              </div>
+              <div class="detail-item" *ngIf="!editingBook || editingBook.id !== book.id">
+                <strong>Lisencode Name / Lizenzcode-Name:</strong>
+                <span>{{ book.lisencodeName }}</span>
+              </div>
+              <div class="detail-item" *ngIf="!editingBook || editingBook.id !== book.id">
+                <strong>ISBN:</strong>
+                <span>{{ book.isbn }}</span>
+              </div>
+            </div>
+
+            <div class="book-actions">
+              <button
+                mat-stroked-button
+                color="primary"
+                *ngIf="!editingBook || editingBook.id !== book.id"
+                (click)="startEdit(book)">
+                Düzenle / Bearbeiten
+              </button>
+              <button
+                mat-stroked-button
+                color="warn"
+                type="button"
+                (click)="confirmDelete(book)"
+                *ngIf="!deletingBookId || deletingBookId !== book.id">
+                Sil / Löschen
+              </button>
+              <div class="edit-actions" *ngIf="editingBook && editingBook.id === book.id">
+                <button mat-raised-button color="primary" (click)="saveBook()">
+                  Kaydet / Speichern
+                </button>
+                <button mat-button type="button" (click)="cancelEdit()">
+                  İptal / Abbrechen
+                </button>
+              </div>
+              <div class="delete-confirm" *ngIf="deletingBookId === book.id">
+                <span>Emin misiniz? / Sind Sie sicher?</span>
+                <button mat-raised-button color="warn" type="button" (click)="deleteBook()">
+                  Evet, sil / Ja, löschen
+                </button>
+                <button mat-button type="button" (click)="cancelDelete()">
+                  İptal / Abbrechen
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredBooks.length === 0">
+        <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
+        <p class="empty-hint">
+          Kitap eklemek için "Kitap Ekle" sayfasını kullanın. / Verwenden Sie "Buch hinzufügen", um Bücher hinzuzufügen.
+        </p>
+        <a mat-raised-button color="primary" routerLink="/admin/add-book">Kitap Ekle / Buch hinzufügen</a>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

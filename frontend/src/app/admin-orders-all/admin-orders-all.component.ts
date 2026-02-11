@@ -38,6 +38,9 @@ export class AdminOrdersAllComponent implements OnInit {
 
   searchTerm: string = '';
   statusFilter: string = 'all';
+  startDate: string = '';
+  endDate: string = '';
+  dateFilterActive = false;
   showAddOrderForm: boolean = false;
   newOrderForm!: FormGroup;
 
@@ -88,6 +91,7 @@ export class AdminOrdersAllComponent implements OnInit {
   fetchOrders(): void {
     this.loading = true;
     this.error = null;
+    this.dateFilterActive = false;
 
     this.http.get<ApiOrderResponse[]>(this.apiUrl).subscribe({
       next: (data) => {
@@ -112,6 +116,49 @@ export class AdminOrdersAllComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  fetchOrdersByDate(): void {
+    if (!this.startDate || !this.endDate) {
+      this.error = 'Lütfen başlangıç ve bitiş tarihlerini seçiniz. / Bitte Start- und Enddatum wählen.';
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    this.dateFilterActive = true;
+
+    const byDateUrl = `${this.apiUrl}/by-date?startDate=${this.startDate}&endDate=${this.endDate}`;
+
+    this.http.get<ApiOrderResponse[]>(byDateUrl).subscribe({
+      next: (data) => {
+        this.orders = data.map(d => ({
+          id: d.id,
+          fullName: d.userName,
+          email: '',
+          phone: '',
+          school: '',
+          city: '',
+          workingBooks: '',
+          selectedBooks: (d.books || []).map(b => b.title || 'Kitap'),
+          createdAt: new Date(d.createdAt),
+          status: 'pending'
+        }));
+        this.applyFilters();
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Siparişler yüklenirken bir hata oluştu.';
+        this.loading = false;
+      }
+    });
+  }
+
+  resetDateFilter(): void {
+    this.startDate = '';
+    this.endDate = '';
+    this.dateFilterActive = false;
+    this.fetchOrders();
   }
 
   // Kitap silme

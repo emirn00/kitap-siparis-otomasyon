@@ -134,6 +134,25 @@ mat-card-content {
   margin-bottom: 2rem;
 }
 
+.date-filters-section {
+  margin-bottom: 1.5rem;
+}
+
+.date-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, auto));
+  gap: 1rem;
+  align-items: center;
+}
+
+.date-field {
+  width: 100%;
+}
+
+.fetch-button {
+  white-space: nowrap;
+}
+
 .filters-row {
   display: grid;
   grid-template-columns: 2fr 1fr;

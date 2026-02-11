@@ -11,11 +11,43 @@
   <mat-card class="form-card">
     <mat-card-content>
       <!-- Title -->
-      <h2 class="section-title">Tüm Siparişler / Alle Bestellungen</h2>
+      <h2 class="section-title">Siparişler / Bestellungen</h2>
       <p class="section-description">
         Bu sayfada sistemdeki tüm siparişleri görüntüleyebilir, arayabilir ve yönetebilirsiniz. 
         / Auf dieser Seite können Sie alle Bestellungen im System anzeigen, suchen und verwalten.
       </p>
+
+      <!-- Date Filters -->
+      <div class="date-filters-section">
+        <div class="date-filters">
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Başlangıç Tarihi / Startdatum</mat-label>
+            <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>Bitiş Tarihi / Enddatum</mat-label>
+            <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="fetchOrdersByDate()"
+            [disabled]="!startDate || !endDate || loading"
+            class="fetch-button">
+            Tarihe Göre Getir / Nach Datum laden
+          </button>
+
+          <button
+            mat-button
+            type="button"
+            (click)="resetDateFilter()"
+            [disabled]="loading && !dateFilterActive">
+            Tüm Siparişler / Alle Bestellungen
+          </button>
+        </div>
+      </div>
 
       <!-- Loading & Error -->
       <div *ngIf="loading" class="loading-container">
@@ -23,7 +55,6 @@
         <p>Yükleniyor... / Wird geladen...</p>
       </div>
       <div *ngIf="error" class="alert alert-error">
-        <mat-icon>error</mat-icon>
         <span>{{ error }}</span>
       </div>
 

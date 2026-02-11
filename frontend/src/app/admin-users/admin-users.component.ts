@@ -23,6 +23,13 @@ export class AdminUsersComponent implements OnInit {
   roleFilter: string = 'all';
   loading = false;
   error: string | null = null;
+  editingUser: User | null = null;
+  updateLoading = false;
+  updateSuccess: string | null = null;
+  updateError: string | null = null;
+  deletingUserId: string | null = null;
+  deleteLoading = false;
+  deleteError: string | null = null;
 
   private apiUrl = 'http://localhost:8080/users';
 
@@ -45,29 +52,56 @@ export class AdminUsersComponent implements OnInit {
         this.loading = false;
       },
       error: () => {
-        // API yoksa örnek veri göster
-        this.users = [
-          {
-            id: '1',
-            firstName: 'Ahmet',
-            lastName: 'Yılmaz',
-            email: 'ahmet@example.com',
-            phone: '05551234567',
-            role: 'USER',
-            createdAt: new Date().toISOString()
-          },
-          {
-            id: '2',
-            firstName: 'Maria',
-            lastName: 'Schmidt',
-            email: 'maria@example.com',
-            phone: '05559876543',
-            role: 'USER',
-            createdAt: new Date().toISOString()
-          }
-        ];
-        this.applyFilters();
+        this.error = 'Kullanıcılar yüklenirken bir hata oluştu';
         this.loading = false;
+      }
+    });
+  }
+
+  startEdit(user: User): void {
+    this.editingUser = { ...user };
+    this.updateSuccess = null;
+    this.updateError = null;
+  }
+
+  cancelEdit(): void {
+    this.editingUser = null;
+  }
+
+  saveUser(): void {
+    if (!this.editingUser) {
+      return;
+    }
+
+    this.updateLoading = true;
+    this.updateError = null;
+    this.updateSuccess = null;
+
+    const payload = {
+      firstName: this.editingUser.firstName,
+      lastName: this.editingUser.lastName,
+      phone: this.editingUser.phone,
+      role: this.editingUser.role
+    };
+
+    this.http.put<User>(`${this.apiUrl}/${this.editingUser.id}`, payload).subscribe({
+      next: (updated) => {
+        const index = this.users.findIndex(u => u.id === updated.id);
+        if (index !== -1) {
+          this.users[index] = { ...this.users[index], ...updated };
+        }
+        this.applyFilters();
+        this.updateSuccess = 'Kullanıcı başarıyla güncellendi / Benutzer erfolgreich aktualisiert';
+        this.updateLoading = false;
+        this.editingUser = null;
+
+        setTimeout(() => {
+          this.updateSuccess = null;
+        }, 3000);
+      },
+      error: () => {
+        this.updateError = 'Kullanıcı güncellenirken bir hata oluştu / Beim Aktualisieren des Benutzers ist ein Fehler aufgetreten';
+        this.updateLoading = false;
       }
     });
   }
@@ -131,5 +165,36 @@ export class AdminUsersComponent implements OnInit {
 
   getNormalUsers(): number {
     return this.users.filter(user => user.role === 'USER').length;
+  }
+
+  confirmDelete(user: User): void {
+    this.deletingUserId = user.id;
+    this.deleteError = null;
+  }
+
+  cancelDelete(): void {
+    this.deletingUserId = null;
+  }
+
+  deleteUser(): void {
+    if (!this.deletingUserId) {
+      return;
+    }
+
+    this.deleteLoading = true;
+    this.deleteError = null;
+
+    this.http.delete<void>(`${this.apiUrl}/${this.deletingUserId}`).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== this.deletingUserId);
+        this.applyFilters();
+        this.deletingUserId = null;
+        this.deleteLoading = false;
+      },
+      error: () => {
+        this.deleteError = 'Kullanıcı silinirken bir hata oluştu / Beim Löschen des Benutzers ist ein Fehler aufgetreten';
+        this.deleteLoading = false;
+      }
+    });
   }
 }

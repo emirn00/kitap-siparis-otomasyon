@@ -26,6 +26,15 @@
       <div *ngIf="error" class="alert alert-error">
         <span>{{ error }}</span>
       </div>
+      <div *ngIf="updateSuccess" class="alert alert-success">
+        <span>{{ updateSuccess }}</span>
+      </div>
+      <div *ngIf="updateError" class="alert alert-error">
+        <span>{{ updateError }}</span>
+      </div>
+      <div *ngIf="deleteError" class="alert alert-error">
+        <span>{{ deleteError }}</span>
+      </div>
 
       <!-- Filters -->
       <div class="filters-section" *ngIf="!loading">
@@ -88,17 +97,108 @@
 
           <mat-card-content>
             <div class="user-details-grid">
+              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
+                <strong>Ad / Vorname:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingUser.firstName"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Ad / Vorname">
+              </div>
+              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
+                <strong>Soyad / Nachname:</strong>
+                <input
+                  class="inline-input"
+                  [(ngModel)]="editingUser.lastName"
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Soyad / Nachname">
+              </div>
               <div class="detail-item">
                 <strong>E-posta / E-Mail:</strong>
                 <span>{{ user.email }}</span>
               </div>
-              <div class="detail-item">
+              <div class="detail-item" [class.full-width]="editingUser && editingUser.id === user.id">
                 <strong>Telefon / Telefon:</strong>
-                <span>{{ user.phone }}</span>
+                <ng-container *ngIf="editingUser && editingUser.id === user.id; else phoneView">
+                  <input
+                    class="inline-input"
+                    [(ngModel)]="editingUser.phone"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Telefon / Telefon">
+                </ng-container>
+                <ng-template #phoneView>
+                  <span>{{ user.phone }}</span>
+                </ng-template>
               </div>
               <div class="detail-item">
                 <strong>Kayıt Tarihi / Registrierungsdatum:</strong>
                 <span>{{ formatDate(user.createdAt) }}</span>
+              </div>
+              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
+                <strong>Rol / Rolle:</strong>
+                <select
+                  class="inline-select"
+                  [(ngModel)]="editingUser.role"
+                  [ngModelOptions]="{ standalone: true }">
+                  <option value="USER">Kullanıcı / Benutzer</option>
+                  <option value="ADMIN">Yönetici / Administrator</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="user-actions">
+              <button
+                mat-stroked-button
+                color="primary"
+                *ngIf="!editingUser || editingUser.id !== user.id"
+                (click)="startEdit(user)">
+                Kullanıcıyı Düzenle / Benutzer bearbeiten
+              </button>
+              <button
+                mat-stroked-button
+                color="warn"
+                type="button"
+                (click)="confirmDelete(user)"
+                *ngIf="!deletingUserId || deletingUserId !== user.id">
+                Kullanıcıyı Sil / Benutzer löschen
+              </button>
+              <div
+                class="edit-actions"
+                *ngIf="editingUser && editingUser.id === user.id">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  (click)="saveUser()"
+                  [disabled]="updateLoading">
+                  Kaydet / Speichern
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  (click)="cancelEdit()"
+                  [disabled]="updateLoading">
+                  İptal / Abbrechen
+                </button>
+              </div>
+              <div
+                class="delete-confirm"
+                *ngIf="deletingUserId === user.id">
+                <span>Emin misiniz? / Sind Sie sicher?</span>
+                <button
+                  mat-raised-button
+                  color="warn"
+                  type="button"
+                  (click)="deleteUser()"
+                  [disabled]="deleteLoading">
+                  Evet, sil / Ja, löschen
+                </button>
+                <button
+                  mat-button
+                  type="button"
+                  (click)="cancelDelete()"
+                  [disabled]="deleteLoading">
+                  İptal / Abbrechen
+                </button>
               </div>
             </div>
           </mat-card-content>

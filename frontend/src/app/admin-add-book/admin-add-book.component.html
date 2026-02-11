@@ -1,0 +1,73 @@
+<div class="admin-container">
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Kitap Ekle / Buch hinzufügen</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Yeni Kitap Ekle / Neues Buch hinzufügen</h2>
+      <p class="section-description">
+        Aşağıdaki alanları doldurarak yeni kitap ekleyebilirsiniz. Eklenen kitaplar Kitaplar sayfasında listelenir ve düzenlenebilir.
+        / Füllen Sie die folgenden Felder aus, um ein neues Buch hinzuzufügen. Hinzugefügte Bücher erscheinen auf der Bücher-Seite und können bearbeitet werden.
+      </p>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        <span>{{ successMessage }}</span>
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()">
+        <div class="form-section">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Request Name / Anfrage-Name *</mat-label>
+              <input matInput formControlName="requestName" placeholder="Request Name">
+              <mat-error *ngIf="requestName?.hasError('required')">
+                Bu alan zorunludur / Dieses Feld ist erforderlich
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Order Name / Bestell-Name *</mat-label>
+              <input matInput formControlName="orderName" placeholder="Order Name">
+              <mat-error *ngIf="orderName?.hasError('required')">
+                Bu alan zorunludur / Dieses Feld ist erforderlich
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Lisencode Name / Lizenzcode-Name *</mat-label>
+              <input matInput formControlName="lisencodeName" placeholder="Lisencode Name">
+              <mat-error *ngIf="lisencodeName?.hasError('required')">
+                Bu alan zorunludur / Dieses Feld ist erforderlich
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>ISBN *</mat-label>
+              <input matInput formControlName="isbn" placeholder="ISBN">
+              <mat-error *ngIf="isbn?.hasError('required')">
+                Bu alan zorunludur / Dieses Feld ist erforderlich
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="addBookForm.invalid" class="submit-button">
+            Kitap Ekle / Buch hinzufügen
+          </button>
+          <a mat-button [routerLink]="['/admin/books']" [queryParams]="{ added: 'true' }">Kitaplar Sayfasına Git / Zur Bücher-Seite</a>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
