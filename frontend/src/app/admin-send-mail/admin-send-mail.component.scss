@@ -1,0 +1,149 @@
+@import '../admin-orders-all/admin-orders-all.component.scss';
+
+.input-section {
+  margin-bottom: 2rem;
+}
+
+.emails-field {
+  width: 100%;
+  display: block;
+  margin-bottom: 1rem;
+
+  ::ng-deep .mat-form-field-outline {
+    color: #d32f2f;
+  }
+
+  textarea {
+    min-height: 100px;
+  }
+}
+
+.build-preview-btn {
+  margin-bottom: 0.5rem;
+}
+
+.preview-section {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.preview-title {
+  color: #d32f2f;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.preview-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #f5f5f5;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  .email-cell {
+    color: #666;
+    word-break: break-all;
+  }
+
+  .table-input {
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+
+    &:focus {
+      outline: none;
+      border-color: #d32f2f;
+      box-shadow: 0 0 0 1px rgba(211, 47, 47, 0.2);
+    }
+
+    &.table-input-codes {
+      min-width: 180px;
+    }
+  }
+}
+
+.send-actions {
+  margin-top: 1rem;
+}
+
+.send-btn {
+  min-width: 180px;
+}
+
+.confirm-box {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #fff8e1;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+}
+
+.confirm-text {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #66bb6a;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.empty-preview {
+  text-align: center;
+  padding: 2rem;
+  color: #999;
+  font-size: 0.95rem;
+
+  .hint {
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .preview-table th,
+  .preview-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}

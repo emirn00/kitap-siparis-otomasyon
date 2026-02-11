@@ -1,13 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import * as XLSX from 'xlsx';
 
-interface FormField {
-  id: string;
-  type: 'text' | 'email' | 'tel' | 'select' | 'textarea' | 'checkbox';
-  label: string;
-  required: boolean;
-  placeholder?: string;
-  options?: string[];
+/** Sabit head (head.csv ile aynı: 7 satır, 5 sütun) */
+const HEAD_ROWS: string[][] = [
+  ['Bestellung Hueber iV Lizenzen', '', '', '', ''],
+  ['Kundennummer:', '955.800', 'Vorname: ', '', ''],
+  ['Straße:', '', 'PLZ:', '', ''],
+  ['Zahlart (Rechnung oder Vorausrechnung): ', '', 'Email-Adresse Code-Empfänger: ', 'merve@tak.com.tr', ''],
+  ['', '', '', '', ''],
+  ['', '', '', '', ''],
+  ['Anzahl Codes', 'Anzahl Aktivierungen', 'Laufzeit Monate', 'Artikelnummer und Titel', 'Einzelpreis']
+];
+
+/** Mock siparişler: her siparişte seçilen kitap/artikel adları (Formular’daki gibi) */
+const MOCK_ORDERS: { books: string[] }[] = [
+  { books: ['121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '321082 P Schritte International Neu 1 Kursbuch+Arbeitsbuch'] },
+  { books: ['121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '631791 P Momente A1.1 Arbeitsbuch'] },
+  { books: ['321082 P Schritte International Neu 1 Kursbuch+Arbeitsbuch', '621082 P Schritte International Neu 2 Kursbuch+Arbeitsbuch'] },
+  { books: ['151051 P Beste Freunde PLUS A1.2 Arbeitsbuch - Interaktive Version', '631792 P Momente A2.1 Arbeitsbuch', '651792 P Momente A2.2 Arbeitsbuch'] }
+];
+
+export interface BookTotalRow {
+  /** Artikelnummer und Titel */
+  code: string;
+  /** Anzahl Codes */
+  quantity: number;
 }
 
 @Component({
@@ -15,93 +32,51 @@ interface FormField {
   templateUrl: './admin-order-form-builder.component.html',
   styleUrls: ['./admin-order-form-builder.component.scss']
 })
-export class AdminOrderFormBuilderComponent implements OnInit {
-  formBuilderForm!: FormGroup;
-  formFields: FormField[] = [];
-  previewMode: boolean = false;
-  successMessage: string | null = null;
+export class AdminOrderFormBuilderComponent {
+  bookTotals: BookTotalRow[] = [];
+  previewReady = false;
+  downloadSuccess: string | null = null;
 
-  fieldTypes = [
-    { value: 'text', label: 'Metin / Text' },
-    { value: 'email', label: 'E-posta / E-Mail' },
-    { value: 'tel', label: 'Telefon / Telefon' },
-    { value: 'select', label: 'Seçim / Auswahl' },
-    { value: 'textarea', label: 'Çok Satırlı Metin / Mehrzeiliger Text' },
-    { value: 'checkbox', label: 'Onay Kutusu / Checkbox' }
-  ];
-
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {
-    this.formBuilderForm = this.fb.group({
-      formName: ['', [Validators.required]],
-      formDescription: [''],
-      fields: this.fb.array([])
-    });
-  }
-
-  get fieldsFormArray(): FormArray {
-    return this.formBuilderForm.get('fields') as FormArray;
-  }
-
-  addField(): void {
-    const fieldGroup = this.fb.group({
-      type: ['text', Validators.required],
-      label: ['', Validators.required],
-      placeholder: [''],
-      required: [false],
-      options: this.fb.array([])
-    });
-    this.fieldsFormArray.push(fieldGroup);
-  }
-
-  removeField(index: number): void {
-    this.fieldsFormArray.removeAt(index);
-  }
-
-  getFieldOptions(index: number): FormArray {
-    return this.fieldsFormArray.at(index).get('options') as FormArray;
-  }
-
-  addOption(index: number): void {
-    const optionsArray = this.getFieldOptions(index);
-    optionsArray.push(this.fb.control(''));
-  }
-
-  removeOption(fieldIndex: number, optionIndex: number): void {
-    const optionsArray = this.getFieldOptions(fieldIndex);
-    optionsArray.removeAt(optionIndex);
-  }
-
-  togglePreview(): void {
-    this.previewMode = !this.previewMode;
-    if (this.previewMode) {
-      this.buildPreviewFields();
+  /** Sipariş formu oluştur: mock siparişlerden toplamları hesapla */
+  createOrderForm(): void {
+    const countByCode: Record<string, number> = {};
+    for (const order of MOCK_ORDERS) {
+      for (const code of order.books) {
+        countByCode[code] = (countByCode[code] || 0) + 1;
+      }
     }
+    this.bookTotals = Object.entries(countByCode)
+      .map(([code, quantity]) => ({ code, quantity }))
+      .sort((a, b) => a.code.localeCompare(b.code));
+    this.previewReady = true;
+    this.downloadSuccess = null;
   }
 
-  buildPreviewFields(): void {
-    this.formFields = this.fieldsFormArray.value.map((field: any, index: number) => ({
-      id: `field-${index}`,
-      type: field.type,
-      label: field.label,
-      required: field.required,
-      placeholder: field.placeholder,
-      options: field.options || []
-    }));
+  closePreview(): void {
+    this.previewReady = false;
   }
 
-  saveForm(): void {
-    if (this.formBuilderForm.valid) {
-      // Backend'e kaydedilecek
-      console.log('Form kaydedildi:', this.formBuilderForm.value);
-      this.successMessage = 'Form şablonu başarıyla kaydedildi! / Formularvorlage erfolgreich gespeichert!';
-      
-      setTimeout(() => {
-        this.successMessage = null;
-      }, 3000);
-    } else {
-      this.formBuilderForm.markAllAsTouched();
+  /** Excel: head + Formular Bestellung formatında satırlar (5 sütun) */
+  downloadExcel(): void {
+    const rows: (string | number)[][] = HEAD_ROWS.map(row => [...row]);
+    for (const row of this.bookTotals) {
+      rows.push([
+        row.quantity,
+        '1',
+        '3 jahre',
+        row.code,
+        'kostenlos'
+      ]);
     }
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Bestellung');
+    XLSX.writeFile(wb, 'Formular_Bestellung_Digitallizenzen.xlsx');
+    this.downloadSuccess = 'Excel dosyası indirildi. / Excel-Datei heruntergeladen.';
+    setTimeout(() => (this.downloadSuccess = null), 4000);
+  }
+
+  get headRows(): string[][] {
+    return HEAD_ROWS;
   }
 }

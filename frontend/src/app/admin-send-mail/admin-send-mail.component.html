@@ -1,0 +1,95 @@
+<div class="admin-container">
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">Mail Gönder / E-Mail senden</h2>
+      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">Toplu Mail Gönderimi / E-Mail-Massenversand</h2>
+      <p class="section-description">
+        Mail göndereceğiniz hocaların e-posta adreslerini virgülle ayırarak yazın. Aşağıda önizlemede isim-soyisim, e-posta ve istenen kitap kodlarını görebilir ve düzenleyebilirsiniz.
+        / Geben Sie die E-Mail-Adressen der Empfänger durch Kommas getrennt ein. In der Vorschau können Sie Name, E-Mail und gewünschte Buchcodes prüfen und bearbeiten.
+      </p>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        <span>{{ successMessage }}</span>
+      </div>
+
+      <div class="input-section">
+        <mat-form-field appearance="outline" class="emails-field">
+          <mat-label>Alıcı e-posta adresleri (virgülle ayırın) / Empfänger-E-Mails (durch Komma getrennt)</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="emailsInput"
+            [ngModelOptions]="{ standalone: true }"
+            rows="4"
+            placeholder="ornek1@okul.edu.tr, ornek2@okul.edu.tr"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="button" (click)="buildPreview()" class="build-preview-btn">
+          Önizleme Oluştur / Vorschau erstellen
+        </button>
+      </div>
+
+      <div class="preview-section" *ngIf="previewRows.length > 0">
+        <h3 class="preview-title">Önizleme / Vorschau</h3>
+        <div class="preview-table-wrap">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th>İsim-Soyisim / Name</th>
+                <th>E-posta / E-Mail</th>
+                <th>İstenen kitap kodları / Gewünschte Buchcodes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of previewRows; let i = index">
+                <td>
+                  <input
+                    class="table-input"
+                    [(ngModel)]="row.fullName"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="İsim Soyisim">
+                </td>
+                <td><span class="email-cell">{{ row.email }}</span></td>
+                <td>
+                  <input
+                    class="table-input table-input-codes"
+                    [(ngModel)]="row.bookCodes"
+                    [ngModelOptions]="{ standalone: true }"
+                    placeholder="Kod1, Kod2, ...">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="send-actions" *ngIf="!showConfirm">
+          <button mat-raised-button color="primary" type="button" (click)="openConfirm()" class="send-btn">
+            Mail Gönder / E-Mail senden
+          </button>
+        </div>
+
+        <div class="confirm-box" *ngIf="showConfirm">
+          <p class="confirm-text">Emin misiniz? Mail gönderilecek. / Sind Sie sicher? E-Mail wird gesendet.</p>
+          <div class="confirm-actions">
+            <button mat-raised-button color="primary" type="button" (click)="confirmSend()">
+              Evet, Gönder / Ja, senden
+            </button>
+            <button mat-button type="button" (click)="cancelSend()">
+              İptal / Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-preview" *ngIf="previewRows.length === 0 && !successMessage">
+        <p>E-posta adreslerini yukarıya yazıp "Önizleme Oluştur" butonuna tıklayın.</p>
+        <p class="hint">Geben Sie die E-Mail-Adressen ein und klicken Sie auf "Vorschau erstellen".</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

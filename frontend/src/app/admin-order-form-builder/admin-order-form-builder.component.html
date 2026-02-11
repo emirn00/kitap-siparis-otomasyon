@@ -1,5 +1,4 @@
 <div class="admin-container">
-  <!-- Header -->
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
@@ -10,226 +9,53 @@
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Yeni Sipariş Formu Şablonu Oluştur / Neue Bestellformularvorlage erstellen</h2>
+      <h2 class="section-title">Bestellung Hueber iV Lizenzen – Formular</h2>
       <p class="section-description">
-        Bu sayfada yeni sipariş formu şablonları oluşturabilirsiniz. Form alanlarını özelleştirebilir ve 
-        kullanıcıların dolduracağı alanları belirleyebilirsiniz. Oluşturduğunuz formları önizleyebilir ve kaydedebilirsiniz.
-        / Auf dieser Seite können Sie neue Bestellformularvorlagen erstellen. Sie können Formularfelder anpassen und 
-        die Felder festlegen, die Benutzer ausfüllen müssen. Sie können die erstellten Formulare in der Vorschau anzeigen und speichern.
+        Head (head.csv) sabit; siparişlerdeki toplam kitap sayıları hesaplanır, Formular Bestellung Digitallizenzen formatında önizleme ve Excel indirilir.
       </p>
 
-      <!-- Success Message -->
-      <div *ngIf="successMessage" class="alert alert-success">
-        <mat-icon>check_circle</mat-icon>
-        <span>{{ successMessage }}</span>
+      <div *ngIf="downloadSuccess" class="alert alert-success">
+        <span>{{ downloadSuccess }}</span>
       </div>
 
-      <!-- Form Builder -->
-      <form [formGroup]="formBuilderForm" *ngIf="!previewMode">
-        <div class="form-section">
-          <h3 class="subsection-title">Form Bilgileri / Formularinformationen</h3>
-          
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field full-width">
-              <mat-label>Form Adı / Formularname *</mat-label>
-              <input matInput formControlName="formName" placeholder="Örn: Sipariş Formu 2024">
-              <mat-icon matPrefix>description</mat-icon>
-              <mat-error *ngIf="formBuilderForm.get('formName')?.hasError('required')">
-                Form adı zorunludur / Formularname ist erforderlich
-              </mat-error>
-            </mat-form-field>
+      <div class="create-section" *ngIf="!previewReady">
+        <button mat-raised-button color="primary" type="button" (click)="createOrderForm()" class="create-btn">
+          Sipariş Formu Oluştur / Bestellformular erstellen
+        </button>
+        <p class="create-hint">Mock sipariş verilerinden toplamlar hesaplanır ve önizleme gösterilir.</p>
+      </div>
 
-            <mat-form-field appearance="outline" class="form-field full-width">
-              <mat-label>Form Açıklaması / Formularbeschreibung</mat-label>
-              <textarea matInput formControlName="formDescription" rows="2" 
-                placeholder="Form hakkında açıklama..."></textarea>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <div class="section-header">
-            <h3 class="subsection-title">Form Alanları / Formularfelder</h3>
-            <button 
-              mat-raised-button 
-              color="primary" 
-              type="button"
-              (click)="addField()">
-              <mat-icon>add</mat-icon>
-              <span>Alan Ekle / Feld hinzufügen</span>
+      <div class="preview-section" *ngIf="previewReady">
+        <div class="preview-header">
+          <h3 class="subsection-title">Önizleme – Formular Bestellung Digitallizenzen</h3>
+          <div class="preview-actions">
+            <button mat-raised-button color="primary" type="button" (click)="downloadExcel()" class="download-btn">
+              Excel İndir / Excel herunterladen
+            </button>
+            <button mat-button type="button" (click)="closePreview()">
+              Önizlemeyi Kapat / Vorschau schließen
             </button>
           </div>
-
-          <div class="fields-list" formArrayName="fields">
-            <div 
-              *ngFor="let field of fieldsFormArray.controls; let i = index" 
-              [formGroupName]="i"
-              class="field-item">
-              
-              <div class="field-header">
-                <h4>Alan {{ i + 1 }} / Feld {{ i + 1 }}</h4>
-                <button 
-                  mat-icon-button 
-                  color="warn" 
-                  type="button"
-                  (click)="removeField(i)">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-
-              <div class="form-row">
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Alan Tipi / Feldtyp *</mat-label>
-                  <mat-select formControlName="type">
-                    <mat-option *ngFor="let type of fieldTypes" [value]="type.value">
-                      {{ type.label }}
-                    </mat-option>
-                  </mat-select>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Etiket / Label *</mat-label>
-                  <input matInput formControlName="label" placeholder="Örn: Ad Soyad">
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="form-field">
-                  <mat-label>Placeholder</mat-label>
-                  <input matInput formControlName="placeholder" placeholder="Örn: Adınızı giriniz">
-                </mat-form-field>
-              </div>
-
-              <div class="form-row">
-                <mat-checkbox formControlName="required" color="primary">
-                  Zorunlu Alan / Pflichtfeld
-                </mat-checkbox>
-              </div>
-
-              <!-- Options for select field -->
-              <div *ngIf="field.get('type')?.value === 'select'" class="options-section">
-                <label class="field-label">Seçenekler / Optionen:</label>
-                <div formArrayName="options">
-                  <div 
-                    *ngFor="let option of getFieldOptions(i).controls; let j = index"
-                    class="option-item">
-                    <input 
-                      matInput 
-                      [formControlName]="j" 
-                      placeholder="Seçenek {{ j + 1 }}">
-                    <button 
-                      mat-icon-button 
-                      color="warn" 
-                      type="button"
-                      (click)="removeOption(i, j)">
-                      <mat-icon>close</mat-icon>
-                    </button>
-                  </div>
-                </div>
-                <button 
-                  mat-stroked-button 
-                  type="button"
-                  (click)="addOption(i)"
-                  class="add-option-button">
-                  <mat-icon>add</mat-icon>
-                  <span>Seçenek Ekle / Option hinzufügen</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div *ngIf="fieldsFormArray.length === 0" class="empty-fields">
-            <mat-icon>add_circle_outline</mat-icon>
-            <p>Henüz alan eklenmedi. "Alan Ekle" butonuna tıklayarak başlayın. / Noch keine Felder hinzugefügt. Klicken Sie auf "Feld hinzufügen", um zu beginnen.</p>
-          </div>
         </div>
 
-        <div class="form-actions">
-          <button 
-            mat-raised-button 
-            type="button"
-            (click)="togglePreview()"
-            [disabled]="fieldsFormArray.length === 0"
-            class="preview-button">
-            <mat-icon>visibility</mat-icon>
-            <span>Önizle / Vorschau</span>
-          </button>
-          <button 
-            mat-raised-button 
-            color="primary" 
-            type="button"
-            (click)="saveForm()"
-            [disabled]="formBuilderForm.invalid"
-            class="save-button">
-            <mat-icon>save</mat-icon>
-            <span>Formu Kaydet / Formular speichern</span>
-          </button>
+        <div class="order-form-preview">
+          <table class="order-preview-table">
+            <thead>
+              <tr *ngFor="let row of headRows; let i = index" [class.header-row]="i < headRows.length - 1" [class.column-headers]="i === headRows.length - 1">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of bookTotals">
+                <td class="cell-num">{{ row.quantity }}</td>
+                <td class="cell-num">1</td>
+                <td>3 jahre</td>
+                <td class="cell-code">{{ row.code }}</td>
+                <td>kostenlos</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </form>
-
-      <!-- Preview Mode -->
-      <div *ngIf="previewMode" class="preview-section">
-        <div class="preview-header">
-          <h3 class="subsection-title">Form Önizleme / Formularvorschau</h3>
-          <button 
-            mat-raised-button 
-            type="button"
-            (click)="togglePreview()"
-            class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-            <span>Düzenlemeye Dön / Zur Bearbeitung zurück</span>
-          </button>
-        </div>
-
-        <div class="preview-form">
-          <h4>{{ formBuilderForm.get('formName')?.value || 'Form Önizleme' }}</h4>
-          <p *ngIf="formBuilderForm.get('formDescription')?.value">
-            {{ formBuilderForm.get('formDescription')?.value }}
-          </p>
-
-          <div class="preview-fields">
-            <div *ngFor="let field of formFields" class="preview-field">
-              <label>
-                {{ field.label }}
-                <span *ngIf="field.required" class="required-mark">*</span>
-              </label>
-              
-              <input 
-                *ngIf="field.type === 'text' || field.type === 'email' || field.type === 'tel'"
-                [type]="field.type"
-                [placeholder]="field.placeholder || ''"
-                [required]="field.required"
-                class="preview-input">
-              
-              <textarea 
-                *ngIf="field.type === 'textarea'"
-                [placeholder]="field.placeholder || ''"
-                [required]="field.required"
-                rows="3"
-                class="preview-input"></textarea>
-              
-              <mat-select 
-                *ngIf="field.type === 'select'"
-                [required]="field.required"
-                class="preview-input">
-                <mat-option *ngFor="let option of field.options" [value]="option">
-                  {{ option }}
-                </mat-option>
-              </mat-select>
-              
-              <mat-checkbox 
-                *ngIf="field.type === 'checkbox'"
-                [required]="field.required">
-                {{ field.label }}
-              </mat-checkbox>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="action-buttons">
-        <button mat-raised-button color="primary" routerLink="/order" class="view-button">
-          <mat-icon>visibility</mat-icon>
-          <span>Mevcut Sipariş Formunu Görüntüle / Aktuelles Bestellformular anzeigen</span>
-        </button>
       </div>
     </mat-card-content>
   </mat-card>

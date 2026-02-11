@@ -16,6 +16,7 @@ import { AdminOrderFormBuilderComponent } from './admin-order-form-builder/admin
 import { AdminAssistantComponent } from './admin-assistant/admin-assistant.component';
 import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
 import { AdminBooksComponent } from './admin-books/admin-books.component';
+import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -82,6 +83,12 @@ const routes: Routes = [
   {
     path: 'admin/books',
     component: AdminBooksComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
+  },
+  {
+    path: 'admin/send-mail',
+    component: AdminSendMailComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'ADMIN' }
   },

@@ -36,6 +36,7 @@ import { AdminOrderFormBuilderComponent } from './admin-order-form-builder/admin
 import { AdminAssistantComponent } from './admin-assistant/admin-assistant.component';
 import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
 import { AdminBooksComponent } from './admin-books/admin-books.component';
+import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { AdminBooksComponent } from './admin-books/admin-books.component';
     AdminOrderFormBuilderComponent,
     AdminAssistantComponent,
     AdminAddBookComponent,
-    AdminBooksComponent
+    AdminBooksComponent,
+    AdminSendMailComponent
   ],
   imports: [
     BrowserModule,

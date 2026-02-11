@@ -1,4 +1,105 @@
-@import '../admin-custom-order/admin-custom-order.component.scss';
+@import '../admin-orders-all/admin-orders-all.component.scss';
+
+.create-section {
+  margin: 2rem 0;
+  text-align: center;
+
+  .create-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+
+  .create-hint {
+    margin-top: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+}
+
+.preview-section {
+  margin-top: 1.5rem;
+}
+
+.preview-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  .subsection-title {
+    color: #d32f2f;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .preview-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .download-btn {
+    flex-shrink: 0;
+  }
+}
+
+.order-form-preview {
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.order-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+
+  th,
+  td {
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border: 1px solid #e0e0e0;
+  }
+
+  .header-row td {
+    background: #fafafa;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .column-headers td {
+    background: #d32f2f;
+    color: white;
+    font-weight: 600;
+  }
+
+  .cell-code {
+    font-weight: 500;
+    color: #333;
+    max-width: 320px;
+  }
+
+  .cell-num {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover {
+    background: #fff8f8;
+  }
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #66bb6a;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
 
 .section-header {
   display: flex;
