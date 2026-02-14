@@ -44,6 +44,8 @@ public class OrderService {
         }
 
         Order order = new Order(user, books);
+        order.setCity(request.getCity());
+        order.setInstitution(request.getInstitution());
         Order savedOrder = orderRepository.save(order);
         return OrderResponse.fromEntity(savedOrder);
     }
@@ -84,6 +86,8 @@ public class OrderService {
         }
 
         order.setBooks(books);
+        order.setCity(request.getCity());
+        order.setInstitution(request.getInstitution());
         Order savedOrder = orderRepository.save(order);
         return OrderResponse.fromEntity(savedOrder);
     }

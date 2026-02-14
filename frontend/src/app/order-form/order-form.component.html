@@ -18,9 +18,10 @@
     <div class="intro-section">
       <p class="intro-text">
         <strong>Sevgili Öğretmenim,</strong><br><br>
-        Yeni Hueber Interaktiv uygulamamızı ücretsiz sipariş vermeniz için lütfen aşağıda ki bilgileri doldurunuz. 
-        Doldurduğunuz bu forma ait siparişleriniz en geç bir hafta içerisinde tarafınıza mail olarak ulaşacaktır. 
-        Bu kodlar üç sene geçerli olacaktır. Bir hafta sonra kodlar mailinize gelmediyse lütfen aşağıda ki numaradan bizlere ulaşınız.<br><br>
+        Yeni Hueber Interaktiv uygulamamızı ücretsiz sipariş vermeniz için lütfen aşağıda ki bilgileri doldurunuz.
+        Doldurduğunuz bu forma ait siparişleriniz en geç bir hafta içerisinde tarafınıza mail olarak ulaşacaktır.
+        Bu kodlar üç sene geçerli olacaktır. Bir hafta sonra kodlar mailinize gelmediyse lütfen aşağıda ki numaradan
+        bizlere ulaşınız.<br><br>
         <em>*Sadece derste kullandığınız kitapların kodları gönderilecektir.</em><br><br>
         <strong>Saygılarımızla,</strong><br>
         <strong>Hueber Team</strong><br>
@@ -31,54 +32,33 @@
 
     <mat-card-content>
       <form [formGroup]="orderForm" *ngIf="!showSummary">
+        <!-- User Information (Auto-filled) -->
+        <div class="user-info-banner" *ngIf="userInfo">
+          <div class="info-group">
+            <span class="label">Ad-Soyad / Name-Nachname:</span>
+            <span class="value">{{ userInfo.fullName }}</span>
+          </div>
+          <div class="info-group">
+            <span class="label">E-posta / E-Mail:</span>
+            <span class="value">{{ userInfo.email }}</span>
+          </div>
+          <div class="info-group">
+            <span class="label">Telefon:</span>
+            <span class="value">{{ userInfo.phoneNumber }}</span>
+          </div>
+        </div>
+
         <!-- Form Fields -->
         <div class="form-section">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Ad-Soyad / Name-Nachname *</mat-label>
-              <input matInput formControlName="fullName" placeholder="Adınızı ve soyadınızı giriniz">
-              <mat-error *ngIf="fullName?.hasError('required')">
-                Ad-Soyad zorunludur
-              </mat-error>
-              <mat-error *ngIf="fullName?.hasError('minlength')">
-                Ad-Soyad en az 3 karakter olmalıdır
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>E-posta / E-Mail *</mat-label>
-              <input matInput formControlName="email" placeholder="ornek@email.com" type="email">
-              <mat-error *ngIf="email?.hasError('required')">
-                E-posta zorunludur
-              </mat-error>
-              <mat-error *ngIf="email?.hasError('email')">
-                Geçerli bir e-posta adresi giriniz
-              </mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Telefon Numarası / Telefonnummer *</mat-label>
-              <input matInput formControlName="phone" placeholder="05XX XXX XX XX" type="tel">
-              <mat-error *ngIf="phone?.hasError('required')">
-                Telefon numarası zorunludur
-              </mat-error>
-              <mat-error *ngIf="phone?.hasError('pattern')">
-                Geçerli bir telefon numarası giriniz (10-11 haneli)
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Okul ve Kampüs / Schule und Kampus *</mat-label>
-              <input matInput formControlName="school" placeholder="Okul ve kampüs adınızı giriniz">
+              <mat-label>Okul ve Kampüs (Kurum) / Schule und Institut *</mat-label>
+              <input matInput formControlName="school" placeholder="Okul veya kurum adınızı giriniz">
               <mat-error *ngIf="school?.hasError('required')">
-                Okul ve kampüs zorunludur
+                Kurum bilgisi zorunludur
               </mat-error>
             </mat-form-field>
-          </div>
 
-          <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Şehir / Stadt *</mat-label>
               <input matInput formControlName="city" placeholder="Şehir adınızı giriniz">
@@ -94,14 +74,11 @@
           <h3 class="section-title">
             Hangi ders kitaplarıyla çalışıyorsunuz? / Mit welchen Lehrwerken arbeiten Sie? *
           </h3>
-          
+
           <mat-form-field appearance="outline" class="form-field full-width">
             <mat-label>Örnek: Beste Freunde 1,2,3 - Schritte International Neu 1 und 2</mat-label>
-            <textarea 
-              matInput 
-              formControlName="workingBooks" 
-              placeholder="z.B. Beste Freunde 1,2,3 - Schritte International Neu 1 und 2"
-              rows="3"></textarea>
+            <textarea matInput formControlName="workingBooks"
+              placeholder="z.B. Beste Freunde 1,2,3 - Schritte International Neu 1 und 2" rows="3"></textarea>
             <mat-error *ngIf="workingBooks?.hasError('required')">
               Bu alan zorunludur
             </mat-error>
@@ -111,19 +88,17 @@
         <!-- Selected Books Section -->
         <div class="form-section">
           <h3 class="section-title">
-            Aşağıda ki kitapların interaktif kodlarına ihtiyacım var: / Ich brauche die interaktiven Codes zu folgenden Lehrwerken: *
+            Aşağıda ki kitapların interaktif kodlarına ihtiyacım var: / Ich brauche die interaktiven Codes zu folgenden
+            Lehrwerken: *
           </h3>
-          
+
           <div class="books-grid">
             <mat-card class="book-card" *ngFor="let book of books">
               <div class="book-image-container">
                 <img [src]="book.imageUrl" [alt]="book.name" class="book-image" (error)="onImageError($event)">
                 <div class="book-level-badge">{{ book.level }}</div>
               </div>
-              <mat-checkbox 
-                [checked]="book.selectedForCodes"
-                (change)="onBookChange(book, $event)"
-                color="accent"
+              <mat-checkbox [checked]="book.selectedForCodes" (change)="onBookChange(book, $event)" color="accent"
                 class="book-checkbox">
                 <span class="book-name">{{ book.name }}</span>
               </mat-checkbox>
@@ -132,12 +107,8 @@
         </div>
 
         <div class="form-actions">
-          <button 
-            mat-raised-button 
-            color="primary" 
-            (click)="onSubmit()"
-            [disabled]="orderForm.invalid || selectedBooksFormArray.length === 0"
-            class="submit-button">
+          <button mat-raised-button color="primary" (click)="onSubmit()"
+            [disabled]="orderForm.invalid || selectedBooksFormArray.length === 0" class="submit-button">
             Devam Et / Weiter
           </button>
         </div>
@@ -151,30 +122,30 @@
 
         <mat-card class="summary-card">
           <mat-card-content>
-            <div class="summary-item">
+            <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
                 <strong>Ad-Soyad / Name-Nachname:</strong>
-                <span>{{ orderForm.value.fullName }}</span>
+                <span>{{ userInfo.fullName }}</span>
               </div>
             </div>
 
-            <div class="summary-item">
+            <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
                 <strong>E-posta / E-Mail:</strong>
-                <span>{{ orderForm.value.email }}</span>
+                <span>{{ userInfo.email }}</span>
               </div>
             </div>
 
-            <div class="summary-item">
+            <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
                 <strong>Telefon Numarası / Telefonnummer:</strong>
-                <span>{{ orderForm.value.phone }}</span>
+                <span>{{ userInfo.phoneNumber }}</span>
               </div>
             </div>
 
             <div class="summary-item">
               <div class="summary-content">
-                <strong>Okul ve Kampüs / Schule und Kampus:</strong>
+                <strong>Okul ve Kurum / Schule und Institut:</strong>
                 <span>{{ orderForm.value.school }}</span>
               </div>
             </div>
@@ -211,18 +182,10 @@
         </mat-card>
 
         <div class="summary-actions">
-          <button 
-            mat-stroked-button 
-            color="primary" 
-            (click)="onBack()"
-            class="back-button">
+          <button mat-stroked-button color="primary" (click)="onBack()" class="back-button">
             Geri Dön / Zurück
           </button>
-          <button 
-            mat-raised-button 
-            color="primary" 
-            (click)="onConfirm()"
-            class="confirm-button">
+          <button mat-raised-button color="primary" (click)="onConfirm()" class="confirm-button">
             Onayla / Bestätigen
           </button>
         </div>

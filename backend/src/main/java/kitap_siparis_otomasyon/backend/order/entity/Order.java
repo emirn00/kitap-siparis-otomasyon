@@ -33,6 +33,12 @@ public class Order {
     @JoinTable(name = "order_books", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
     private List<Book> books;
 
+    @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
+    private String institution;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

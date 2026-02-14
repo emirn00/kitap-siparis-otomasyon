@@ -10,4 +10,6 @@ import java.util.UUID;
 @Setter
 public class UpdateOrderRequest {
     private List<UUID> bookIds;
+    private String city;
+    private String institution;
 }

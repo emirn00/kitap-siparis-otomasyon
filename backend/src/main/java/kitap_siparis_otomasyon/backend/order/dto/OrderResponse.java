@@ -16,6 +16,8 @@ public class OrderResponse {
     private UUID userId;
     private String userName;
     private List<Book> books;
+    private String city;
+    private String institution;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -25,6 +27,8 @@ public class OrderResponse {
         response.setUserId(order.getUser().getId());
         response.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
         response.setBooks(order.getBooks());
+        response.setCity(order.getCity());
+        response.setInstitution(order.getInstitution());
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
         return response;

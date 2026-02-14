@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Observable, tap} from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { Observable, tap } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:8080/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(request: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, request).pipe(
@@ -30,6 +30,22 @@ export class AuthService {
 
     const payload = JSON.parse(atob(token.split('.')[1]));
     return payload.role;
+  }
+
+  getUserInfo(): { email: string; fullName: string; phoneNumber: string } | null {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        email: payload.email,
+        fullName: payload.fullName,
+        phoneNumber: payload.phoneNumber
+      };
+    } catch (e) {
+      return null;
+    }
   }
 
   isLoggedIn(): boolean {

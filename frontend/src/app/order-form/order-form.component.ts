@@ -11,6 +11,8 @@ interface Book {
   selectedForCodes: boolean;
 }
 
+import { AuthService } from '../auth/auth.service';
+
 @Component({
   selector: 'app-order-form',
   templateUrl: './order-form.component.html',
@@ -19,85 +21,86 @@ interface Book {
 export class OrderFormComponent implements OnInit {
   orderForm!: FormGroup;
   showSummary = false;
-  
+  userInfo: { email: string; fullName: string; phoneNumber: string } | null = null;
+
   // Static kitap listesi - backend'den çekilecek
   books: Book[] = [
-    { 
-      id: 1, 
-      name: 'Beste Freunde A 1.1 Arbeitsbuch', 
+    {
+      id: 1,
+      name: 'Beste Freunde A 1.1 Arbeitsbuch',
       level: 'A1.1',
       imageUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 2, 
-      name: 'Beste Freunde A 1.2 Arbeitsbuch', 
+    {
+      id: 2,
+      name: 'Beste Freunde A 1.2 Arbeitsbuch',
       level: 'A1.2',
       imageUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 3, 
-      name: 'Beste Freunde A 2.1 Arbeitsbuch', 
+    {
+      id: 3,
+      name: 'Beste Freunde A 2.1 Arbeitsbuch',
       level: 'A2.1',
       imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 4, 
-      name: 'Beste Freunde A 2.2 Arbeitsbuch', 
+    {
+      id: 4,
+      name: 'Beste Freunde A 2.2 Arbeitsbuch',
       level: 'A2.2',
       imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 5, 
-      name: 'Beste Freunde B 1.1 Arbeitsbuch', 
+    {
+      id: 5,
+      name: 'Beste Freunde B 1.1 Arbeitsbuch',
       level: 'B1.1',
       imageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 6, 
-      name: 'Beste Freunde B 1.2 Arbeitsbuch', 
+    {
+      id: 6,
+      name: 'Beste Freunde B 1.2 Arbeitsbuch',
       level: 'B1.2',
       imageUrl: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 7, 
-      name: 'Beste Freunde B 2.1 Arbeitsbuch', 
+    {
+      id: 7,
+      name: 'Beste Freunde B 2.1 Arbeitsbuch',
       level: 'B2.1',
       imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     },
-    { 
-      id: 8, 
-      name: 'Beste Freunde B 2.2 Arbeitsbuch', 
+    {
+      id: 8,
+      name: 'Beste Freunde B 2.2 Arbeitsbuch',
       level: 'B2.2',
       imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop',
-      selectedForWorking: false, 
-      selectedForCodes: false 
+      selectedForWorking: false,
+      selectedForCodes: false
     }
   ];
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
-  ) {}
+    private router: Router,
+    private authService: AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.userInfo = this.authService.getUserInfo();
+
     this.orderForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10,11}$/)]],
       school: ['', [Validators.required]],
       city: ['', [Validators.required]],
       workingBooks: ['', [Validators.required]],
@@ -111,7 +114,7 @@ export class OrderFormComponent implements OnInit {
 
   onBookChange(book: Book, event: any): void {
     const targetArray = this.selectedBooksFormArray;
-    
+
     if (event.checked) {
       book.selectedForCodes = true;
       targetArray.push(this.fb.control(book.id));
@@ -140,7 +143,7 @@ export class OrderFormComponent implements OnInit {
       ...this.orderForm.value,
       selectedBookNames: this.getSelectedBookNames()
     });
-    
+
     alert('Siparişiniz başarıyla alındı!');
     this.resetForm();
   }
@@ -165,9 +168,6 @@ export class OrderFormComponent implements OnInit {
     this.showSummary = false;
   }
 
-  get fullName() { return this.orderForm.get('fullName'); }
-  get email() { return this.orderForm.get('email'); }
-  get phone() { return this.orderForm.get('phone'); }
   get school() { return this.orderForm.get('school'); }
   get city() { return this.orderForm.get('city'); }
   get workingBooks() { return this.orderForm.get('workingBooks'); }
