@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -25,7 +25,7 @@ import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
 import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './auth/login/login.component';
-import {AuthInterceptor} from "./auth/auth.interceptor";
+import { AuthInterceptor } from "./auth/auth.interceptor";
 import { RegisterComponent } from './auth/register/register.component';
 import { ProfileComponent } from './profile/profile.component';
 import { AdminOrdersAllComponent } from './admin-orders-all/admin-orders-all.component';
@@ -37,6 +37,7 @@ import { AdminAssistantComponent } from './admin-assistant/admin-assistant.compo
 import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
 import { AdminBooksComponent } from './admin-books/admin-books.component';
 import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
+import { BookCardComponent } from './admin-books/components/book-card/book-card.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.compon
     AdminAssistantComponent,
     AdminAddBookComponent,
     AdminBooksComponent,
-    AdminSendMailComponent
+    AdminSendMailComponent,
+    BookCardComponent
   ],
   imports: [
     BrowserModule,

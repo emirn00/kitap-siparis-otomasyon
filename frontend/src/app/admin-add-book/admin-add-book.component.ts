@@ -15,7 +15,7 @@ export class AdminAddBookComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private bookStore: AdminBookStoreService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.addBookForm = this.fb.group({
@@ -28,11 +28,18 @@ export class AdminAddBookComponent implements OnInit {
 
   onSubmit(): void {
     if (this.addBookForm.valid) {
-      this.bookStore.addBook(this.addBookForm.value);
-      this.successMessage = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
-      this.errorMessage = null;
-      this.addBookForm.reset();
-      setTimeout(() => (this.successMessage = null), 4000);
+      this.bookStore.addBook(this.addBookForm.value).subscribe({
+        next: () => {
+          this.successMessage = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
+          this.errorMessage = null;
+          this.addBookForm.reset();
+          setTimeout(() => (this.successMessage = null), 4000);
+        },
+        error: (err) => {
+          this.errorMessage = 'Ekleme başarısız. / Hinzufügen fehlgeschlagen.';
+          this.successMessage = null;
+        }
+      });
     } else {
       this.addBookForm.markAllAsTouched();
       this.errorMessage = 'Lütfen tüm alanları doldurun. / Bitte füllen Sie alle Felder aus.';

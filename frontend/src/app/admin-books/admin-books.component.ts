@@ -22,10 +22,14 @@ export class AdminBooksComponent implements OnInit {
     private bookStore: AdminBookStoreService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.loadBooks();
+    this.bookStore.getBooksObservable().subscribe(books => {
+      this.books = books;
+      this.applyFilters();
+    });
+
     const added = this.route.snapshot.queryParamMap.get('added');
     if (added === 'true' || added === '1') {
       this.addSuccess = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
@@ -39,26 +43,21 @@ export class AdminBooksComponent implements OnInit {
     }
   }
 
-  loadBooks(): void {
-    this.books = this.bookStore.getBooks();
-    this.applyFilters();
-  }
-
   applyFilters(): void {
-    const term = this.searchTerm.trim().toLowerCase();
-    this.filteredBooks = term
-      ? this.books.filter(
-          b =>
-            b.requestName.toLowerCase().includes(term) ||
-            b.orderName.toLowerCase().includes(term) ||
-            b.lisencodeName.toLowerCase().includes(term) ||
-            b.isbn.toLowerCase().includes(term)
-        )
-      : [...this.books];
+    // With server-side filtering, we just show what's in the store
+    this.filteredBooks = [...this.books];
   }
 
   onSearch(): void {
-    this.applyFilters();
+    this.bookStore.refreshBooks(this.searchTerm);
+  }
+
+  onLoadMore(): void {
+    this.bookStore.loadMore();
+  }
+
+  hasMore(): boolean {
+    return this.bookStore.hasMore();
   }
 
   startEdit(book: AdminBook): void {
@@ -73,21 +72,20 @@ export class AdminBooksComponent implements OnInit {
 
   saveBook(): void {
     if (!this.editingBook) return;
-    const updated = this.bookStore.updateBook(this.editingBook.id, {
+    this.bookStore.updateBook(this.editingBook.id, {
       requestName: this.editingBook.requestName,
       orderName: this.editingBook.orderName,
-      lisencodeName: this.editingBook.lisencodeName,
       isbn: this.editingBook.isbn
+    }).subscribe({
+      next: (updated) => {
+        this.updateSuccess = 'Kitap güncellendi. / Buch aktualisiert.';
+        this.editingBook = null;
+        setTimeout(() => (this.updateSuccess = null), 3000);
+      },
+      error: (err) => {
+        this.updateError = 'Güncelleme başarısız. / Aktualisierung fehlgeschlagen.';
+      }
     });
-    if (updated) {
-      this.books = this.bookStore.getBooks();
-      this.applyFilters();
-      this.updateSuccess = 'Kitap güncellendi. / Buch aktualisiert.';
-      this.editingBook = null;
-      setTimeout(() => (this.updateSuccess = null), 3000);
-    } else {
-      this.updateError = 'Güncelleme başarısız. / Aktualisierung fehlgeschlagen.';
-    }
   }
 
   confirmDelete(book: AdminBook): void {
@@ -101,14 +99,14 @@ export class AdminBooksComponent implements OnInit {
 
   deleteBook(): void {
     if (!this.deletingBookId) return;
-    const ok = this.bookStore.deleteBook(this.deletingBookId);
-    if (ok) {
-      this.books = this.bookStore.getBooks();
-      this.applyFilters();
-      this.deletingBookId = null;
-    } else {
-      this.deleteError = 'Silme başarısız. / Löschen fehlgeschlagen.';
-    }
+    this.bookStore.deleteBook(this.deletingBookId).subscribe({
+      next: () => {
+        this.deletingBookId = null;
+      },
+      error: (err) => {
+        this.deleteError = 'Silme başarısız. / Löschen fehlgeschlagen.';
+      }
+    });
   }
 
   getTotalBooks(): number {

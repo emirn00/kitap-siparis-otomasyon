@@ -8,4 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, UUID> {
+    org.springframework.data.domain.Page<Book> findByRequestNameContainingIgnoreCaseOrIsbnContainingIgnoreCase(
+            String requestName, String isbn, org.springframework.data.domain.Pageable pageable);
 }

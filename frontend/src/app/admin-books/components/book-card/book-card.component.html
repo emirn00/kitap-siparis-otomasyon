@@ -1,0 +1,50 @@
+<mat-card class="book-card-inner">
+  <div class="book-card-content">
+    <div class="book-image-container">
+      <img [src]="placeholderImage" alt="Book Cover" class="book-cover">
+    </div>
+
+    <div class="book-info">
+      <div *ngIf="!isEditing" class="view-mode">
+        <h3 class="book-title">{{ book.requestName }}</h3>
+        <p class="book-isbn"><strong>ISBN:</strong> {{ book.isbn }}</p>
+        <p class="book-order"><strong>Order:</strong> {{ book.orderName }}</p>
+        <p *ngIf="book.lisencodeName" class="book-license"><strong>License:</strong> {{ book.lisencodeName }}</p>
+        <p class="book-id-tag">#{{ book.id }}</p>
+      </div>
+
+      <div *ngIf="isEditing" class="edit-mode">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Request Name</mat-label>
+          <input matInput [(ngModel)]="book.requestName">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Order Name</mat-label>
+          <input matInput [(ngModel)]="book.orderName">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>ISBN</mat-label>
+          <input matInput [(ngModel)]="book.isbn">
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <mat-card-actions align="end">
+    <ng-container *ngIf="!isEditing && !isDeleting">
+      <button mat-stroked-button color="primary" (click)="onEdit()">Düzenle / Bearbeiten</button>
+      <button mat-stroked-button color="warn" (click)="onDelete()">Sil / Löschen</button>
+    </ng-container>
+
+    <ng-container *ngIf="isEditing">
+      <button mat-raised-button color="primary" (click)="onSave()">Kaydet / Speichern</button>
+      <button mat-button (click)="onCancel()">İptal / Abbrechen</button>
+    </ng-container>
+
+    <ng-container *ngIf="isDeleting">
+      <span class="delete-hint">Emin misiniz?</span>
+      <button mat-raised-button color="warn" (click)="onConfirmDelete()">Evet, sil</button>
+      <button mat-button (click)="onCancelDelete()">İptal</button>
+    </ng-container>
+  </mat-card-actions>
+</mat-card>

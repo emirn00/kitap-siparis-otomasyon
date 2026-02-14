@@ -8,7 +8,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "books")
-@Getter @Setter
+@Getter
+@Setter
 public class Book {
 
     @Id
@@ -25,14 +26,17 @@ public class Book {
     @Column(name = "isbn", nullable = false)
     private String isbn;
 
+    @Column(name = "lisencode_name")
+    private String lisencodeName;
+
     protected Book() {
     }
 
-    public Book(String requestName, String orderName, String isbn) {
+    public Book(String requestName, String orderName, String isbn, String lisencodeName) {
         this.requestName = requestName;
         this.orderName = orderName;
         this.isbn = isbn;
+        this.lisencodeName = lisencodeName;
     }
 
 }
-
