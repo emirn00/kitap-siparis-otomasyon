@@ -54,23 +54,30 @@
         </div>
       </div>
 
-      <div class="books-list" *ngIf="filteredBooks.length > 0">
+      <div class="books-list" *ngIf="!booksLoading && filteredBooks.length > 0">
         <app-book-card *ngFor="let book of filteredBooks" [book]="book" [isEditing]="editingBook?.id === book.id"
           [isDeleting]="deletingBookId === book.id" (edit)="startEdit($event)" (delete)="confirmDelete($event)"
           (save)="saveBook()" (cancel)="cancelEdit()" (confirmDelete)="deleteBook()" (cancelDelete)="cancelDelete()">
         </app-book-card>
       </div>
 
-      <div class="load-more-container" *ngIf="hasMore()">
+      <div class="load-more-container" *ngIf="!booksLoading && hasMore()">
         <button mat-stroked-button color="primary" (click)="onLoadMore()" class="load-more-btn">
           Daha Fazla Yükle / Mehr laden
         </button>
       </div>
 
-      <div class="empty-state" *ngIf="filteredBooks.length === 0">
+      <div *ngIf="booksLoading" class="books-loading">
+        Kitaplar yükleniyor / Bücher werden geladen…
+      </div>
+      <div *ngIf="booksLoadError" class="alert alert-error">
+        <span>{{ booksLoadError }}</span>
+      </div>
+
+      <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && filteredBooks.length === 0">
         <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
         <p class="empty-hint">
-          Kitap eklemek için "Kitap Ekle" sayfasını kullanın. / Verwenden Sie "Buch hinzufügen", um Bücher hinzuzufügen.
+          Kitap eklemek için sağ üstteki "Kitap Ekle" butonunu kullanın. / Verwenden Sie "Buch hinzufügen", um Bücher hinzuzufügen.
         </p>
         <a mat-raised-button color="primary" routerLink="/admin/add-book">Kitap Ekle / Buch hinzufügen</a>
       </div>

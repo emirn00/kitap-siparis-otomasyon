@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AdminBookStoreService } from '../admin/admin-book-store.service';
 
 @Component({
@@ -14,7 +15,8 @@ export class AdminAddBookComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private bookStore: AdminBookStoreService
+    private bookStore: AdminBookStoreService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -28,14 +30,18 @@ export class AdminAddBookComponent implements OnInit {
 
   onSubmit(): void {
     if (this.addBookForm.valid) {
+      // POST api/books ile veritabanına kitap eklenir
       this.bookStore.addBook(this.addBookForm.value).subscribe({
         next: () => {
           this.successMessage = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
           this.errorMessage = null;
           this.addBookForm.reset();
-          setTimeout(() => (this.successMessage = null), 4000);
+          setTimeout(() => {
+            this.successMessage = null;
+            this.router.navigate(['/admin/books'], { queryParams: { added: 'true' } });
+          }, 1500);
         },
-        error: (err) => {
+        error: () => {
           this.errorMessage = 'Ekleme başarısız. / Hinzufügen fehlgeschlagen.';
           this.successMessage = null;
         }

@@ -45,6 +45,19 @@ export class AdminBookStoreService {
     });
   }
 
+  /** Tüm kitaplar listesi: GET /api/books (id yok, sayfa parametreleri ile) */
+  loadBooksFromApi(searchTerm: string = '', size: number = 50): Observable<PageResponse<AdminBook>> {
+    this.currentSearch = searchTerm;
+    this.currentPage = 0;
+    return this.fetchBooks(this.currentPage, size, this.currentSearch).pipe(
+      tap(res => {
+        this.books = res.content;
+        this.isLastPage = res.last;
+        this.books$.next([...this.books]);
+      })
+    );
+  }
+
   loadMore(size: number = 20): void {
     if (this.isLastPage) return;
     this.currentPage++;
@@ -130,5 +143,15 @@ export class AdminBookStoreService {
 
   getBookById(id: string): AdminBook | null {
     return this.books.find(b => b.id === id) || null;
+  }
+
+  /** API'den ID ile tek kitap getirir */
+  fetchBookById(id: string): Observable<AdminBook> {
+    return this.http.get<AdminBook>(`${this.apiUrl}/${id}`).pipe(
+      catchError(err => {
+        console.error('Error fetching book by id', err);
+        return throwError(() => err);
+      })
+    );
   }
 }
