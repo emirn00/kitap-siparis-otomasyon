@@ -17,6 +17,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
+
 import java.util.List;
 
 @Configuration
@@ -25,9 +27,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public SecurityConfig(JwtService jwtService) {
+    public SecurityConfig(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     @Bean
@@ -37,7 +41,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtService);
+        return new JwtAuthenticationFilter(jwtService, userRepository);
     }
 
     @Bean
@@ -61,25 +65,21 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+                                "/v3/api-docs/**")
+                        .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtAuthenticationFilter(),
-                        UsernamePasswordAuthenticationFilter.class
-                );
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
