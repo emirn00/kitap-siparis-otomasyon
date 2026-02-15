@@ -85,14 +85,17 @@
           </mat-form-field>
         </div>
 
-        <!-- Selected Books Section -->
+        <!-- Selected Books Section (kitaplar GET /api/books ile API'den) -->
         <div class="form-section">
           <h3 class="section-title">
             Aşağıda ki kitapların interaktif kodlarına ihtiyacım var: / Ich brauche die interaktiven Codes zu folgenden
             Lehrwerken: *
           </h3>
 
-          <div class="books-grid">
+          <p *ngIf="booksLoading" class="books-loading">Kitaplar yükleniyor / Bücher werden geladen…</p>
+          <p *ngIf="booksError" class="books-error">{{ booksError }}</p>
+
+          <div class="books-grid" *ngIf="!booksLoading && books.length > 0">
             <mat-card class="book-card" *ngFor="let book of books">
               <div class="book-image-container">
                 <img [src]="book.imageUrl" [alt]="book.name" class="book-image" (error)="onImageError($event)">
@@ -181,12 +184,14 @@
           </mat-card-content>
         </mat-card>
 
+        <div *ngIf="orderError" class="order-error">{{ orderError }}</div>
         <div class="summary-actions">
-          <button mat-stroked-button color="primary" (click)="onBack()" class="back-button">
+          <button mat-stroked-button color="primary" (click)="onBack()" class="back-button" [disabled]="orderSubmitting">
             Geri Dön / Zurück
           </button>
-          <button mat-raised-button color="primary" (click)="onConfirm()" class="confirm-button">
-            Onayla / Bestätigen
+          <button mat-raised-button color="primary" (click)="onConfirm()" class="confirm-button"
+            [disabled]="orderSubmitting">
+            {{ orderSubmitting ? 'Gönderiliyor…' : 'Onayla / Bestätigen' }}
           </button>
         </div>
       </div>

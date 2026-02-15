@@ -97,7 +97,8 @@ export class AdminBooksComponent implements OnInit {
     this.bookStore.updateBook(this.editingBook.id, {
       requestName: this.editingBook.requestName,
       orderName: this.editingBook.orderName,
-      isbn: this.editingBook.isbn
+      isbn: this.editingBook.isbn,
+      lisencodeName: this.editingBook.lisencodeName
     }).subscribe({
       next: (updated) => {
         this.updateSuccess = 'Kitap güncellendi. / Buch aktualisiert.';

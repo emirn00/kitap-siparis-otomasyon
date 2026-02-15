@@ -64,6 +64,24 @@
   margin-bottom: 8px;
 }
 
+.card-actions {
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .btn-put,
+  .btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  button mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .delete-hint {
   margin-right: 12px;
   font-weight: 500;

@@ -4,6 +4,7 @@ import kitap_siparis_otomasyon.backend.security.JwtAuthenticationFilter;
 import kitap_siparis_otomasyon.backend.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -71,6 +72,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

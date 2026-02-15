@@ -6,7 +6,9 @@ interface ApiOrderResponse {
   id: string;
   userId: string;
   userName: string;
-  books: { id: string; title?: string }[];
+  books: { id: string; title?: string; requestName?: string }[];
+  city?: string;
+  institution?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -95,16 +97,15 @@ export class AdminOrdersAllComponent implements OnInit {
 
     this.http.get<ApiOrderResponse[]>(this.apiUrl).subscribe({
       next: (data) => {
-        // API'den gelen veriyi UI modeline map et
         this.orders = data.map(d => ({
           id: d.id,
           fullName: d.userName,
           email: '',
           phone: '',
-          school: '',
-          city: '',
+          school: d.institution ?? '',
+          city: d.city ?? '',
           workingBooks: '',
-          selectedBooks: (d.books || []).map(b => b.title || 'Kitap'),
+          selectedBooks: (d.books || []).map(b => b.requestName || b.title || 'Kitap'),
           createdAt: new Date(d.createdAt),
           status: 'pending'
         }));
@@ -137,10 +138,10 @@ export class AdminOrdersAllComponent implements OnInit {
           fullName: d.userName,
           email: '',
           phone: '',
-          school: '',
-          city: '',
+          school: d.institution ?? '',
+          city: d.city ?? '',
           workingBooks: '',
-          selectedBooks: (d.books || []).map(b => b.title || 'Kitap'),
+          selectedBooks: (d.books || []).map(b => b.requestName || b.title || 'Kitap'),
           createdAt: new Date(d.createdAt),
           status: 'pending'
         }));

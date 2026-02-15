@@ -277,6 +277,22 @@ mat-card-content {
   }
 }
 
+.books-loading {
+  color: #666;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.books-error {
+  color: #c62828;
+  margin: 1rem 0;
+}
+
+.order-error {
+  color: #c62828;
+  margin-bottom: 1rem;
+}
+
 .books-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));

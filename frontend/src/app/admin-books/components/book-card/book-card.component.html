@@ -23,6 +23,10 @@
           <input matInput [(ngModel)]="book.orderName">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Lisencode Name</mat-label>
+          <input matInput [(ngModel)]="book.lisencodeName" placeholder="Opsiyonel">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>ISBN</mat-label>
           <input matInput [(ngModel)]="book.isbn">
         </mat-form-field>
@@ -30,20 +34,32 @@
     </div>
   </div>
 
-  <mat-card-actions align="end">
+  <mat-card-actions align="end" class="card-actions">
     <ng-container *ngIf="!isEditing && !isDeleting">
-      <button mat-stroked-button color="primary" (click)="onEdit()">Düzenle / Bearbeiten</button>
-      <button mat-stroked-button color="warn" (click)="onDelete()">Sil / Löschen</button>
+      <button mat-stroked-button color="primary" (click)="onEdit()" class="btn-put" title="PUT /api/books/{{ book.id }}">
+        <mat-icon>edit</mat-icon>
+        Düzenle (PUT) / Bearbeiten
+      </button>
+      <button mat-stroked-button color="warn" (click)="onDelete()" class="btn-delete" title="DELETE /api/books/{{ book.id }}">
+        <mat-icon>delete</mat-icon>
+        Sil (DELETE) / Löschen
+      </button>
     </ng-container>
 
     <ng-container *ngIf="isEditing">
-      <button mat-raised-button color="primary" (click)="onSave()">Kaydet / Speichern</button>
+      <button mat-raised-button color="primary" (click)="onSave()">
+        <mat-icon>save</mat-icon>
+        Kaydet (PUT) / Speichern
+      </button>
       <button mat-button (click)="onCancel()">İptal / Abbrechen</button>
     </ng-container>
 
     <ng-container *ngIf="isDeleting">
-      <span class="delete-hint">Emin misiniz?</span>
-      <button mat-raised-button color="warn" (click)="onConfirmDelete()">Evet, sil</button>
+      <span class="delete-hint">Emin misiniz? / Sind Sie sicher?</span>
+      <button mat-raised-button color="warn" (click)="onConfirmDelete()">
+        <mat-icon>delete_forever</mat-icon>
+        Evet, sil (DELETE)
+      </button>
       <button mat-button (click)="onCancelDelete()">İptal</button>
     </ng-container>
   </mat-card-actions>
