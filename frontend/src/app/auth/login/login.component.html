@@ -3,13 +3,13 @@
 
     <div class="card-body p-4">
       <h3 class="text-center mb-4 text-danger fw-bold">
-        Giriş Yap
+        {{ 'login' | translate }}
       </h3>
 
       <form (ngSubmit)="login()" #loginForm="ngForm">
 
         <div class="mb-3">
-          <label class="form-label">Email</label>
+          <label class="form-label">{{ 'email' | translate }}</label>
           <input
             type="email"
             class="form-control"
@@ -21,7 +21,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Şifre</label>
+          <label class="form-label">{{ 'password' | translate }}</label>
           <input
             type="password"
             class="form-control"
@@ -37,16 +37,16 @@
         </div>
 
         <button type="submit" class="btn btn-danger w-100 mt-3">
-          Giriş Yap
+          {{ 'login' | translate }}
         </button>
       </form>
 
       <hr />
 
       <p class="text-center mb-0">
-        Hesabınız yok mu?
+        {{ 'noAccount' | translate }}
         <a routerLink="/register" class="text-danger fw-semibold">
-          Kayıt Ol
+          {{ 'register' | translate }}
         </a>
       </p>
     </div>

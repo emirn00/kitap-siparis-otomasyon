@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminBookStoreService, AdminBook } from '../admin/admin-book-store.service';
+import { TranslationService } from '../i18n/translation.service';
 
 @Component({
   selector: 'app-admin-books',
@@ -24,7 +25,8 @@ export class AdminBooksComponent implements OnInit {
   constructor(
     private bookStore: AdminBookStoreService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private translation: TranslationService
   ) { }
 
   ngOnInit(): void {
@@ -38,7 +40,7 @@ export class AdminBooksComponent implements OnInit {
 
     const added = this.route.snapshot.queryParamMap.get('added');
     if (added === 'true' || added === '1') {
-      this.addSuccess = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
+      this.addSuccess = this.translation.get('addSuccess');
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: {},
@@ -60,7 +62,7 @@ export class AdminBooksComponent implements OnInit {
       },
       error: () => {
         this.booksLoading = false;
-        this.booksLoadError = 'Kitaplar yüklenemedi. / Bücher konnten nicht geladen werden.';
+        this.booksLoadError = this.translation.get('booksError');
       }
     });
   }
@@ -104,12 +106,12 @@ export class AdminBooksComponent implements OnInit {
       lisencodeName: current.lisencodeName
     }).subscribe({
       next: (updated) => {
-        this.updateSuccess = 'Kitap güncellendi. / Buch aktualisiert.';
+        this.updateSuccess = this.translation.get('bookUpdated');
         this.editingBook = null;
         setTimeout(() => (this.updateSuccess = null), 3000);
       },
-      error: (err) => {
-        this.updateError = 'Güncelleme başarısız. / Aktualisierung fehlgeschlagen.';
+      error: () => {
+        this.updateError = this.translation.get('bookUpdateFailed');
       }
     });
   }
@@ -129,8 +131,8 @@ export class AdminBooksComponent implements OnInit {
       next: () => {
         this.deletingBookId = null;
       },
-      error: (err) => {
-        this.deleteError = 'Silme başarısız. / Löschen fehlgeschlagen.';
+      error: () => {
+        this.deleteError = this.translation.get('bookDeleteFailed');
       }
     });
   }

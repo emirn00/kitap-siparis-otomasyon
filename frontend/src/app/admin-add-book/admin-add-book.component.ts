@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminBookStoreService } from '../admin/admin-book-store.service';
+import { TranslationService } from '../i18n/translation.service';
 
 @Component({
   selector: 'app-admin-add-book',
@@ -16,7 +17,8 @@ export class AdminAddBookComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private bookStore: AdminBookStoreService,
-    private router: Router
+    private router: Router,
+    private translation: TranslationService
   ) { }
 
   ngOnInit(): void {
@@ -33,7 +35,7 @@ export class AdminAddBookComponent implements OnInit {
       // POST api/books ile veritabanına kitap eklenir
       this.bookStore.addBook(this.addBookForm.value).subscribe({
         next: () => {
-          this.successMessage = 'Kitap başarıyla eklendi. / Buch erfolgreich hinzugefügt.';
+          this.successMessage = this.translation.get('addSuccess');
           this.errorMessage = null;
           this.addBookForm.reset();
           setTimeout(() => {
@@ -42,13 +44,13 @@ export class AdminAddBookComponent implements OnInit {
           }, 1500);
         },
         error: () => {
-          this.errorMessage = 'Ekleme başarısız. / Hinzufügen fehlgeschlagen.';
+          this.errorMessage = this.translation.get('addBookFailed');
           this.successMessage = null;
         }
       });
     } else {
       this.addBookForm.markAllAsTouched();
-      this.errorMessage = 'Lütfen tüm alanları doldurun. / Bitte füllen Sie alle Felder aus.';
+      this.errorMessage = this.translation.get('fillAllFields');
     }
   }
 

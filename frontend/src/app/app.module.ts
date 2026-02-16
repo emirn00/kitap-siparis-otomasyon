@@ -38,10 +38,12 @@ import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component
 import { AdminBooksComponent } from './admin-books/admin-books.component';
 import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
 import { BookCardComponent } from './admin-books/components/book-card/book-card.component';
+import { TranslatePipe } from './i18n/translate.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
+    TranslatePipe,
     OrderFormComponent,
     HelpFormComponent,
     AdminComponent,

@@ -1,30 +1,23 @@
 <div class="order-form-container">
-  <!-- Profile Button -->
-  <button class="profile-button" (click)="goToProfile()" aria-label="Profil" type="button">
+  <button class="profile-button" (click)="goToProfile()" [attr.aria-label]="'profile' | translate" type="button">
     <mat-icon>account_circle</mat-icon>
   </button>
 
-  <!-- Hueber Header with Logo -->
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Hueber Interaktiv Sipariş - Hueber Interaktiv Bestellung</h2>
-      <a routerLink="/yardim" class="help-link">Yardım / Hilfe</a>
+      <h2 class="header-subtitle">{{ 'orderTitle' | translate }}</h2>
+      <a routerLink="/yardim" class="help-link">{{ 'help' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
-    <!-- Introduction Text -->
     <div class="intro-section">
       <p class="intro-text">
-        <strong>Sevgili Öğretmenim,</strong><br><br>
-        Yeni Hueber Interaktiv uygulamamızı ücretsiz sipariş vermeniz için lütfen aşağıda ki bilgileri doldurunuz.
-        Doldurduğunuz bu forma ait siparişleriniz en geç bir hafta içerisinde tarafınıza mail olarak ulaşacaktır.
-        Bu kodlar üç sene geçerli olacaktır. Bir hafta sonra kodlar mailinize gelmediyse lütfen aşağıda ki numaradan
-        bizlere ulaşınız.<br><br>
-        <em>*Sadece derste kullandığınız kitapların kodları gönderilecektir.</em><br><br>
-        <strong>Saygılarımızla,</strong><br>
-        <strong>Hueber Team</strong><br>
+        <strong>{{ 'orderIntro1' | translate }}</strong><br><br>
+        {{ 'orderIntro2' | translate }}<br><br>
+        <em>{{ 'orderIntro3' | translate }}</em><br><br>
+        <strong>{{ 'orderIntro4' | translate }}</strong><br>
         Nurten Karadağ - 0552 614 58 57<br>
         Merve Baycan - 0541 614 58 57
       </p>
@@ -35,64 +28,50 @@
         <!-- User Information (Auto-filled) -->
         <div class="user-info-banner" *ngIf="userInfo">
           <div class="info-group">
-            <span class="label">Ad-Soyad / Name-Nachname:</span>
+            <span class="label">{{ 'fullName' | translate }}:</span>
             <span class="value">{{ userInfo.fullName }}</span>
           </div>
           <div class="info-group">
-            <span class="label">E-posta / E-Mail:</span>
+            <span class="label">{{ 'email' | translate }}:</span>
             <span class="value">{{ userInfo.email }}</span>
           </div>
           <div class="info-group">
-            <span class="label">Telefon:</span>
+            <span class="label">{{ 'phone' | translate }}:</span>
             <span class="value">{{ userInfo.phoneNumber }}</span>
           </div>
         </div>
 
-        <!-- Form Fields -->
         <div class="form-section">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Okul ve Kampüs (Kurum) / Schule und Institut *</mat-label>
-              <input matInput formControlName="school" placeholder="Okul veya kurum adınızı giriniz">
-              <mat-error *ngIf="school?.hasError('required')">
-                Kurum bilgisi zorunludur
-              </mat-error>
+              <mat-label>{{ 'school' | translate }}</mat-label>
+              <input matInput formControlName="school" [placeholder]="'schoolPlaceholder' | translate">
+              <mat-error *ngIf="school?.hasError('required')">{{ 'requiredSchool' | translate }}</mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Şehir / Stadt *</mat-label>
-              <input matInput formControlName="city" placeholder="Şehir adınızı giriniz">
-              <mat-error *ngIf="city?.hasError('required')">
-                Şehir zorunludur
-              </mat-error>
+              <mat-label>{{ 'city' | translate }}</mat-label>
+              <input matInput formControlName="city" [placeholder]="'cityPlaceholder' | translate">
+              <mat-error *ngIf="city?.hasError('required')">{{ 'requiredCity' | translate }}</mat-error>
             </mat-form-field>
           </div>
         </div>
 
-        <!-- Working Books Section -->
         <div class="form-section">
-          <h3 class="section-title">
-            Hangi ders kitaplarıyla çalışıyorsunuz? / Mit welchen Lehrwerken arbeiten Sie? *
-          </h3>
+          <h3 class="section-title">{{ 'workingBooks' | translate }}</h3>
 
           <mat-form-field appearance="outline" class="form-field full-width">
-            <mat-label>Örnek: Beste Freunde 1,2,3 - Schritte International Neu 1 und 2</mat-label>
+            <mat-label>{{ 'workingBooksPlaceholder' | translate }}</mat-label>
             <textarea matInput formControlName="workingBooks"
-              placeholder="z.B. Beste Freunde 1,2,3 - Schritte International Neu 1 und 2" rows="3"></textarea>
-            <mat-error *ngIf="workingBooks?.hasError('required')">
-              Bu alan zorunludur
-            </mat-error>
+              [placeholder]="'workingBooksPlaceholder' | translate" rows="3"></textarea>
+            <mat-error *ngIf="workingBooks?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
           </mat-form-field>
         </div>
 
-        <!-- Selected Books Section (kitaplar GET /api/books ile API'den) -->
         <div class="form-section">
-          <h3 class="section-title">
-            Aşağıda ki kitapların interaktif kodlarına ihtiyacım var: / Ich brauche die interaktiven Codes zu folgenden
-            Lehrwerken: *
-          </h3>
+          <h3 class="section-title">{{ 'needCodes' | translate }}</h3>
 
-          <p *ngIf="booksLoading" class="books-loading">Kitaplar yükleniyor / Bücher werden geladen…</p>
+          <p *ngIf="booksLoading" class="books-loading">{{ 'booksLoading' | translate }}</p>
           <p *ngIf="booksError" class="books-error">{{ booksError }}</p>
 
           <div class="books-grid" *ngIf="!booksLoading && books.length > 0">
@@ -112,50 +91,47 @@
         <div class="form-actions">
           <button mat-raised-button color="primary" (click)="onSubmit()"
             [disabled]="orderForm.invalid || selectedBooksFormArray.length === 0" class="submit-button">
-            Devam Et / Weiter
+            {{ 'continueBtn' | translate }}
           </button>
         </div>
       </form>
 
-      <!-- Özet Ekranı -->
       <div *ngIf="showSummary" class="summary-section">
-        <h3 class="summary-title">
-          Sipariş Özeti / Bestellübersicht
-        </h3>
+        <h3 class="summary-title">{{ 'summaryTitle' | translate }}</h3>
 
         <mat-card class="summary-card">
           <mat-card-content>
             <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
-                <strong>Ad-Soyad / Name-Nachname:</strong>
+                <strong>{{ 'fullName' | translate }}:</strong>
                 <span>{{ userInfo.fullName }}</span>
               </div>
             </div>
 
             <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
-                <strong>E-posta / E-Mail:</strong>
+                <strong>{{ 'email' | translate }}:</strong>
                 <span>{{ userInfo.email }}</span>
               </div>
             </div>
 
             <div class="summary-item" *ngIf="userInfo">
               <div class="summary-content">
-                <strong>Telefon Numarası / Telefonnummer:</strong>
+                <strong>{{ 'phone' | translate }}:</strong>
                 <span>{{ userInfo.phoneNumber }}</span>
               </div>
             </div>
 
             <div class="summary-item">
               <div class="summary-content">
-                <strong>Okul ve Kurum / Schule und Institut:</strong>
+                <strong>{{ 'school' | translate }}</strong>
                 <span>{{ orderForm.value.school }}</span>
               </div>
             </div>
 
             <div class="summary-item">
               <div class="summary-content">
-                <strong>Şehir / Stadt:</strong>
+                <strong>{{ 'city' | translate }}:</strong>
                 <span>{{ orderForm.value.city }}</span>
               </div>
             </div>
@@ -164,7 +140,7 @@
 
             <div class="summary-item">
               <div class="summary-content">
-                <strong>Hangi ders kitaplarıyla çalışıyorsunuz? / Mit welchen Lehrwerken arbeiten Sie?</strong>
+                <strong>{{ 'workingBooks' | translate }}</strong>
                 <span>{{ orderForm.value.workingBooks }}</span>
               </div>
             </div>
@@ -173,7 +149,7 @@
 
             <div class="summary-item books-summary">
               <div class="summary-content">
-                <strong>Seçilen Kitaplar / Ausgewählte Lehrwerke:</strong>
+                <strong>{{ 'books' | translate }}:</strong>
                 <mat-list class="books-list">
                   <mat-list-item *ngFor="let bookName of getSelectedBookNames()">
                     <div matLine>{{ bookName }}</div>
@@ -187,11 +163,11 @@
         <div *ngIf="orderError" class="order-error">{{ orderError }}</div>
         <div class="summary-actions">
           <button mat-stroked-button color="primary" (click)="onBack()" class="back-button" [disabled]="orderSubmitting">
-            Geri Dön / Zurück
+            {{ 'back' | translate }}
           </button>
           <button mat-raised-button color="primary" (click)="onConfirm()" class="confirm-button"
             [disabled]="orderSubmitting">
-            {{ orderSubmitting ? 'Gönderiliyor…' : 'Onayla / Bestätigen' }}
+            {{ orderSubmitting ? ('save' | translate) + '…' : ('confirm' | translate) }}
           </button>
         </div>
       </div>

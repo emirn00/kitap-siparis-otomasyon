@@ -15,19 +15,19 @@
 
       <div *ngIf="isEditing" class="edit-mode">
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Request Name</mat-label>
+          <mat-label>{{ 'requestName' | translate }}</mat-label>
           <input matInput [(ngModel)]="book.requestName">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Order Name</mat-label>
+          <mat-label>{{ 'orderName' | translate }}</mat-label>
           <input matInput [(ngModel)]="book.orderName">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Lisencode Name</mat-label>
-          <input matInput [(ngModel)]="book.lisencodeName" placeholder="Opsiyonel">
+          <mat-label>{{ 'lisencodeName' | translate }}</mat-label>
+          <input matInput [(ngModel)]="book.lisencodeName" [placeholder]="'optional' | translate">
         </mat-form-field>
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>ISBN</mat-label>
+          <mat-label>{{ 'isbn' | translate }}</mat-label>
           <input matInput [(ngModel)]="book.isbn">
         </mat-form-field>
       </div>
@@ -38,29 +38,29 @@
     <ng-container *ngIf="!isEditing && !isDeleting">
       <button mat-stroked-button color="primary" (click)="onEdit()" class="btn-put" title="PUT /api/books/{{ book.id }}">
         <mat-icon>edit</mat-icon>
-        Düzenle (PUT) / Bearbeiten
+        {{ 'edit' | translate }}
       </button>
       <button mat-stroked-button color="warn" (click)="onDelete()" class="btn-delete" title="DELETE /api/books/{{ book.id }}">
         <mat-icon>delete</mat-icon>
-        Sil (DELETE) / Löschen
+        {{ 'delete' | translate }}
       </button>
     </ng-container>
 
     <ng-container *ngIf="isEditing">
       <button mat-raised-button color="primary" (click)="onSave()">
         <mat-icon>save</mat-icon>
-        Kaydet (PUT) / Speichern
+        {{ 'save' | translate }}
       </button>
-      <button mat-button (click)="onCancel()">İptal / Abbrechen</button>
+      <button mat-button (click)="onCancel()">{{ 'cancel' | translate }}</button>
     </ng-container>
 
     <ng-container *ngIf="isDeleting">
-      <span class="delete-hint">Emin misiniz? / Sind Sie sicher?</span>
+      <span class="delete-hint">{{ 'deleteConfirm' | translate }}</span>
       <button mat-raised-button color="warn" (click)="onConfirmDelete()">
         <mat-icon>delete_forever</mat-icon>
-        Evet, sil (DELETE)
+        {{ 'deleteYes' | translate }}
       </button>
-      <button mat-button (click)="onCancelDelete()">İptal</button>
+      <button mat-button (click)="onCancelDelete()">{{ 'cancel' | translate }}</button>
     </ng-container>
   </mat-card-actions>
 </mat-card>

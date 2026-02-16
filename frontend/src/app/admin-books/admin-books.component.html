@@ -2,19 +2,15 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Kitaplar / Bücher</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+      <h2 class="header-subtitle">{{ 'books' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Kitap Yönetimi / Buchverwaltung</h2>
-      <p class="section-description">
-        Bu sayfada kitapları görüntüleyebilir, arayabilir ve özelliklerini (Request Name, Order Name, Lisencode Name,
-        ISBN) düzenleyebilirsiniz.
-        / Auf dieser Seite können Sie Bücher anzeigen, suchen und deren Eigenschaften bearbeiten.
-      </p>
+      <h2 class="section-title">{{ 'bookManagement' | translate }}</h2>
+      <p class="section-description">{{ 'bookManagementDesc' | translate }}</p>
 
       <div *ngIf="addSuccess" class="alert alert-success">
         <span>{{ addSuccess }}</span>
@@ -36,20 +32,20 @@
               <i class="search-icon">🔍</i>
               <input type="text" class="custom-search-input" [(ngModel)]="searchTerm"
                 [ngModelOptions]="{ standalone: true }" (keyup.enter)="onSearch()"
-                placeholder="ISBN veya Kitap Adı / ISBN oder Buchtitel">
+                [placeholder]="'searchPlaceholder' | translate">
             </div>
             <button class="btn-search" (click)="onSearch()">
-              Ara / Suchen
+              {{ 'search' | translate }}
             </button>
           </div>
           <a mat-flat-button color="accent" routerLink="/admin/add-book" class="btn-add-book">
-            <mat-icon>add</mat-icon> Kitap Ekle / Buch hinzufügen
+            <mat-icon>add</mat-icon> {{ 'addBook' | translate }}
           </a>
         </div>
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-value">{{ getTotalBooks() }}</div>
-            <div class="stat-label">Toplam Kitap / Gesamt Bücher</div>
+            <div class="stat-label">{{ 'totalBooks' | translate }}</div>
           </div>
         </div>
       </div>
@@ -63,23 +59,21 @@
 
       <div class="load-more-container" *ngIf="!booksLoading && hasMore()">
         <button mat-stroked-button color="primary" (click)="onLoadMore()" class="load-more-btn">
-          Daha Fazla Yükle / Mehr laden
+          {{ 'loadMore' | translate }}
         </button>
       </div>
 
       <div *ngIf="booksLoading" class="books-loading">
-        Kitaplar yükleniyor / Bücher werden geladen…
+        {{ 'booksLoading' | translate }}
       </div>
       <div *ngIf="booksLoadError" class="alert alert-error">
         <span>{{ booksLoadError }}</span>
       </div>
 
       <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && filteredBooks.length === 0">
-        <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
-        <p class="empty-hint">
-          Kitap eklemek için sağ üstteki "Kitap Ekle" butonunu kullanın. / Verwenden Sie "Buch hinzufügen", um Bücher hinzuzufügen.
-        </p>
-        <a mat-raised-button color="primary" routerLink="/admin/add-book">Kitap Ekle / Buch hinzufügen</a>
+        <p>{{ 'noResults' | translate }}</p>
+        <p class="empty-hint">{{ 'noResultsHint' | translate }}</p>
+        <a mat-raised-button color="primary" routerLink="/admin/add-book">{{ 'addBook' | translate }}</a>
       </div>
     </mat-card-content>
   </mat-card>

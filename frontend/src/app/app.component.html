@@ -1,1 +1,7 @@
+<div class="app-lang-selector">
+  <span class="lang-label">{{ 'lang' | translate }}:</span>
+  <button type="button" class="lang-btn" [class.active]="currentLang === 'tr'" (click)="setLang('tr')">TR</button>
+  <button type="button" class="lang-btn" [class.active]="currentLang === 'de'" (click)="setLang('de')">DE</button>
+  <button type="button" class="lang-btn" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
+</div>
 <router-outlet></router-outlet>

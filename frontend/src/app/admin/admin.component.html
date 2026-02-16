@@ -1,74 +1,58 @@
 <div class="admin-container">
-  <!-- Hueber Header with Logo -->
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Admin Paneli - Verwaltungspanel</h2>
-      <button type="button" class="logout-btn" (click)="logout()">Çıkış Yap / Abmelden</button>
+      <h2 class="header-subtitle">{{ 'adminPanel' | translate }}</h2>
+      <button type="button" class="logout-btn" (click)="logout()">{{ 'logout' | translate }}</button>
     </div>
   </div>
 
   <div class="dashboard-container">
-    <!-- Welcome Section -->
     <div class="welcome-section">
-      <h2 class="welcome-title">Hoş Geldiniz / Willkommen</h2>
-      <p class="welcome-subtitle">Yönetim paneline hoş geldiniz. Aşağıdaki seçeneklerden birini seçerek işlemlerinize devam edebilirsiniz.</p>
+      <h2 class="welcome-title">{{ 'welcome' | translate }}</h2>
+      <p class="welcome-subtitle">{{ 'welcomeSub' | translate }}</p>
     </div>
 
-    <!-- Admin Navigation Cards -->
     <div class="admin-cards-grid">
-      
-      <!-- Orders Card (All + Filter by Date) -->
       <mat-card class="admin-card" routerLink="/admin/orders">
-        <h3 class="card-title">Siparişler / Bestellungen</h3>
-        <p class="card-description">
-          Tüm siparişleri görüntüleyin ve isterseniz tarih aralığına göre filtreleyin /
-          Alle Bestellungen anzeigen und bei Bedarf nach Datum filtern
-        </p>
+        <h3 class="card-title">{{ 'orders' | translate }}</h3>
+        <p class="card-description">{{ 'ordersDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Kitaplar Card (içinde Kitap Ekle butonu var) -->
       <mat-card class="admin-card" routerLink="/admin/books">
-        <h3 class="card-title">Kitaplar / Bücher</h3>
-        <p class="card-description">Kitapları görüntüleyin, ekleyin ve düzenleyin / Bücher anzeigen, hinzufügen und bearbeiten</p>
+        <h3 class="card-title">{{ 'books' | translate }}</h3>
+        <p class="card-description">{{ 'booksDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Mail Gönder Card -->
       <mat-card class="admin-card" routerLink="/admin/send-mail">
-        <h3 class="card-title">Mail Gönder / E-Mail senden</h3>
-        <p class="card-description">Hocalara toplu mail gönderin, önizleme ile kontrol edin / E-Mails an Dozenten senden mit Vorschau</p>
+        <h3 class="card-title">{{ 'sendMail' | translate }}</h3>
+        <p class="card-description">{{ 'sendMailDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Özel Sipariş Ekle Card -->
       <mat-card class="admin-card" routerLink="/admin/custom-order">
-        <h3 class="card-title">Özel Sipariş Ekle / Spezielle Bestellung hinzufügen</h3>
-        <p class="card-description">Manuel olarak yeni sipariş oluşturun / Manuell neue Bestellung erstellen</p>
+        <h3 class="card-title">{{ 'customOrder' | translate }}</h3>
+        <p class="card-description">{{ 'customOrderDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Users (Arama) Card -->
       <mat-card class="admin-card" routerLink="/admin/users">
-        <h3 class="card-title">Kullanıcılar (Arama) / Benutzer (Suche)</h3>
-        <p class="card-description">Kullanıcıları arayın ve yönetin / Benutzer suchen und verwalten</p>
+        <h3 class="card-title">{{ 'users' | translate }}</h3>
+        <p class="card-description">{{ 'usersDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Loglar Card -->
       <mat-card class="admin-card" routerLink="/admin/logs">
-        <h3 class="card-title">Loglar / Logs</h3>
-        <p class="card-description">Sistem loglarını ve geçmişi görüntüleyin / Systemprotokolle und Verlauf anzeigen</p>
+        <h3 class="card-title">{{ 'logs' | translate }}</h3>
+        <p class="card-description">{{ 'logsDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Sipariş Formu Oluştur Card -->
       <mat-card class="admin-card" routerLink="/admin/order-form-builder">
-        <h3 class="card-title">Sipariş Formu Oluştur / Bestellformular erstellen</h3>
-        <p class="card-description">Yeni sipariş formu şablonu oluşturun / Neue Bestellformularvorlage erstellen</p>
+        <h3 class="card-title">{{ 'orderFormBuilder' | translate }}</h3>
+        <p class="card-description">{{ 'orderFormBuilderDesc' | translate }}</p>
       </mat-card>
 
-      <!-- Asistan Card -->
       <mat-card class="admin-card" routerLink="/admin/assistant">
-        <h3 class="card-title">Asistan / Assistent</h3>
-        <p class="card-description">Yapay zeka destekli asistan ile çalışın / Mit KI-gestütztem Assistenten arbeiten</p>
+        <h3 class="card-title">{{ 'assistant' | translate }}</h3>
+        <p class="card-description">{{ 'assistantDesc' | translate }}</p>
       </mat-card>
-
     </div>
   </div>
 </div>

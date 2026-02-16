@@ -5,6 +5,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { AuthService } from '../auth/auth.service';
 import { OrderBookService } from './order-book.service';
 import { OrderApiService } from './order-api.service';
+import { TranslationService } from '../i18n/translation.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 export interface Book {
@@ -42,7 +43,8 @@ export class OrderFormComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private orderBookService: OrderBookService,
-    private orderApiService: OrderApiService
+    private orderApiService: OrderApiService,
+    private translation: TranslationService
   ) { }
 
   ngOnInit(): void {
@@ -77,10 +79,10 @@ export class OrderFormComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.booksLoading = false;
         if (err.status === 401 || err.status === 403) {
-          this.booksError = 'Oturum gerekli. Lütfen giriş yapın. / Bitte anmelden.';
+          this.booksError = this.translation.get('booksError');
           return;
         }
-        this.booksError = 'Kitaplar yüklenemedi. / Bücher konnten nicht geladen werden.';
+        this.booksError = this.translation.get('booksError');
       }
     });
   }
@@ -115,18 +117,18 @@ export class OrderFormComponent implements OnInit {
 
   onConfirm(): void {
     if (!this.authService.getToken()) {
-      this.orderError = 'Oturum süreniz dolmuş olabilir. Lütfen tekrar giriş yapın. / Bitte erneut anmelden.';
+      this.orderError = this.translation.get('sessionExpired');
       return;
     }
     const bookIds = this.selectedBooksFormArray.controls.map(c => c.value as string);
     if (bookIds.length === 0) {
-      alert('Lütfen en az bir kitap seçiniz!');
+      alert(this.translation.get('selectOneBook'));
       return;
     }
     const institution = this.orderForm.get('school')?.value ?? '';
     const city = this.orderForm.get('city')?.value ?? '';
     if (!institution.trim() || !city.trim()) {
-      alert('Okul ve şehir alanları zorunludur.');
+      alert(this.translation.get('requiredField'));
       return;
     }
 
@@ -136,20 +138,20 @@ export class OrderFormComponent implements OnInit {
       next: () => {
         this.orderSubmitting = false;
         this.orderError = null;
-        alert('Siparişiniz başarıyla alındı! Admin siparişler sayfasında görünecektir.');
+        alert(this.translation.get('orderSuccess'));
         this.resetForm();
       },
       error: (err: HttpErrorResponse) => {
         this.orderSubmitting = false;
         if (err.status === 403) {
-          this.orderError = 'Sadece kullanıcı (USER) sipariş verebilir. Admin hesabıyla giriş yaptıysanız, çıkış yapıp kullanıcı hesabıyla giriş yapın.';
+          this.orderError = this.translation.get('onlyUserOrder');
           return;
         }
         if (err.status === 401) {
-          this.orderError = 'Oturum süreniz dolmuş. Lütfen tekrar giriş yapın. / Bitte erneut anmelden.';
+          this.orderError = this.translation.get('sessionExpired');
           return;
         }
-        this.orderError = 'Sipariş gönderilemedi. / Bestellung konnte nicht gesendet werden.';
+        this.orderError = this.translation.get('orderSendFailed');
       }
     });
   }
