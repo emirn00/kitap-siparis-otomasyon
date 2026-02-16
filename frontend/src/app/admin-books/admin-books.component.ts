@@ -94,11 +94,14 @@ export class AdminBooksComponent implements OnInit {
 
   saveBook(): void {
     if (!this.editingBook) return;
-    this.bookStore.updateBook(this.editingBook.id, {
-      requestName: this.editingBook.requestName,
-      orderName: this.editingBook.orderName,
-      isbn: this.editingBook.isbn,
-      lisencodeName: this.editingBook.lisencodeName
+    // Formda düzenlenen değerler listedeki kitap nesnesinde (book-card [book] binding); güncel hali listeden al
+    const current = this.books.find(b => b.id === this.editingBook!.id);
+    if (!current) return;
+    this.bookStore.updateBook(current.id, {
+      requestName: current.requestName,
+      orderName: current.orderName,
+      isbn: current.isbn,
+      lisencodeName: current.lisencodeName
     }).subscribe({
       next: (updated) => {
         this.updateSuccess = 'Kitap güncellendi. / Buch aktualisiert.';
