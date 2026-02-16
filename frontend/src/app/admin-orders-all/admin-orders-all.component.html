@@ -17,7 +17,7 @@
         / Auf dieser Seite können Sie alle Bestellungen im System anzeigen, suchen und verwalten.
       </p>
 
-      <!-- Date Filters -->
+      <!-- Tarihe göre filtreleme -->
       <div class="date-filters-section">
         <div class="date-filters">
           <mat-form-field appearance="outline" class="date-field">
@@ -43,10 +43,13 @@
             mat-button
             type="button"
             (click)="resetDateFilter()"
-            [disabled]="loading && !dateFilterActive">
+            [disabled]="loading">
             Tüm Siparişler / Alle Bestellungen
           </button>
         </div>
+        <p *ngIf="dateFilterActive && !loading" class="date-filter-hint">
+          Tarih filtresi uygulandı ({{ startDate }} – {{ endDate }}). Tümünü görmek için "Tüm Siparişler"e tıklayın.
+        </p>
       </div>
 
       <!-- Loading & Error -->
@@ -120,11 +123,27 @@
                 [style.backgroundColor]="getStatusColor(order.status)">
                 {{ getStatusLabel(order.status) }}
               </span>
+              <div class="order-actions-header">
+                <button mat-stroked-button color="warn" (click)="confirmDeleteOrder(order.id)" type="button"
+                  [disabled]="deletingOrderId !== null && deletingOrderId !== order.id"
+                  class="btn-delete-order">
+                  <mat-icon>delete</mat-icon>
+                  Siparişi sil
+                </button>
+              </div>
             </div>
           </mat-card-header>
 
           <mat-card-content>
-            <div class="order-details-grid">
+            <!-- Sipariş silme onayı -->
+            <div *ngIf="deletingOrderId === order.id" class="delete-confirm-box">
+              <p>Siparişi silmek istediğinize emin misiniz? / Sind Sie sicher?</p>
+              <div *ngIf="deleteOrderError" class="alert alert-error">{{ deleteOrderError }}</div>
+              <button mat-raised-button color="warn" (click)="deleteOrder()">Evet, sil</button>
+              <button mat-button (click)="cancelDeleteOrder()">İptal</button>
+            </div>
+
+            <div class="order-details-grid" *ngIf="deletingOrderId !== order.id">
               <div class="detail-item">
                 <strong>E-posta / E-Mail:</strong>
                 <span>{{ order.email || 'Belirtilmemiş / Nicht angegeben' }}</span>
@@ -145,15 +164,61 @@
                 <strong>Çalışılan Kitaplar / Arbeitsbücher:</strong>
                 <span>{{ order.workingBooks || 'Belirtilmemiş / Nicht angegeben' }}</span>
               </div>
-              <div class="detail-item full-width">
+              <div class="detail-item full-width books-section">
                 <strong>Seçilen Kitaplar / Ausgewählte Bücher:</strong>
-                <div class="books-list">
-                  <span *ngFor="let book of order.selectedBooks" class="book-tag">
-                    {{ book }}
-                  </span>
+                <div class="books-list" *ngIf="editingOrderId !== order.id">
+                  <span *ngFor="let book of order.selectedBooks" class="book-tag">{{ book }}</span>
                   <span *ngIf="order.selectedBooks.length === 0" class="no-books">
                     Kitap seçilmemiş / Keine Bücher ausgewählt
                   </span>
+                </div>
+                <div *ngIf="editingOrderId !== order.id" class="edit-books-actions">
+                  <button mat-stroked-button color="primary" (click)="startEditBooks(order)" type="button">
+                    <mat-icon>edit</mat-icon>
+                    Seçili kitapları düzenle
+                  </button>
+                </div>
+
+                <!-- Düzenleme paneli: kitap ekle / çıkar -->
+                <div *ngIf="editingOrderId === order.id" class="edit-books-panel">
+                  <div *ngIf="editBooksError" class="alert alert-error">{{ editBooksError }}</div>
+                  <div class="edit-books-current">
+                    <strong>Şu anki kitaplar:</strong>
+                    <div class="edit-books-tags">
+                      <span *ngFor="let book of editBooksList" class="book-tag with-remove">
+                        {{ book.requestName }}
+                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)" aria-label="Çıkar">×</button>
+                      </span>
+                      <span *ngIf="editBooksList.length === 0" class="no-books">Henüz kitap yok</span>
+                    </div>
+                  </div>
+                  <div class="edit-books-add" *ngIf="!allBooksLoading">
+                    <strong>Kitap ekle (tüm kitaplar listesinden):</strong>
+                    <p class="add-books-hint">Arama kutusuna yazarak kitap adına göre filtreleyin, listeden istediğinize tıklayarak ekleyin. Kaydet ile siparişi güncelleyin.</p>
+                    <div class="add-book-search-row">
+                      <mat-form-field appearance="outline" class="add-book-search-field">
+                        <mat-label>Ara / Suchen (kitap adı)</mat-label>
+                        <input matInput [(ngModel)]="addBookSearchTerm" [ngModelOptions]="{ standalone: true }"
+                          placeholder="Kitap adı veya ISBN ile ara...">
+                        <mat-icon matSuffix>search</mat-icon>
+                      </mat-form-field>
+                    </div>
+                    <div class="add-book-buttons">
+                      <button mat-stroked-button *ngFor="let book of getFilteredBooksToAdd()" type="button"
+                        (click)="addBookToEdit(book)">
+                        + {{ book.requestName }}
+                      </button>
+                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">Eklenebilecek başka kitap yok (hepsi zaten eklendi).</span>
+                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0" class="no-more-books">Aramanıza uygun kitap bulunamadı.</span>
+                    </div>
+                  </div>
+                  <p *ngIf="allBooksLoading" class="loading-books">Kitaplar yükleniyor…</p>
+                  <div class="edit-books-footer">
+                    <button mat-raised-button color="primary" (click)="saveOrderBooks()" [disabled]="editBooksSaving">
+                      {{ editBooksSaving ? 'Kaydediliyor…' : 'Kaydet' }}
+                    </button>
+                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">İptal</button>
+                  </div>
                 </div>
               </div>
               <div class="detail-item">
