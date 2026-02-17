@@ -20,6 +20,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
@@ -79,6 +81,8 @@ import { TranslatePipe } from './i18n/translate.pipe';
     MatDividerModule,
     MatSelectModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     HttpClientModule
   ],
   providers: [
@@ -86,7 +90,8 @@ import { TranslatePipe } from './i18n/translate.pipe';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    },
+    { provide: MAT_DATE_LOCALE, useValue: 'tr-TR' }
   ],
   bootstrap: [AppComponent]
 })

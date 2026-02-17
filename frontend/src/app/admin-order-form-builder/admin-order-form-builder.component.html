@@ -11,29 +11,50 @@
     <mat-card-content>
       <h2 class="section-title">Bestellung Hueber iV Lizenzen – Formular</h2>
       <p class="section-description">
-        Head (head.csv) sabit; siparişlerdeki toplam kitap sayıları hesaplanır, Formular Bestellung Digitallizenzen formatında önizleme ve Excel indirilir.
+        Belirli bir tarih aralığındaki siparişleri toplayarak "Formular Bestellung Digitallizenzen" formatında Excel
+        oluşturun.
       </p>
 
       <div *ngIf="downloadSuccess" class="alert alert-success">
         <span>{{ downloadSuccess }}</span>
       </div>
 
-      <div class="create-section" *ngIf="!previewReady">
-        <button mat-raised-button color="primary" type="button" (click)="createOrderForm()" class="create-btn">
-          Sipariş Formu Oluştur / Bestellformular erstellen
-        </button>
-        <p class="create-hint">Mock sipariş verilerinden toplamlar hesaplanır ve önizleme gösterilir.</p>
+      <div *ngIf="error" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+
+      <div class="date-selection-section">
+        <mat-form-field appearance="outline" class="date-range-field">
+          <mat-label>Tarih Aralığı Seçiniz / Datumsbereich wählen</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate [(ngModel)]="startDate" placeholder="Başlangıç" (dateChange)="onDateChange()">
+            <input matEndDate [(ngModel)]="endDate" placeholder="Bitiş" (dateChange)="onDateChange()">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <div class="date-info">
+          <p *ngIf="startDate && endDate">
+            <strong>Şu anki filtre:</strong> Son 1 hafta / bugüne kadar olan siparişler dahil edilmektedir.
+            <br>
+            <span class="date-range-text">({{ startDate | date:'dd.MM.yyyy' }} – {{ endDate | date:'dd.MM.yyyy'
+              }})</span>
+          </p>
+        </div>
+
+        <div *ngIf="loading" class="loading-indicator">
+          <mat-spinner diameter="20"></mat-spinner>
+          <span>Yükleniyor...</span>
+        </div>
       </div>
 
       <div class="preview-section" *ngIf="previewReady">
         <div class="preview-header">
-          <h3 class="subsection-title">Önizleme – Formular Bestellung Digitallizenzen</h3>
+          <h3 class="subsection-title">Önizleme</h3>
           <div class="preview-actions">
             <button mat-raised-button color="primary" type="button" (click)="downloadExcel()" class="download-btn">
               Excel İndir / Excel herunterladen
-            </button>
-            <button mat-button type="button" (click)="closePreview()">
-              Önizlemeyi Kapat / Vorschau schließen
             </button>
           </div>
         </div>
@@ -41,7 +62,8 @@
         <div class="order-form-preview">
           <table class="order-preview-table">
             <thead>
-              <tr *ngFor="let row of headRows; let i = index" [class.header-row]="i < headRows.length - 1" [class.column-headers]="i === headRows.length - 1">
+              <tr *ngFor="let row of headRows; let i = index" [class.header-row]="i < headRows.length - 1"
+                [class.column-headers]="i === headRows.length - 1">
                 <td *ngFor="let cell of row">{{ cell }}</td>
               </tr>
             </thead>
@@ -52,6 +74,10 @@
                 <td>3 jahre</td>
                 <td class="cell-code">{{ row.code }}</td>
                 <td>kostenlos</td>
+              </tr>
+              <tr *ngIf="bookTotals.length === 0">
+                <td colspan="5" class="no-data">Bu tarih aralığında sipariş bulunamadı. / Keine Bestellungen gefunden.
+                </td>
               </tr>
             </tbody>
           </table>

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import * as XLSX from 'xlsx';
 
 /** Sabit head (head.csv ile aynı: 7 satır, 5 sütun) */
@@ -12,19 +13,15 @@ const HEAD_ROWS: string[][] = [
   ['Anzahl Codes', 'Anzahl Aktivierungen', 'Laufzeit Monate', 'Artikelnummer und Titel', 'Einzelpreis']
 ];
 
-/** Mock siparişler: her siparişte seçilen kitap/artikel adları (Formular’daki gibi) */
-const MOCK_ORDERS: { books: string[] }[] = [
-  { books: ['121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '321082 P Schritte International Neu 1 Kursbuch+Arbeitsbuch'] },
-  { books: ['121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '121051 P Beste Freunde PLUS A1.1 Arbeitsbuch - Interaktive Version', '631791 P Momente A1.1 Arbeitsbuch'] },
-  { books: ['321082 P Schritte International Neu 1 Kursbuch+Arbeitsbuch', '621082 P Schritte International Neu 2 Kursbuch+Arbeitsbuch'] },
-  { books: ['151051 P Beste Freunde PLUS A1.2 Arbeitsbuch - Interaktive Version', '631792 P Momente A2.1 Arbeitsbuch', '651792 P Momente A2.2 Arbeitsbuch'] }
-];
-
 export interface BookTotalRow {
-  /** Artikelnummer und Titel */
+  /** Artikelnummer und Titel (ISBN + Name) */
   code: string;
-  /** Anzahl Codes */
+  /** Anzahl Codes (Toplam Sipariş Sayısı) */
   quantity: number;
+}
+
+interface ApiOrderResponse {
+  books: { isbn: string; requestName: string }[];
 }
 
 @Component({
@@ -37,41 +34,120 @@ export class AdminOrderFormBuilderComponent {
   previewReady = false;
   downloadSuccess: string | null = null;
 
-  /** Sipariş formu oluştur: mock siparişlerden toplamları hesapla */
-  createOrderForm(): void {
+  startDate: Date | null = null;
+  endDate: Date | null = null;
+  loading = false;
+  error: string | null = null;
+
+  private apiUrl = 'http://localhost:8080/api/orders/by-date';
+
+  constructor(private http: HttpClient) {
+    // Default: Son 1 hafta (Bugün dahil)
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 7);
+
+    this.startDate = start;
+    this.endDate = end;
+  }
+
+  ngOnInit(): void {
+    if (this.startDate && this.endDate) {
+      this.fetchAndAggregateOrders();
+    }
+  }
+
+  onDateChange(): void {
+    if (this.startDate && this.endDate) {
+      this.fetchAndAggregateOrders();
+    }
+  }
+
+  /** Siparişleri tarih aralığına göre getir ve topla */
+  fetchAndAggregateOrders(): void {
+    if (!this.startDate || !this.endDate) {
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    // Preview açık kalsın, sadece veri güncellensin
+    if (!this.previewReady) {
+      this.previewReady = false;
+    }
+
+    // Date -> YYYY-MM-DD string conversion
+    const startStr = this.formatDate(this.startDate);
+    const endStr = this.formatDate(this.endDate);
+
+    const url = `${this.apiUrl}?startDate=${startStr}&endDate=${endStr}`;
+
+    this.http.get<ApiOrderResponse[]>(url).subscribe({
+      next: (orders) => {
+        this.aggregateOrders(orders);
+        this.loading = false;
+        this.previewReady = true;
+      },
+      error: (err) => {
+        console.error('Siparişler getirilemedi', err);
+        this.error = 'Siparişler yüklenirken hata oluştu. / Fehler beim Laden der Bestellungen.';
+        this.loading = false;
+      }
+    });
+  }
+
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  private aggregateOrders(orders: ApiOrderResponse[]): void {
     const countByCode: Record<string, number> = {};
-    for (const order of MOCK_ORDERS) {
-      for (const code of order.books) {
-        countByCode[code] = (countByCode[code] || 0) + 1;
+
+    for (const order of orders) {
+      if (!order.books) continue;
+      for (const book of order.books) {
+        // Kitap tanımlayıcısı: ISBN + Boşluk + Ad. ISBN yoksa sadece Ad.
+        const identifier = `${book.isbn || ''} ${book.requestName || ''}`.trim();
+        if (identifier) {
+          countByCode[identifier] = (countByCode[identifier] || 0) + 1;
+        }
       }
     }
+
     this.bookTotals = Object.entries(countByCode)
       .map(([code, quantity]) => ({ code, quantity }))
       .sort((a, b) => a.code.localeCompare(b.code));
-    this.previewReady = true;
-    this.downloadSuccess = null;
   }
 
   closePreview(): void {
     this.previewReady = false;
+    this.bookTotals = [];
   }
 
-  /** Excel: head + Formular Bestellung formatında satırlar (5 sütun) */
+  /** Excel: head + Formular Bestellung formatında satırlar */
   downloadExcel(): void {
     const rows: (string | number)[][] = HEAD_ROWS.map(row => [...row]);
+
     for (const row of this.bookTotals) {
       rows.push([
-        row.quantity,
-        '1',
-        '3 jahre',
-        row.code,
-        'kostenlos'
+        row.quantity,   // Anzahl Codes (Sipariş edilen toplam sayı)
+        '1',            // Anzahl Aktivierungen (Sabit)
+        '3 jahre',      // Laufzeit Monate (Sabit)
+        row.code,       // Artikelnummer und Titel (ISBN + İsim)
+        'kostenlos'     // Einzelpreis (Sabit)
       ]);
     }
+
     const ws = XLSX.utils.aoa_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Bestellung');
-    XLSX.writeFile(wb, 'Formular_Bestellung_Digitallizenzen.xlsx');
+
+    const fileName = `Formular_Bestellung_${this.startDate}_${this.endDate}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
     this.downloadSuccess = 'Excel dosyası indirildi. / Excel-Datei heruntergeladen.';
     setTimeout(() => (this.downloadSuccess = null), 4000);
   }
