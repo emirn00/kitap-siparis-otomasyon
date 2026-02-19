@@ -1,40 +1,38 @@
 <div class="profile-container">
   <!-- Back Button -->
-  <button class="back-button" (click)="goBack()" aria-label="Geri" type="button">
-    <mat-icon>arrow_back</mat-icon>
+  <button class="back-button" (click)="goBack()" [attr.aria-label]="'backBtn' | translate" type="button">
+    ← {{ 'backBtn' | translate }}
   </button>
 
   <!-- Hueber Header -->
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Profilim / Mein Profil</h2>
+      <h2 class="header-subtitle">{{ 'profileMy' | translate }}</h2>
     </div>
   </div>
 
   <mat-card class="profile-card">
     <mat-card-content>
       <div class="profile-header">
-        <h2 class="profile-title">Profil Bilgilerim</h2>
-        <p class="profile-subtitle">Kişisel bilgilerinizi buradan güncelleyebilirsiniz</p>
+        <h2 class="profile-title">{{ 'profileTitle' | translate }}</h2>
+        <p class="profile-subtitle">{{ 'profileSubtitle' | translate }}</p>
       </div>
 
       <!-- Success Message -->
       <div *ngIf="successMessage" class="alert alert-success">
-        <mat-icon>check_circle</mat-icon>
         <span>{{ successMessage }}</span>
       </div>
 
       <!-- Error Message -->
       <div *ngIf="errorMessage" class="alert alert-error">
-        <mat-icon>error</mat-icon>
         <span>{{ errorMessage }}</span>
       </div>
 
       <!-- Loading State -->
       <div *ngIf="loading && !userData" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
-        <p>Yükleniyor...</p>
+        <p>{{ 'loading' | translate }}</p>
       </div>
 
       <!-- Profile Form -->
@@ -42,52 +40,48 @@
         <div class="form-section">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Ad / Vorname *</mat-label>
-              <input matInput formControlName="firstName" placeholder="Adınızı giriniz">
-              <mat-icon matPrefix>person</mat-icon>
+              <mat-label>{{ 'firstName' | translate }} *</mat-label>
+              <input matInput formControlName="firstName" [placeholder]="'firstNamePlaceholder' | translate">
               <mat-error *ngIf="firstName?.hasError('required')">
-                Ad zorunludur
+                {{ 'firstNameRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="firstName?.hasError('minlength')">
-                Ad en az 2 karakter olmalıdır
+                {{ 'firstNameMin' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Soyad / Nachname *</mat-label>
-              <input matInput formControlName="lastName" placeholder="Soyadınızı giriniz">
-              <mat-icon matPrefix>person</mat-icon>
+              <mat-label>{{ 'lastName' | translate }} *</mat-label>
+              <input matInput formControlName="lastName" [placeholder]="'lastNamePlaceholder' | translate">
               <mat-error *ngIf="lastName?.hasError('required')">
-                Soyad zorunludur
+                {{ 'lastNameRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="lastName?.hasError('minlength')">
-                Soyad en az 2 karakter olmalıdır
+                {{ 'lastNameMin' | translate }}
               </mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>E-posta / E-Mail *</mat-label>
+              <mat-label>{{ 'email' | translate }} *</mat-label>
               <input matInput formControlName="email" placeholder="ornek@email.com" type="email">
-              <mat-icon matPrefix>email</mat-icon>
               <mat-error *ngIf="email?.hasError('required')">
-                E-posta zorunludur
+                {{ 'emailRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="email?.hasError('email')">
-                Geçerli bir e-posta adresi giriniz
+                {{ 'validEmailError' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Telefon Numarası / Telefonnummer *</mat-label>
+              <mat-label>{{ 'phone' | translate }} *</mat-label>
               <input matInput formControlName="phone" placeholder="05XX XXX XX XX" type="tel">
-              <mat-icon matPrefix>phone</mat-icon>
               <mat-error *ngIf="phone?.hasError('required')">
-                Telefon numarası zorunludur
+                {{ 'phoneRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="phone?.hasError('pattern')">
-                Geçerli bir telefon numarası giriniz (10-11 haneli)
+                {{ 'validPhoneError' | translate }}
               </mat-error>
             </mat-form-field>
           </div>
@@ -100,8 +94,7 @@
             type="submit"
             [disabled]="profileForm.invalid || loading"
             class="submit-button">
-            <mat-icon>save</mat-icon>
-            <span>Güncelle / Aktualisieren</span>
+            <span>{{ 'updateBtn' | translate }}</span>
           </button>
         </div>
       </form>

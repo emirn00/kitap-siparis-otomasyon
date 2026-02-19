@@ -3,22 +3,18 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Yardım ve Sorular / Hilfe und Fragen</h2>
-      <a routerLink="/" class="help-link">Ana Sayfa / Startseite</a>
+      <h2 class="header-subtitle">{{ 'helpTitle' | translate }}</h2>
+      <a routerLink="/" class="help-link">{{ 'homePage' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
-    <!-- Introduction Text -->
+    <!-- Introduction Text (single language) -->
     <div class="intro-section">
       <p class="intro-text">
-        <strong>Merhaba,</strong><br><br>
-        Size nasıl yardımcı olabiliriz? Aşağıdaki formu doldurarak sorularınızı bize iletebilirsiniz. 
-        En kısa sürede size geri dönüş yapacağız.<br><br>
-        <strong>Hallo,</strong><br><br>
-        Wie können wir Ihnen helfen? Sie können uns Ihre Fragen über das untenstehende Formular senden. 
-        Wir werden Ihnen so schnell wie möglich antworten.<br><br>
-        <strong>İletişim Bilgileri / Kontaktinformationen:</strong><br>
+        <strong>{{ 'introHello' | translate }}</strong><br><br>
+        {{ 'introText' | translate }}<br><br>
+        <strong>{{ 'contactInfo' | translate }}:</strong><br>
         Nurten Karadağ - 0552 614 58 57<br>
         Merve Baycan - 0541 614 58 57
       </p>
@@ -30,62 +26,62 @@
         <div class="form-section">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Ad-Soyad / Name-Nachname *</mat-label>
-              <input matInput formControlName="fullName" placeholder="Adınızı ve soyadınızı giriniz">
+              <mat-label>{{ 'fullName' | translate }} *</mat-label>
+              <input matInput formControlName="fullName" [placeholder]="'fullNamePlaceholderHelp' | translate">
               <mat-error *ngIf="fullName?.hasError('required')">
-                Ad-Soyad zorunludur
+                {{ 'fullNameRequiredShort' | translate }}
               </mat-error>
               <mat-error *ngIf="fullName?.hasError('minlength')">
-                Ad-Soyad en az 3 karakter olmalıdır
+                {{ 'fullNameMinShort' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>E-posta / E-Mail *</mat-label>
+              <mat-label>{{ 'email' | translate }} *</mat-label>
               <input matInput formControlName="email" placeholder="ornek@email.com" type="email">
               <mat-error *ngIf="email?.hasError('required')">
-                E-posta zorunludur
+                {{ 'emailRequiredShort' | translate }}
               </mat-error>
               <mat-error *ngIf="email?.hasError('email')">
-                Geçerli bir e-posta adresi giriniz
+                {{ 'validEmailError' | translate }}
               </mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Telefon Numarası / Telefonnummer *</mat-label>
+              <mat-label>{{ 'phone' | translate }} *</mat-label>
               <input matInput formControlName="phone" placeholder="05XX XXX XX XX" type="tel">
               <mat-error *ngIf="phone?.hasError('required')">
-                Telefon numarası zorunludur
+                {{ 'phoneRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="phone?.hasError('pattern')">
-                Geçerli bir telefon numarası giriniz (10-11 haneli)
+                {{ 'validPhoneError' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Konu / Betreff *</mat-label>
-              <input matInput formControlName="subject" placeholder="Sorunuzun konusunu giriniz">
+              <mat-label>{{ 'subject' | translate }} *</mat-label>
+              <input matInput formControlName="subject" [placeholder]="'subjectPlaceholder' | translate">
               <mat-error *ngIf="subject?.hasError('required')">
-                Konu zorunludur
+                {{ 'subjectRequired' | translate }}
               </mat-error>
             </mat-form-field>
           </div>
 
           <div class="form-section">
             <mat-form-field appearance="outline" class="form-field full-width">
-              <mat-label>Mesajınız / Ihre Nachricht *</mat-label>
+              <mat-label>{{ 'messageLabel' | translate }} *</mat-label>
               <textarea 
                 matInput 
                 formControlName="message" 
-                placeholder="Sorunuzu veya mesajınızı buraya yazınız..."
+                [placeholder]="'messagePlaceholderHelp' | translate"
                 rows="6"></textarea>
               <mat-error *ngIf="message?.hasError('required')">
-                Mesaj zorunludur
+                {{ 'messageRequired' | translate }}
               </mat-error>
               <mat-error *ngIf="message?.hasError('minlength')">
-                Mesaj en az 10 karakter olmalıdır
+                {{ 'messageMinLength' | translate }}
               </mat-error>
             </mat-form-field>
           </div>
@@ -98,21 +94,18 @@
             (click)="onSubmit()"
             [disabled]="helpForm.invalid"
             class="submit-button">
-            Gönder / Senden
+            {{ 'sendBtn' | translate }}
           </button>
         </div>
       </form>
 
-      <!-- Success Message -->
+      <!-- Success Message (single language) -->
       <div *ngIf="showSuccess" class="success-section">
         <div class="success-message">
-          <h3>Mesajınız Başarıyla Gönderildi!</h3>
-          <p>Ihre Nachricht wurde erfolgreich gesendet!</p>
-          <p>En kısa sürede size geri dönüş yapacağız.</p>
-          <p>Wir werden Ihnen so schnell wie möglich antworten.</p>
+          <h3>{{ 'successTitle' | translate }}</h3>
+          <p>{{ 'successFollowUp' | translate }}</p>
         </div>
       </div>
     </mat-card-content>
   </mat-card>
 </div>
-

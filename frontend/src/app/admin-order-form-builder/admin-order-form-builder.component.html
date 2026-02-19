@@ -2,8 +2,8 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Sipariş Formu Oluştur / Bestellformular erstellen</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+      <h2 class="header-subtitle">{{ 'orderFormBuilderSubtitle' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
   </div>
 
@@ -11,8 +11,7 @@
     <mat-card-content>
       <h2 class="section-title">Bestellung Hueber iV Lizenzen – Formular</h2>
       <p class="section-description">
-        Belirli bir tarih aralığındaki siparişleri toplayarak "Formular Bestellung Digitallizenzen" formatında Excel
-        oluşturun.
+        {{ 'formBuilderSectionDesc' | translate }}
       </p>
 
       <div *ngIf="downloadSuccess" class="alert alert-success">
@@ -25,10 +24,10 @@
 
       <div class="date-selection-section">
         <mat-form-field appearance="outline" class="date-range-field">
-          <mat-label>Tarih Aralığı Seçiniz / Datumsbereich wählen</mat-label>
+          <mat-label>{{ 'dateRangeLabel' | translate }}</mat-label>
           <mat-date-range-input [rangePicker]="picker">
-            <input matStartDate [(ngModel)]="startDate" placeholder="Başlangıç" (dateChange)="onDateChange()">
-            <input matEndDate [(ngModel)]="endDate" placeholder="Bitiş" (dateChange)="onDateChange()">
+            <input matStartDate [(ngModel)]="startDate" [placeholder]="'startPlaceholder' | translate" (dateChange)="onDateChange()">
+            <input matEndDate [(ngModel)]="endDate" [placeholder]="'endPlaceholder' | translate" (dateChange)="onDateChange()">
           </mat-date-range-input>
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
@@ -36,7 +35,7 @@
 
         <div class="date-info">
           <p *ngIf="startDate && endDate">
-            <strong>Şu anki filtre:</strong> Son 1 hafta / bugüne kadar olan siparişler dahil edilmektedir.
+            <strong>{{ 'currentFilterDesc' | translate }}</strong>
             <br>
             <span class="date-range-text">({{ startDate | date:'dd.MM.yyyy' }} – {{ endDate | date:'dd.MM.yyyy'
               }})</span>
@@ -45,16 +44,16 @@
 
         <div *ngIf="loading" class="loading-indicator">
           <mat-spinner diameter="20"></mat-spinner>
-          <span>Yükleniyor...</span>
+          <span>{{ 'loading' | translate }}</span>
         </div>
       </div>
 
       <div class="preview-section" *ngIf="previewReady">
         <div class="preview-header">
-          <h3 class="subsection-title">Önizleme</h3>
+          <h3 class="subsection-title">{{ 'preview' | translate }}</h3>
           <div class="preview-actions">
             <button mat-raised-button color="primary" type="button" (click)="downloadExcel()" class="download-btn">
-              Excel İndir / Excel herunterladen
+              {{ 'downloadExcel' | translate }}
             </button>
           </div>
         </div>
@@ -76,8 +75,7 @@
                 <td>kostenlos</td>
               </tr>
               <tr *ngIf="bookTotals.length === 0">
-                <td colspan="5" class="no-data">Bu tarih aralığında sipariş bulunamadı. / Keine Bestellungen gefunden.
-                </td>
+                <td colspan="5" class="no-data">{{ 'noOrdersInRange' | translate }}</td>
               </tr>
             </tbody>
           </table>

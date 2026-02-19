@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TranslationService } from '../i18n/translation.service';
 
 interface ApiOrderResponse {
   id: string;
@@ -92,7 +93,8 @@ export class AdminOrdersAllComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private translation: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -382,12 +384,13 @@ export class AdminOrdersAllComponent implements OnInit {
   }
 
   getStatusLabel(status: OrderStatus): string {
-    const labels: { [key in OrderStatus]: string } = {
-      pending: 'Beklemede',
-      processed: 'İşleniyor',
-      completed: 'Tamamlandı'
+    const keyMap: { [key in OrderStatus]: string } = {
+      pending: 'statusPending',
+      processed: 'statusProcessed',
+      completed: 'statusCompleted'
     };
-    return labels[status] || status;
+    const key = keyMap[status];
+    return key ? this.translation.get(key) : status;
   }
 
   getStatusColor(status: OrderStatus): string {

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslationService } from '../i18n/translation.service';
 
 interface LogEntry {
   level: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
@@ -19,6 +20,8 @@ export class AdminLogsComponent implements OnInit {
   filteredLogs: LogEntry[] = [];
   levelFilter: string = 'all';
   searchTerm: string = '';
+
+  constructor(private translation: TranslationService) {}
 
   ngOnInit(): void {
     // Örnek log verileri - gerçek uygulamada backend'den gelecek
@@ -100,13 +103,14 @@ export class AdminLogsComponent implements OnInit {
   }
 
   getLevelLabel(level: string): string {
-    const labels: { [key: string]: string } = {
-      'INFO': 'Bilgi / Information',
-      'WARNING': 'Uyarı / Warnung',
-      'ERROR': 'Hata / Fehler',
-      'SUCCESS': 'Başarılı / Erfolgreich'
+    const keyMap: { [key: string]: string } = {
+      'INFO': 'levelInfo',
+      'WARNING': 'levelWarning',
+      'ERROR': 'levelError',
+      'SUCCESS': 'levelSuccess'
     };
-    return labels[level] || level;
+    const key = keyMap[level];
+    return key ? this.translation.get(key) : level;
   }
 
   getTotalLogs(): number {

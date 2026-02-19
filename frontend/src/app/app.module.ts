@@ -15,7 +15,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
@@ -76,7 +75,6 @@ import { TranslatePipe } from './i18n/translate.pipe';
     MatCheckboxModule,
     MatStepperModule,
     MatListModule,
-    MatIconModule,
     MatToolbarModule,
     MatDividerModule,
     MatSelectModule,

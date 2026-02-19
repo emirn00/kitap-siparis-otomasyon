@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { TranslationService } from '../i18n/translation.service';
 
 interface User {
   id: string;
@@ -33,7 +34,10 @@ export class AdminUsersComponent implements OnInit {
 
   private apiUrl = 'http://localhost:8080/users';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private translation: TranslationService
+  ) {}
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -132,11 +136,12 @@ export class AdminUsersComponent implements OnInit {
   }
 
   getRoleLabel(role: string): string {
-    const labels: { [key: string]: string } = {
-      'USER': 'Kullanıcı / Benutzer',
-      'ADMIN': 'Yönetici / Administrator'
+    const keyMap: { [key: string]: string } = {
+      'USER': 'roleUser',
+      'ADMIN': 'roleAdmin'
     };
-    return labels[role] || role;
+    const key = keyMap[role];
+    return key ? this.translation.get(key) : role;
   }
 
   getRoleColor(role: string): string {

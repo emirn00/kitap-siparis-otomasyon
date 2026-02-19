@@ -3,14 +3,14 @@
 
     <div class="card-body p-4">
       <h3 class="text-center mb-4 text-danger fw-bold">
-        Kayıt Ol
+        {{ 'register' | translate }}
       </h3>
 
       <form [formGroup]="registerForm" (ngSubmit)="register()">
 
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label class="form-label">İsim</label>
+            <label class="form-label">{{ 'firstName' | translate }}</label>
             <input
               type="text"
               class="form-control"
@@ -19,7 +19,7 @@
           </div>
 
           <div class="col-md-6 mb-3">
-            <label class="form-label">Soyisim</label>
+            <label class="form-label">{{ 'lastName' | translate }}</label>
             <input
               type="text"
               class="form-control"
@@ -29,7 +29,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Email</label>
+          <label class="form-label">{{ 'email' | translate }}</label>
           <input
             type="email"
             class="form-control"
@@ -38,7 +38,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Telefon</label>
+          <label class="form-label">{{ 'phone' | translate }}</label>
           <input
             type="text"
             class="form-control"
@@ -47,7 +47,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Şifre</label>
+          <label class="form-label">{{ 'password' | translate }}</label>
           <input
             type="password"
             class="form-control"
@@ -56,7 +56,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label">Şifre Tekrar</label>
+          <label class="form-label">{{ 'confirmPassword' | translate }}</label>
           <input
             type="password"
             class="form-control"
@@ -73,16 +73,16 @@
           class="btn btn-danger w-100 mt-2"
           [disabled]="registerForm.invalid"
         >
-          Kayıt Ol
+          {{ 'register' | translate }}
         </button>
       </form>
 
       <hr />
 
       <p class="text-center mb-0">
-        Hesabınız var mı?
+        {{ 'haveAccount' | translate }}
         <a routerLink="/login" class="text-danger fw-semibold">
-          Giriş Yap
+          {{ 'login' | translate }}
         </a>
       </p>
     </div>

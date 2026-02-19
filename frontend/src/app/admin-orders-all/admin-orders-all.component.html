@@ -3,30 +3,29 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Siparişler (Tümü) / Bestellungen (Alle)</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+      <h2 class="header-subtitle">{{ 'ordersAll' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
       <!-- Title -->
-      <h2 class="section-title">Siparişler / Bestellungen</h2>
+      <h2 class="section-title">{{ 'ordersSectionTitle' | translate }}</h2>
       <p class="section-description">
-        Bu sayfada sistemdeki tüm siparişleri görüntüleyebilir, arayabilir ve yönetebilirsiniz. 
-        / Auf dieser Seite können Sie alle Bestellungen im System anzeigen, suchen und verwalten.
+        {{ 'ordersSectionDesc' | translate }}
       </p>
 
       <!-- Tarihe göre filtreleme -->
       <div class="date-filters-section">
         <div class="date-filters">
           <mat-form-field appearance="outline" class="date-field">
-            <mat-label>Başlangıç Tarihi / Startdatum</mat-label>
+            <mat-label>{{ 'startDate' | translate }}</mat-label>
             <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="date-field">
-            <mat-label>Bitiş Tarihi / Enddatum</mat-label>
+            <mat-label>{{ 'endDate' | translate }}</mat-label>
             <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
           </mat-form-field>
 
@@ -36,7 +35,7 @@
             (click)="fetchOrdersByDate()"
             [disabled]="!startDate || !endDate || loading"
             class="fetch-button">
-            Tarihe Göre Getir / Nach Datum laden
+            {{ 'fetchByDate' | translate }}
           </button>
 
           <button
@@ -44,18 +43,18 @@
             type="button"
             (click)="resetDateFilter()"
             [disabled]="loading">
-            Tüm Siparişler / Alle Bestellungen
+            {{ 'allOrders' | translate }}
           </button>
         </div>
         <p *ngIf="dateFilterActive && !loading" class="date-filter-hint">
-          Tarih filtresi uygulandı ({{ startDate }} – {{ endDate }}). Tümünü görmek için "Tüm Siparişler"e tıklayın.
+          {{ 'dateFilterHint' | translate }} ({{ startDate }} – {{ endDate }}).
         </p>
       </div>
 
       <!-- Loading & Error -->
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
-        <p>Yükleniyor... / Wird geladen...</p>
+        <p>{{ 'loading' | translate }}</p>
       </div>
       <div *ngIf="error" class="alert alert-error">
         <span>{{ error }}</span>
@@ -65,26 +64,25 @@
       <div class="filters-section" *ngIf="!loading">
         <div class="filters-row">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Ara / Suchen</mat-label>
+            <mat-label>{{ 'search' | translate }}</mat-label>
             <input
               matInput
               [(ngModel)]="searchTerm"
               [ngModelOptions]="{ standalone: true }"
               (input)="onSearch()"
-              placeholder="İsim, e-posta, okul veya şehir / Name, E-Mail, Schule oder Stadt">
-            <mat-icon matPrefix>search</mat-icon>
+              [placeholder]="'searchOrdersPlaceholder' | translate">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="status-field">
-            <mat-label>Durum / Status</mat-label>
+            <mat-label>{{ 'status' | translate }}</mat-label>
             <mat-select
               [(ngModel)]="statusFilter"
               [ngModelOptions]="{ standalone: true }"
               (selectionChange)="onStatusFilterChange()">
-              <mat-option value="all">Tümü / Alle</mat-option>
-              <mat-option value="pending">Beklemede / Ausstehend</mat-option>
-              <mat-option value="processed">İşleniyor / In Bearbeitung</mat-option>
-              <mat-option value="completed">Tamamlandı / Abgeschlossen</mat-option>
+              <mat-option value="all">{{ 'all' | translate }}</mat-option>
+              <mat-option value="pending">{{ 'statusPending' | translate }}</mat-option>
+              <mat-option value="processed">{{ 'statusProcessed' | translate }}</mat-option>
+              <mat-option value="completed">{{ 'statusCompleted' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -93,19 +91,19 @@
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-value">{{ getTotalOrders() }}</div>
-            <div class="stat-label">Toplam / Gesamt</div>
+            <div class="stat-label">{{ 'total' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">{{ getPendingOrders() }}</div>
-            <div class="stat-label">Beklemede / Ausstehend</div>
+            <div class="stat-label">{{ 'statusPending' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">{{ getProcessedOrders() }}</div>
-            <div class="stat-label">İşleniyor / In Bearbeitung</div>
+            <div class="stat-label">{{ 'statusProcessed' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">{{ getCompletedOrders() }}</div>
-            <div class="stat-label">Tamamlandı / Abgeschlossen</div>
+            <div class="stat-label">{{ 'statusCompleted' | translate }}</div>
           </div>
         </div>
       </div>
@@ -127,8 +125,7 @@
                 <button mat-stroked-button color="warn" (click)="confirmDeleteOrder(order.id)" type="button"
                   [disabled]="deletingOrderId !== null && deletingOrderId !== order.id"
                   class="btn-delete-order">
-                  <mat-icon>delete</mat-icon>
-                  Siparişi sil
+                  {{ 'deleteOrder' | translate }}
                 </button>
               </div>
             </div>
@@ -137,70 +134,68 @@
           <mat-card-content>
             <!-- Sipariş silme onayı -->
             <div *ngIf="deletingOrderId === order.id" class="delete-confirm-box">
-              <p>Siparişi silmek istediğinize emin misiniz? / Sind Sie sicher?</p>
+              <p>{{ 'deleteOrderConfirm' | translate }}</p>
               <div *ngIf="deleteOrderError" class="alert alert-error">{{ deleteOrderError }}</div>
-              <button mat-raised-button color="warn" (click)="deleteOrder()">Evet, sil</button>
-              <button mat-button (click)="cancelDeleteOrder()">İptal</button>
+              <button mat-raised-button color="warn" (click)="deleteOrder()">{{ 'yesDelete' | translate }}</button>
+              <button mat-button (click)="cancelDeleteOrder()">{{ 'cancel' | translate }}</button>
             </div>
 
             <div class="order-details-grid" *ngIf="deletingOrderId !== order.id">
               <div class="detail-item">
-                <strong>E-posta / E-Mail:</strong>
-                <span>{{ order.email || 'Belirtilmemiş / Nicht angegeben' }}</span>
+                <strong>{{ 'email' | translate }}:</strong>
+                <span>{{ order.email || ('notSpecified' | translate) }}</span>
               </div>
               <div class="detail-item">
-                <strong>Telefon / Telefon:</strong>
-                <span>{{ order.phone || 'Belirtilmemiş / Nicht angegeben' }}</span>
+                <strong>{{ 'phone' | translate }}:</strong>
+                <span>{{ order.phone || ('notSpecified' | translate) }}</span>
               </div>
               <div class="detail-item">
-                <strong>Okul / Schule:</strong>
-                <span>{{ order.school || 'Belirtilmemiş / Nicht angegeben' }}</span>
+                <strong>{{ 'schoolLabel' | translate }}:</strong>
+                <span>{{ order.school || ('notSpecified' | translate) }}</span>
               </div>
               <div class="detail-item">
-                <strong>Şehir / Stadt:</strong>
-                <span>{{ order.city || 'Belirtilmemiş / Nicht angegeben' }}</span>
+                <strong>{{ 'cityLabel' | translate }}:</strong>
+                <span>{{ order.city || ('notSpecified' | translate) }}</span>
               </div>
               <div class="detail-item full-width">
-                <strong>Çalışılan Kitaplar / Arbeitsbücher:</strong>
-                <span>{{ order.workingBooks || 'Belirtilmemiş / Nicht angegeben' }}</span>
+                <strong>{{ 'workingBooksLabel' | translate }}:</strong>
+                <span>{{ order.workingBooks || ('notSpecified' | translate) }}</span>
               </div>
               <div class="detail-item full-width books-section">
-                <strong>Seçilen Kitaplar / Ausgewählte Bücher:</strong>
+                <strong>{{ 'selectedBooksLabel' | translate }}:</strong>
                 <div class="books-list" *ngIf="editingOrderId !== order.id">
                   <span *ngFor="let book of order.selectedBooks" class="book-tag">{{ book }}</span>
                   <span *ngIf="order.selectedBooks.length === 0" class="no-books">
-                    Kitap seçilmemiş / Keine Bücher ausgewählt
+                    {{ 'noBooksSelected' | translate }}
                   </span>
                 </div>
                 <div *ngIf="editingOrderId !== order.id" class="edit-books-actions">
                   <button mat-stroked-button color="primary" (click)="startEditBooks(order)" type="button">
-                    <mat-icon>edit</mat-icon>
-                    Seçili kitapları düzenle
+                    {{ 'editSelectedBooks' | translate }}
                   </button>
                 </div>
 
-                <!-- Düzenleme paneli: kitap ekle / çıkar -->
+                <!-- Düzenleme paneli -->
                 <div *ngIf="editingOrderId === order.id" class="edit-books-panel">
                   <div *ngIf="editBooksError" class="alert alert-error">{{ editBooksError }}</div>
                   <div class="edit-books-current">
-                    <strong>Şu anki kitaplar:</strong>
+                    <strong>{{ 'currentBooks' | translate }}:</strong>
                     <div class="edit-books-tags">
                       <span *ngFor="let book of editBooksList" class="book-tag with-remove">
                         {{ book.requestName }}
-                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)" aria-label="Çıkar">×</button>
+                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)" [attr.aria-label]="'removeLabel' | translate">×</button>
                       </span>
-                      <span *ngIf="editBooksList.length === 0" class="no-books">Henüz kitap yok</span>
+                      <span *ngIf="editBooksList.length === 0" class="no-books">{{ 'noBooksYet' | translate }}</span>
                     </div>
                   </div>
                   <div class="edit-books-add" *ngIf="!allBooksLoading">
-                    <strong>Kitap ekle (tüm kitaplar listesinden):</strong>
-                    <p class="add-books-hint">Arama kutusuna yazarak kitap adına göre filtreleyin, listeden istediğinize tıklayarak ekleyin. Kaydet ile siparişi güncelleyin.</p>
+                    <strong>{{ 'addBookFromList' | translate }}:</strong>
+                    <p class="add-books-hint">{{ 'addBooksHint' | translate }}</p>
                     <div class="add-book-search-row">
                       <mat-form-field appearance="outline" class="add-book-search-field">
-                        <mat-label>Ara / Suchen (kitap adı)</mat-label>
+                        <mat-label>{{ 'search' | translate }} ({{ 'searchBookPlaceholder' | translate }})</mat-label>
                         <input matInput [(ngModel)]="addBookSearchTerm" [ngModelOptions]="{ standalone: true }"
-                          placeholder="Kitap adı veya ISBN ile ara...">
-                        <mat-icon matSuffix>search</mat-icon>
+                          [placeholder]="'searchBookPlaceholder' | translate">
                       </mat-form-field>
                     </div>
                     <div class="add-book-buttons">
@@ -208,21 +203,21 @@
                         (click)="addBookToEdit(book)">
                         + {{ book.requestName }}
                       </button>
-                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">Eklenebilecek başka kitap yok (hepsi zaten eklendi).</span>
-                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0" class="no-more-books">Aramanıza uygun kitap bulunamadı.</span>
+                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">{{ 'noMoreBooksToAdd' | translate }}</span>
+                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0" class="no-more-books">{{ 'noMatchBooks' | translate }}</span>
                     </div>
                   </div>
-                  <p *ngIf="allBooksLoading" class="loading-books">Kitaplar yükleniyor…</p>
+                  <p *ngIf="allBooksLoading" class="loading-books">{{ 'booksLoading' | translate }}</p>
                   <div class="edit-books-footer">
                     <button mat-raised-button color="primary" (click)="saveOrderBooks()" [disabled]="editBooksSaving">
-                      {{ editBooksSaving ? 'Kaydediliyor…' : 'Kaydet' }}
+                      {{ editBooksSaving ? ('saving' | translate) : ('save' | translate) }}
                     </button>
-                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">İptal</button>
+                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">{{ 'cancel' | translate }}</button>
                   </div>
                 </div>
               </div>
               <div class="detail-item">
-                <strong>Tarih / Datum:</strong>
+                <strong>{{ 'dateLabel' | translate }}:</strong>
                 <span>{{ formatDate(order.createdAt) }}</span>
               </div>
             </div>
@@ -232,9 +227,8 @@
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
-        <mat-icon>inbox</mat-icon>
-        <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
-        <p class="empty-hint">Arama kriterlerinizi değiştirerek tekrar deneyin. / Versuchen Sie es erneut, indem Sie Ihre Suchkriterien ändern.</p>
+        <p>{{ 'noResultsOrders' | translate }}</p>
+        <p class="empty-hint">{{ 'emptyHintOrders' | translate }}</p>
       </div>
     </mat-card-content>
   </mat-card>

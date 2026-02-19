@@ -3,25 +3,22 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Kullanıcılar (Arama) / Benutzer (Suche)</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+      <h2 class="header-subtitle">{{ 'usersSubtitle' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Kullanıcı Yönetimi / Benutzerverwaltung</h2>
+      <h2 class="section-title">{{ 'usersSectionTitle' | translate }}</h2>
       <p class="section-description">
-        Bu sayfada sistemdeki tüm kullanıcıları görüntüleyebilir, arayabilir ve yönetebilirsiniz. 
-        Kullanıcı bilgilerini görüntüleyebilir ve gerekirse düzenleyebilirsiniz.
-        / Auf dieser Seite können Sie alle Benutzer im System anzeigen, suchen und verwalten. 
-        Sie können Benutzerinformationen anzeigen und bei Bedarf bearbeiten.
+        {{ 'usersSectionDesc' | translate }}
       </p>
 
       <!-- Loading & Error -->
       <div *ngIf="loading" class="loading-container">
         <mat-spinner diameter="50"></mat-spinner>
-        <p>Yükleniyor... / Wird geladen...</p>
+        <p>{{ 'loading' | translate }}</p>
       </div>
       <div *ngIf="error" class="alert alert-error">
         <span>{{ error }}</span>
@@ -40,24 +37,24 @@
       <div class="filters-section" *ngIf="!loading">
         <div class="filters-row">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Ara / Suchen</mat-label>
+            <mat-label>{{ 'search' | translate }}</mat-label>
             <input
               matInput
               [(ngModel)]="searchTerm"
               [ngModelOptions]="{ standalone: true }"
               (input)="onSearch()"
-              placeholder="Ad, soyad, e-posta veya telefon / Name, Nachname, E-Mail oder Telefon">
+              [placeholder]="'searchUsersPlaceholder' | translate">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="role-field">
-            <mat-label>Rol / Rolle</mat-label>
+            <mat-label>{{ 'role' | translate }}</mat-label>
             <mat-select
               [(ngModel)]="roleFilter"
               [ngModelOptions]="{ standalone: true }"
               (selectionChange)="onRoleFilterChange()">
-              <mat-option value="all">Tümü / Alle</mat-option>
-              <mat-option value="USER">Kullanıcı / Benutzer</mat-option>
-              <mat-option value="ADMIN">Yönetici / Administrator</mat-option>
+              <mat-option value="all">{{ 'all' | translate }}</mat-option>
+              <mat-option value="USER">{{ 'roleUser' | translate }}</mat-option>
+              <mat-option value="ADMIN">{{ 'roleAdmin' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -66,15 +63,15 @@
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-value">{{ getTotalUsers() }}</div>
-            <div class="stat-label">Toplam Kullanıcı / Gesamt Benutzer</div>
+            <div class="stat-label">{{ 'totalUsers' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">{{ getAdminUsers() }}</div>
-            <div class="stat-label">Yönetici / Administrator</div>
+            <div class="stat-label">{{ 'roleAdmin' | translate }}</div>
           </div>
           <div class="stat-card">
             <div class="stat-value">{{ getNormalUsers() }}</div>
-            <div class="stat-label">Kullanıcı / Benutzer</div>
+            <div class="stat-label">{{ 'roleUser' | translate }}</div>
           </div>
         </div>
       </div>
@@ -98,50 +95,50 @@
           <mat-card-content>
             <div class="user-details-grid">
               <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>Ad / Vorname:</strong>
+                <strong>{{ 'firstNameLabel' | translate }}:</strong>
                 <input
                   class="inline-input"
                   [(ngModel)]="editingUser.firstName"
                   [ngModelOptions]="{ standalone: true }"
-                  placeholder="Ad / Vorname">
+                  [placeholder]="'firstNameLabel' | translate">
               </div>
               <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>Soyad / Nachname:</strong>
+                <strong>{{ 'lastNameLabel' | translate }}:</strong>
                 <input
                   class="inline-input"
                   [(ngModel)]="editingUser.lastName"
                   [ngModelOptions]="{ standalone: true }"
-                  placeholder="Soyad / Nachname">
+                  [placeholder]="'lastNameLabel' | translate">
               </div>
               <div class="detail-item">
-                <strong>E-posta / E-Mail:</strong>
+                <strong>{{ 'email' | translate }}:</strong>
                 <span>{{ user.email }}</span>
               </div>
               <div class="detail-item" [class.full-width]="editingUser && editingUser.id === user.id">
-                <strong>Telefon / Telefon:</strong>
+                <strong>{{ 'phone' | translate }}:</strong>
                 <ng-container *ngIf="editingUser && editingUser.id === user.id; else phoneView">
                   <input
                     class="inline-input"
                     [(ngModel)]="editingUser.phone"
                     [ngModelOptions]="{ standalone: true }"
-                    placeholder="Telefon / Telefon">
+                    [placeholder]="'phone' | translate">
                 </ng-container>
                 <ng-template #phoneView>
                   <span>{{ user.phone }}</span>
                 </ng-template>
               </div>
               <div class="detail-item">
-                <strong>Kayıt Tarihi / Registrierungsdatum:</strong>
+                <strong>{{ 'regDate' | translate }}:</strong>
                 <span>{{ formatDate(user.createdAt) }}</span>
               </div>
               <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>Rol / Rolle:</strong>
+                <strong>{{ 'role' | translate }}:</strong>
                 <select
                   class="inline-select"
                   [(ngModel)]="editingUser.role"
                   [ngModelOptions]="{ standalone: true }">
-                  <option value="USER">Kullanıcı / Benutzer</option>
-                  <option value="ADMIN">Yönetici / Administrator</option>
+                  <option value="USER">{{ 'roleUser' | translate }}</option>
+                  <option value="ADMIN">{{ 'roleAdmin' | translate }}</option>
                 </select>
               </div>
             </div>
@@ -152,7 +149,7 @@
                 color="primary"
                 *ngIf="!editingUser || editingUser.id !== user.id"
                 (click)="startEdit(user)">
-                Kullanıcıyı Düzenle / Benutzer bearbeiten
+                {{ 'editUser' | translate }}
               </button>
               <button
                 mat-stroked-button
@@ -160,7 +157,7 @@
                 type="button"
                 (click)="confirmDelete(user)"
                 *ngIf="!deletingUserId || deletingUserId !== user.id">
-                Kullanıcıyı Sil / Benutzer löschen
+                {{ 'deleteUser' | translate }}
               </button>
               <div
                 class="edit-actions"
@@ -170,34 +167,34 @@
                   color="primary"
                   (click)="saveUser()"
                   [disabled]="updateLoading">
-                  Kaydet / Speichern
+                  {{ 'saveUser' | translate }}
                 </button>
                 <button
                   mat-button
                   type="button"
                   (click)="cancelEdit()"
                   [disabled]="updateLoading">
-                  İptal / Abbrechen
+                  {{ 'cancel' | translate }}
                 </button>
               </div>
               <div
                 class="delete-confirm"
                 *ngIf="deletingUserId === user.id">
-                <span>Emin misiniz? / Sind Sie sicher?</span>
+                <span>{{ 'deleteUserConfirm' | translate }}</span>
                 <button
                   mat-raised-button
                   color="warn"
                   type="button"
                   (click)="deleteUser()"
                   [disabled]="deleteLoading">
-                  Evet, sil / Ja, löschen
+                  {{ 'yesDelete' | translate }}
                 </button>
                 <button
                   mat-button
                   type="button"
                   (click)="cancelDelete()"
                   [disabled]="deleteLoading">
-                  İptal / Abbrechen
+                  {{ 'cancel' | translate }}
                 </button>
               </div>
             </div>
@@ -207,8 +204,8 @@
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="!loading && filteredUsers.length === 0">
-        <p>Sonuç bulunamadı / Keine Ergebnisse gefunden</p>
-        <p class="empty-hint">Arama kriterlerinizi değiştirerek tekrar deneyin. / Versuchen Sie es erneut, indem Sie Ihre Suchkriterien ändern.</p>
+        <p>{{ 'noResultsUsers' | translate }}</p>
+        <p class="empty-hint">{{ 'emptyHintUsers' | translate }}</p>
       </div>
     </mat-card-content>
   </mat-card>

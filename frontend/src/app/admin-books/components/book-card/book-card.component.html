@@ -37,18 +37,15 @@
   <mat-card-actions align="end" class="card-actions">
     <ng-container *ngIf="!isEditing && !isDeleting">
       <button mat-stroked-button color="primary" (click)="onEdit()" class="btn-put" title="PUT /api/books/{{ book.id }}">
-        <mat-icon>edit</mat-icon>
         {{ 'edit' | translate }}
       </button>
       <button mat-stroked-button color="warn" (click)="onDelete()" class="btn-delete" title="DELETE /api/books/{{ book.id }}">
-        <mat-icon>delete</mat-icon>
         {{ 'delete' | translate }}
       </button>
     </ng-container>
 
     <ng-container *ngIf="isEditing">
       <button mat-raised-button color="primary" (click)="onSave()">
-        <mat-icon>save</mat-icon>
         {{ 'save' | translate }}
       </button>
       <button mat-button (click)="onCancel()">{{ 'cancel' | translate }}</button>
@@ -57,7 +54,6 @@
     <ng-container *ngIf="isDeleting">
       <span class="delete-hint">{{ 'deleteConfirm' | translate }}</span>
       <button mat-raised-button color="warn" (click)="onConfirmDelete()">
-        <mat-icon>delete_forever</mat-icon>
         {{ 'deleteYes' | translate }}
       </button>
       <button mat-button (click)="onCancelDelete()">{{ 'cancel' | translate }}</button>

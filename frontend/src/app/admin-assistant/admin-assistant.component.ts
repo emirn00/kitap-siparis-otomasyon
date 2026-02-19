@@ -10,7 +10,7 @@ interface Message {
 }
 
 interface QuickSuggestion {
-  text: string;
+  textKey: string;
   action: string;
   icon: string;
 }
@@ -32,19 +32,19 @@ export class AdminAssistantComponent implements OnInit, AfterViewChecked {
   chatMinimized: boolean = false;
 
   quickSuggestions: QuickSuggestion[] = [
-    { text: 'Siparişleri göster', action: 'orders', icon: 'shopping_cart' },
-    { text: 'Kullanıcıları listele', action: 'users', icon: 'people' },
-    { text: 'İstatistikleri göster', action: 'stats', icon: 'bar_chart' },
-    { text: 'Sistem durumu', action: 'system', icon: 'settings' },
-    { text: 'Yardım al', action: 'help', icon: 'help' },
-    { text: 'Son siparişler', action: 'recent_orders', icon: 'history' }
+    { textKey: 'suggestionShowOrders', action: 'orders', icon: 'shopping_cart' },
+    { textKey: 'suggestionListUsers', action: 'users', icon: 'people' },
+    { textKey: 'suggestionShowStats', action: 'stats', icon: 'bar_chart' },
+    { textKey: 'suggestionSystemStatus', action: 'system', icon: 'settings' },
+    { textKey: 'suggestionGetHelp', action: 'help', icon: 'help' },
+    { textKey: 'suggestionRecentOrders', action: 'recent_orders', icon: 'history' }
   ];
 
   categories = [
-    { value: 'all', label: 'Tümü / Alle', icon: 'chat' },
-    { value: 'order', label: 'Siparişler / Bestellungen', icon: 'shopping_cart' },
-    { value: 'user', label: 'Kullanıcılar / Benutzer', icon: 'people' },
-    { value: 'system', label: 'Sistem / System', icon: 'settings' }
+    { value: 'all', labelKey: 'all', icon: 'chat' },
+    { value: 'order', labelKey: 'orders', icon: 'shopping_cart' },
+    { value: 'user', labelKey: 'users', icon: 'people' },
+    { value: 'system', labelKey: 'categorySystem', icon: 'settings' }
   ];
 
   selectedCategory: string = 'all';

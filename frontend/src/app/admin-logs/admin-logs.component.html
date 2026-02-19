@@ -3,46 +3,42 @@
   <div class="hueber-header">
     <div class="logo-container">
       <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">Loglar / Logs</h2>
-      <a routerLink="/admin" class="help-link">Admin Ana Sayfa / Admin Startseite</a>
+      <h2 class="header-subtitle">{{ 'logsTitle' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">Sistem Logları ve Geçmiş / Systemprotokolle und Verlauf</h2>
+      <h2 class="section-title">{{ 'logsSectionTitle' | translate }}</h2>
       <p class="section-description">
-        Bu sayfada sistemdeki tüm log kayıtlarını görüntüleyebilirsiniz. Sistem aktivitelerini, 
-        hataları ve önemli olayları buradan takip edebilirsiniz.
-        / Auf dieser Seite können Sie alle Protokolleinträge im System anzeigen. Sie können 
-        Systemaktivitäten, Fehler und wichtige Ereignisse hier verfolgen.
+        {{ 'logsSectionDesc' | translate }}
       </p>
 
       <!-- Filters -->
       <div class="filters-section">
         <div class="filters-row">
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Ara / Suchen</mat-label>
+            <mat-label>{{ 'search' | translate }}</mat-label>
             <input
               matInput
               [(ngModel)]="searchTerm"
               [ngModelOptions]="{ standalone: true }"
               (input)="onSearch()"
-              placeholder="Mesaj, detay veya kullanıcı ara / Nachricht, Details oder Benutzer suchen">
-            <mat-icon matPrefix>search</mat-icon>
+              [placeholder]="'searchLogsPlaceholder' | translate">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="level-field">
-            <mat-label>Seviye / Level</mat-label>
+            <mat-label>{{ 'level' | translate }}</mat-label>
             <mat-select
               [(ngModel)]="levelFilter"
               [ngModelOptions]="{ standalone: true }"
               (selectionChange)="onLevelFilterChange()">
-              <mat-option value="all">Tümü / Alle</mat-option>
-              <mat-option value="INFO">Bilgi / Information</mat-option>
-              <mat-option value="WARNING">Uyarı / Warnung</mat-option>
-              <mat-option value="ERROR">Hata / Fehler</mat-option>
-              <mat-option value="SUCCESS">Başarılı / Erfolgreich</mat-option>
+              <mat-option value="all">{{ 'all' | translate }}</mat-option>
+              <mat-option value="INFO">{{ 'levelInfo' | translate }}</mat-option>
+              <mat-option value="WARNING">{{ 'levelWarning' | translate }}</mat-option>
+              <mat-option value="ERROR">{{ 'levelError' | translate }}</mat-option>
+              <mat-option value="SUCCESS">{{ 'levelSuccess' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -51,19 +47,19 @@
         <div class="stats-row">
           <div class="stat-card">
             <div class="stat-value">{{ getTotalLogs() }}</div>
-            <div class="stat-label">Toplam Log / Gesamt Logs</div>
+            <div class="stat-label">{{ 'totalLogs' | translate }}</div>
           </div>
           <div class="stat-card info">
             <div class="stat-value">{{ getInfoLogs() }}</div>
-            <div class="stat-label">Bilgi / Information</div>
+            <div class="stat-label">{{ 'levelInfo' | translate }}</div>
           </div>
           <div class="stat-card warning">
             <div class="stat-value">{{ getWarningLogs() }}</div>
-            <div class="stat-label">Uyarı / Warnung</div>
+            <div class="stat-label">{{ 'levelWarning' | translate }}</div>
           </div>
           <div class="stat-card error">
             <div class="stat-value">{{ getErrorLogs() }}</div>
-            <div class="stat-label">Hata / Fehler</div>
+            <div class="stat-label">{{ 'levelError' | translate }}</div>
           </div>
         </div>
       </div>
@@ -79,26 +75,19 @@
           </div>
           <div class="log-message">{{ log.message }}</div>
           <div class="log-details" *ngIf="log.details">
-            <strong>Detaylar / Details:</strong> {{ log.details }}
+            <strong>{{ 'details' | translate }}:</strong> {{ log.details }}
           </div>
           <div class="log-meta" *ngIf="log.user || log.action">
-            <span *ngIf="log.user" class="log-user">
-              <mat-icon>person</mat-icon>
-              {{ log.user }}
-            </span>
-            <span *ngIf="log.action" class="log-action">
-              <mat-icon>settings</mat-icon>
-              {{ log.action }}
-            </span>
+            <span *ngIf="log.user" class="log-user">{{ log.user }}</span>
+            <span *ngIf="log.action" class="log-action">{{ log.action }}</span>
           </div>
         </div>
       </div>
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="filteredLogs.length === 0">
-        <mat-icon>description</mat-icon>
-        <p>Log kaydı bulunamadı / Keine Protokolleinträge gefunden</p>
-        <p class="empty-hint">Filtreleri değiştirerek tekrar deneyin. / Versuchen Sie es erneut, indem Sie die Filter ändern.</p>
+        <p>{{ 'noLogsFound' | translate }}</p>
+        <p class="empty-hint">{{ 'emptyHintLogs' | translate }}</p>
       </div>
     </mat-card-content>
   </mat-card>
