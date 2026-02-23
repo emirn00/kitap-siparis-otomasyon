@@ -15,6 +15,8 @@ public class OrderResponse {
     private UUID id;
     private UUID userId;
     private String userName;
+    private String email;
+    private String phone;
     private List<Book> books;
     private String city;
     private String institution;
@@ -26,6 +28,8 @@ public class OrderResponse {
         response.setId(order.getId());
         response.setUserId(order.getUser().getId());
         response.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
+        response.setEmail(order.getUser().getEmail());
+        response.setPhone(order.getUser().getPhone());
         response.setBooks(order.getBooks());
         response.setCity(order.getCity());
         response.setInstitution(order.getInstitution());

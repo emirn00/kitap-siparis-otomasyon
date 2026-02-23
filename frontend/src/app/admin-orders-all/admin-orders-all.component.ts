@@ -7,6 +7,8 @@ interface ApiOrderResponse {
   id: string;
   userId: string;
   userName: string;
+  email?: string;
+  phone?: string;
   books: { id: string; title?: string; requestName?: string }[];
   city?: string;
   institution?: string;
@@ -123,8 +125,8 @@ export class AdminOrdersAllComponent implements OnInit {
     return {
       id: d.id,
       fullName: d.userName,
-      email: '',
-      phone: '',
+      email: d.email ?? '',
+      phone: d.phone ?? '',
       school: d.institution ?? '',
       city: d.city ?? '',
       workingBooks: '',
