@@ -1,0 +1,62 @@
+<div class="admin-container">
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">{{ 'bulkMailSubtitle' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">{{ 'bulkMailTitle' | translate }}</h2>
+      <p class="section-description">
+        {{ 'bulkMailDesc' | translate }}
+      </p>
+
+      <div *ngIf="successMessage" class="alert alert-success">
+        <span>{{ successMessage }}</span>
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-error">
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <div class="input-section">
+        <mat-form-field appearance="outline" class="emails-field">
+          <mat-label>{{ 'bulkMailRecipientsLabel' | translate }}</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="emailsInput"
+            [ngModelOptions]="{ standalone: true }"
+            rows="6"
+            [placeholder]="'bulkMailRecipientsPlaceholder' | translate"></textarea>
+        </mat-form-field>
+        <p class="recipient-count" *ngIf="recipientList.length > 0">
+          {{ 'bulkMailRecipientCount' | translate }}: {{ recipientList.length }}
+        </p>
+      </div>
+
+      <div class="template-section">
+        <button mat-button type="button" (click)="toggleTemplate()" class="toggle-template-btn">
+          {{ showTemplate ? ('bulkMailHideTemplate' | translate) : ('bulkMailShowTemplate' | translate) }}
+        </button>
+        <div class="template-preview" *ngIf="showTemplate">
+          <pre class="template-content">{{ mailTemplate }}</pre>
+        </div>
+      </div>
+
+      <div class="send-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          [disabled]="!canSend"
+          (click)="sendBulkMail()"
+          class="send-btn">
+          <span *ngIf="!sending">{{ 'bulkMailSend' | translate }}</span>
+          <span *ngIf="sending">{{ 'loading' | translate }}</span>
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
