@@ -1,0 +1,62 @@
+<div class="admin-container">
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">{{ 'lisencodeCsv' | translate }}</h2>
+      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
+    </div>
+  </div>
+
+  <mat-card class="form-card">
+    <mat-card-content>
+      <h2 class="section-title">{{ 'lisencodeCsvTitle' | translate }}</h2>
+      <p class="section-description">
+        {{ 'lisencodeCsvDesc' | translate }}
+      </p>
+
+      <div class="upload-section">
+        <input
+          type="file"
+          #fileInput
+          accept=".csv"
+          (change)="onFileSelected($event)"
+          class="file-input-hidden" />
+        <button mat-raised-button color="primary" type="button" (click)="fileInput.click()" [disabled]="loading">
+          {{ loading ? ('loading' | translate) : ('lisencodeCsvSelect' | translate) }}
+        </button>
+        <span *ngIf="fileName" class="file-name">{{ fileName }}</span>
+      </div>
+
+      <div *ngIf="error" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>{{ 'loading' | translate }}</p>
+      </div>
+
+      <div *ngIf="hasPreview && !loading" class="preview-section">
+        <h3 class="preview-title">{{ 'preview' | translate }} ({{ rows.length }} {{ 'lisencodeCsvRows' | translate }})</h3>
+        <div class="preview-table-wrap">
+          <table class="preview-table">
+            <thead>
+              <tr>
+                <th *ngFor="let cell of headerRow; let i = index">{{ cell || ('lisencodeCsvCol' | translate) + ' ' + (i + 1) }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of dataRows">
+                <td *ngFor="let cell of row">{{ cell }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div *ngIf="!hasPreview && !loading && !error" class="empty-hint">
+        <p>{{ 'lisencodeCsvHint' | translate }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
