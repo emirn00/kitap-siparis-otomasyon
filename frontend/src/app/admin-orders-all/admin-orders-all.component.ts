@@ -12,11 +12,12 @@ interface ApiOrderResponse {
   books: { id: string; title?: string; requestName?: string }[];
   city?: string;
   institution?: string;
+  status: string;
   createdAt: string;
   updatedAt: string;
 }
 
-type OrderStatus = 'pending' | 'processed' | 'completed';
+type OrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELED';
 
 export interface OrderBookItem {
   id: string;
@@ -97,7 +98,7 @@ export class AdminOrdersAllComponent implements OnInit {
     private http: HttpClient,
     private fb: FormBuilder,
     private translation: TranslationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initNewOrderForm();
@@ -133,7 +134,7 @@ export class AdminOrdersAllComponent implements OnInit {
       books,
       selectedBooks: books.map(b => b.requestName),
       createdAt: new Date(d.createdAt),
-      status: 'pending'
+      status: d.status as OrderStatus
     };
   }
 
@@ -306,6 +307,21 @@ export class AdminOrdersAllComponent implements OnInit {
     });
   }
 
+  updateOrderStatus(orderId: string, status: OrderStatus): void {
+    this.http.patch<ApiOrderResponse>(`${this.apiUrl}/${orderId}/status?status=${status}`, {}).subscribe({
+      next: (updated) => {
+        const idx = this.orders.findIndex(o => o.id === orderId);
+        if (idx !== -1) {
+          this.orders[idx] = this.mapApiOrderToAdmin(updated);
+        }
+        this.applyFilters();
+      },
+      error: () => {
+        this.error = 'Sipariş durumu güncellenemedi. / Bestellstatus konnte nicht aktualisiert werden.';
+      }
+    });
+  }
+
   // Özel sipariş formunu aç / kapa
   toggleAddOrderForm(): void {
     this.showAddOrderForm = !this.showAddOrderForm;
@@ -387,9 +403,9 @@ export class AdminOrdersAllComponent implements OnInit {
 
   getStatusLabel(status: OrderStatus): string {
     const keyMap: { [key in OrderStatus]: string } = {
-      pending: 'statusPending',
-      processed: 'statusProcessed',
-      completed: 'statusCompleted'
+      PENDING: 'statusPending',
+      COMPLETED: 'statusCompleted',
+      CANCELED: 'statusCanceled'
     };
     const key = keyMap[status];
     return key ? this.translation.get(key) : status;
@@ -397,9 +413,9 @@ export class AdminOrdersAllComponent implements OnInit {
 
   getStatusColor(status: OrderStatus): string {
     const colors: { [key in OrderStatus]: string } = {
-      pending: '#ff9800',
-      processed: '#2196f3',
-      completed: '#4caf50'
+      PENDING: '#ff9800',
+      COMPLETED: '#4caf50',
+      CANCELED: '#f44336'
     };
     return colors[status] || '#666';
   }
@@ -419,14 +435,14 @@ export class AdminOrdersAllComponent implements OnInit {
   }
 
   getPendingOrders(): number {
-    return this.orders.filter(order => order.status === 'pending').length;
-  }
-
-  getProcessedOrders(): number {
-    return this.orders.filter(order => order.status === 'processed').length;
+    return this.orders.filter(order => order.status === 'PENDING').length;
   }
 
   getCompletedOrders(): number {
-    return this.orders.filter(order => order.status === 'completed').length;
+    return this.orders.filter(order => order.status === 'COMPLETED').length;
+  }
+
+  getCanceledOrders(): number {
+    return this.orders.filter(order => order.status === 'CANCELED').length;
   }
 }

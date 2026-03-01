@@ -29,20 +29,12 @@
             <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
           </mat-form-field>
 
-          <button
-            mat-raised-button
-            color="primary"
-            (click)="fetchOrdersByDate()"
-            [disabled]="!startDate || !endDate || loading"
-            class="fetch-button">
+          <button mat-raised-button color="primary" (click)="fetchOrdersByDate()"
+            [disabled]="!startDate || !endDate || loading" class="fetch-button">
             {{ 'fetchByDate' | translate }}
           </button>
 
-          <button
-            mat-button
-            type="button"
-            (click)="resetDateFilter()"
-            [disabled]="loading">
+          <button mat-button type="button" (click)="resetDateFilter()" [disabled]="loading">
             {{ 'allOrders' | translate }}
           </button>
         </div>
@@ -65,24 +57,18 @@
         <div class="filters-row">
           <mat-form-field appearance="outline" class="search-field">
             <mat-label>{{ 'search' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="searchTerm"
-              [ngModelOptions]="{ standalone: true }"
-              (input)="onSearch()"
+            <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{ standalone: true }" (input)="onSearch()"
               [placeholder]="'searchOrdersPlaceholder' | translate">
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="status-field">
             <mat-label>{{ 'status' | translate }}</mat-label>
-            <mat-select
-              [(ngModel)]="statusFilter"
-              [ngModelOptions]="{ standalone: true }"
+            <mat-select [(ngModel)]="statusFilter" [ngModelOptions]="{ standalone: true }"
               (selectionChange)="onStatusFilterChange()">
               <mat-option value="all">{{ 'all' | translate }}</mat-option>
-              <mat-option value="pending">{{ 'statusPending' | translate }}</mat-option>
-              <mat-option value="processed">{{ 'statusProcessed' | translate }}</mat-option>
-              <mat-option value="completed">{{ 'statusCompleted' | translate }}</mat-option>
+              <mat-option value="PENDING">{{ 'statusPending' | translate }}</mat-option>
+              <mat-option value="COMPLETED">{{ 'statusCompleted' | translate }}</mat-option>
+              <mat-option value="CANCELED">{{ 'statusCanceled' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
         </div>
@@ -98,12 +84,12 @@
             <div class="stat-label">{{ 'statusPending' | translate }}</div>
           </div>
           <div class="stat-card">
-            <div class="stat-value">{{ getProcessedOrders() }}</div>
-            <div class="stat-label">{{ 'statusProcessed' | translate }}</div>
-          </div>
-          <div class="stat-card">
             <div class="stat-value">{{ getCompletedOrders() }}</div>
             <div class="stat-label">{{ 'statusCompleted' | translate }}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">{{ getCanceledOrders() }}</div>
+            <div class="stat-label">{{ 'statusCanceled' | translate }}</div>
           </div>
         </div>
       </div>
@@ -117,14 +103,22 @@
                 <h3 class="order-name">{{ order.fullName }}</h3>
                 <span class="order-id">#{{ order.id }}</span>
               </div>
-              <span class="order-status"
-                [style.backgroundColor]="getStatusColor(order.status)">
+              <span class="order-status" [style.backgroundColor]="getStatusColor(order.status)">
                 {{ getStatusLabel(order.status) }}
               </span>
+              <div class="order-moderation-actions" *ngIf="order.status === 'PENDING'">
+                <button mat-raised-button color="primary" (click)="updateOrderStatus(order.id, 'COMPLETED')"
+                  class="btn-approve">
+                  {{ 'approve' | translate }}
+                </button>
+                <button mat-stroked-button color="warn" (click)="updateOrderStatus(order.id, 'CANCELED')"
+                  class="btn-reject">
+                  {{ 'reject' | translate }}
+                </button>
+              </div>
               <div class="order-actions-header">
                 <button mat-stroked-button color="warn" (click)="confirmDeleteOrder(order.id)" type="button"
-                  [disabled]="deletingOrderId !== null && deletingOrderId !== order.id"
-                  class="btn-delete-order">
+                  [disabled]="deletingOrderId !== null && deletingOrderId !== order.id" class="btn-delete-order">
                   {{ 'deleteOrder' | translate }}
                 </button>
               </div>
@@ -183,7 +177,8 @@
                     <div class="edit-books-tags">
                       <span *ngFor="let book of editBooksList" class="book-tag with-remove">
                         {{ book.requestName }}
-                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)" [attr.aria-label]="'removeLabel' | translate">×</button>
+                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)"
+                          [attr.aria-label]="'removeLabel' | translate">×</button>
                       </span>
                       <span *ngIf="editBooksList.length === 0" class="no-books">{{ 'noBooksYet' | translate }}</span>
                     </div>
@@ -203,8 +198,10 @@
                         (click)="addBookToEdit(book)">
                         + {{ book.requestName }}
                       </button>
-                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">{{ 'noMoreBooksToAdd' | translate }}</span>
-                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0" class="no-more-books">{{ 'noMatchBooks' | translate }}</span>
+                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">{{ 'noMoreBooksToAdd' |
+                        translate }}</span>
+                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0"
+                        class="no-more-books">{{ 'noMatchBooks' | translate }}</span>
                     </div>
                   </div>
                   <p *ngIf="allBooksLoading" class="loading-books">{{ 'booksLoading' | translate }}</p>
@@ -212,7 +209,8 @@
                     <button mat-raised-button color="primary" (click)="saveOrderBooks()" [disabled]="editBooksSaving">
                       {{ editBooksSaving ? ('saving' | translate) : ('save' | translate) }}
                     </button>
-                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">{{ 'cancel' | translate }}</button>
+                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">{{ 'cancel' | translate
+                      }}</button>
                   </div>
                 </div>
               </div>

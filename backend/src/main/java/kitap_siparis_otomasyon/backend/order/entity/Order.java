@@ -47,11 +47,16 @@ public class Order {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private OrderStatus status = OrderStatus.PENDING;
+
     public Order() {
     }
 
     public Order(User user, List<Book> books) {
         this.user = user;
         this.books = books;
+        this.status = OrderStatus.PENDING;
     }
 }

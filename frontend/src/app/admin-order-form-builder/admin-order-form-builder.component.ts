@@ -80,7 +80,7 @@ export class AdminOrderFormBuilderComponent {
     const startStr = this.formatDate(this.startDate);
     const endStr = this.formatDate(this.endDate);
 
-    const url = `${this.apiUrl}?startDate=${startStr}&endDate=${endStr}`;
+    const url = `${this.apiUrl}?startDate=${startStr}&endDate=${endStr}&status=COMPLETED`;
 
     this.http.get<ApiOrderResponse[]>(url).subscribe({
       next: (orders) => {

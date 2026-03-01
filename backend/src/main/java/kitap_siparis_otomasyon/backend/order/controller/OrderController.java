@@ -3,6 +3,7 @@ package kitap_siparis_otomasyon.backend.order.controller;
 import kitap_siparis_otomasyon.backend.order.dto.CreateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.OrderResponse;
 import kitap_siparis_otomasyon.backend.order.dto.UpdateOrderRequest;
+import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import kitap_siparis_otomasyon.backend.order.service.OrderService;
 import kitap_siparis_otomasyon.backend.user.entity.User;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -44,9 +45,9 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<OrderResponse>> getOrdersByDateRange(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate, endDate));
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @RequestParam(value = "status", required = false) OrderStatus status) {
+        return ResponseEntity.ok(orderService.getOrdersByDateRange(startDate, endDate, status));
     }
 
     @GetMapping("/{id}")
@@ -59,6 +60,12 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<OrderResponse> updateOrder(@PathVariable UUID id, @RequestBody UpdateOrderRequest request) {
         return ResponseEntity.ok(orderService.updateOrder(id, request));
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderResponse> updateOrderStatus(@PathVariable UUID id, @RequestParam OrderStatus status) {
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }
 
     @DeleteMapping("/{id}")

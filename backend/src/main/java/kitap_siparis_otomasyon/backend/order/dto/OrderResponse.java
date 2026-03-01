@@ -2,6 +2,7 @@ package kitap_siparis_otomasyon.backend.order.dto;
 
 import kitap_siparis_otomasyon.backend.book.entity.Book;
 import kitap_siparis_otomasyon.backend.order.entity.Order;
+import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class OrderResponse {
     private List<Book> books;
     private String city;
     private String institution;
+    private OrderStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -33,6 +35,7 @@ public class OrderResponse {
         response.setBooks(order.getBooks());
         response.setCity(order.getCity());
         response.setInstitution(order.getInstitution());
+        response.setStatus(order.getStatus());
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
         return response;

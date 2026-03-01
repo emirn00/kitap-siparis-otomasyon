@@ -6,6 +6,7 @@ import kitap_siparis_otomasyon.backend.order.dto.CreateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.OrderResponse;
 import kitap_siparis_otomasyon.backend.order.dto.UpdateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.entity.Order;
+import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import kitap_siparis_otomasyon.backend.order.repository.OrderRepository;
 import kitap_siparis_otomasyon.backend.user.entity.User;
 import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
@@ -58,9 +59,15 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<OrderResponse> getOrdersByDateRange(LocalDate startDate, LocalDate endDate) {
+    public List<OrderResponse> getOrdersByDateRange(LocalDate startDate, LocalDate endDate, OrderStatus status) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
+
+        if (status != null) {
+            return orderRepository.findByCreatedAtBetweenAndStatus(startDateTime, endDateTime, status).stream()
+                    .map(OrderResponse::fromEntity)
+                    .collect(Collectors.toList());
+        }
 
         return orderRepository.findByCreatedAtBetween(startDateTime, endDateTime).stream()
                 .map(OrderResponse::fromEntity)
@@ -98,5 +105,15 @@ public class OrderService {
             throw new RuntimeException("Order not found with id: " + id);
         }
         orderRepository.deleteById(id);
+    }
+
+    @Transactional
+    public OrderResponse updateOrderStatus(UUID id, OrderStatus status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+
+        order.setStatus(status);
+        Order savedOrder = orderRepository.save(order);
+        return OrderResponse.fromEntity(savedOrder);
     }
 }
