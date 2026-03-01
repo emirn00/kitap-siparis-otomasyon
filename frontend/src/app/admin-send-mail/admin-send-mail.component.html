@@ -66,9 +66,33 @@
           </table>
         </div>
 
-        <div class="send-actions" *ngIf="!showConfirm">
+        <div class="send-actions" *ngIf="!showConfirm && !showTestPreview">
+          <button mat-raised-button type="button" (click)="openTestPreview()" class="test-btn">
+            {{ 'testSendBtn' | translate }}
+          </button>
           <button mat-raised-button color="primary" type="button" (click)="openConfirm()" class="send-btn">
             {{ 'sendMailBtn' | translate }}
+          </button>
+        </div>
+
+        <div class="test-preview-section" *ngIf="showTestPreview">
+          <h3 class="test-preview-title">{{ 'testSendTitle' | translate }}</h3>
+          <p class="test-preview-desc">{{ 'testSendDesc' | translate }}</p>
+          <div class="test-preview-list">
+            <div class="test-preview-card" *ngFor="let row of previewRows; let i = index">
+              <div class="test-preview-card-header">
+                <span class="test-preview-to">{{ 'testSendTo' | translate }} {{ i + 1 }}:</span>
+                <strong>{{ row.fullName }}</strong>
+                <span class="test-preview-email">({{ row.email }})</span>
+              </div>
+              <div class="test-preview-bookcodes">
+                <span class="test-preview-label">{{ 'bookCodesColumn' | translate }}:</span>
+                <span class="test-preview-codes">{{ row.bookCodes || ('codesPlaceholder' | translate) }}</span>
+              </div>
+            </div>
+          </div>
+          <button mat-button type="button" (click)="closeTestPreview()" class="test-close-btn">
+            {{ 'testSendClose' | translate }}
           </button>
         </div>
 

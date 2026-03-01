@@ -92,10 +92,98 @@
 
 .send-actions {
   margin-top: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.test-btn {
+  border: 1px solid #d32f2f;
+  color: #d32f2f;
+  min-width: 140px;
+
+  &:hover {
+    background: rgba(211, 47, 47, 0.08);
+  }
 }
 
 .send-btn {
   min-width: 180px;
+}
+
+.test-preview-section {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.test-preview-title {
+  color: #d32f2f;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+}
+
+.test-preview-desc {
+  margin: 0 0 1rem 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.test-preview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.test-preview-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.9rem 1rem;
+}
+
+.test-preview-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.test-preview-to {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.test-preview-email {
+  font-size: 0.85rem;
+  color: #888;
+  word-break: break-all;
+}
+
+.test-preview-bookcodes {
+  font-size: 0.9rem;
+  padding-left: 0.25rem;
+}
+
+.test-preview-label {
+  color: #666;
+  margin-right: 0.35rem;
+}
+
+.test-preview-codes {
+  color: #333;
+  word-break: break-word;
+}
+
+.test-close-btn {
+  color: #666;
 }
 
 .confirm-box {

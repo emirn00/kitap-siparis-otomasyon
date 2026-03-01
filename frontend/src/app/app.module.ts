@@ -38,6 +38,8 @@ import { AdminAssistantComponent } from './admin-assistant/admin-assistant.compo
 import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
 import { AdminBooksComponent } from './admin-books/admin-books.component';
 import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
+import { AdminLisencodeCsvComponent } from './admin-lisencode-csv/admin-lisencode-csv.component';
+import { AdminBulkMailComponent } from './admin-bulk-mail/admin-bulk-mail.component';
 import { BookCardComponent } from './admin-books/components/book-card/book-card.component';
 import { TranslatePipe } from './i18n/translate.pipe';
 
@@ -60,6 +62,8 @@ import { TranslatePipe } from './i18n/translate.pipe';
     AdminAddBookComponent,
     AdminBooksComponent,
     AdminSendMailComponent,
+    AdminLisencodeCsvComponent,
+    AdminBulkMailComponent,
     BookCardComponent
   ],
   imports: [

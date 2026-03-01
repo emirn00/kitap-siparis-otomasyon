@@ -17,6 +17,8 @@ import { AdminAssistantComponent } from './admin-assistant/admin-assistant.compo
 import { AdminAddBookComponent } from './admin-add-book/admin-add-book.component';
 import { AdminBooksComponent } from './admin-books/admin-books.component';
 import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
+import { AdminLisencodeCsvComponent } from './admin-lisencode-csv/admin-lisencode-csv.component';
+import { AdminBulkMailComponent } from './admin-bulk-mail/admin-bulk-mail.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -89,6 +91,18 @@ const routes: Routes = [
   {
     path: 'admin/send-mail',
     component: AdminSendMailComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
+  },
+  {
+    path: 'admin/bulk-mail',
+    component: AdminBulkMailComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { role: 'ADMIN' }
+  },
+  {
+    path: 'admin/lisencode-csv',
+    component: AdminLisencodeCsvComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'ADMIN' }
   },

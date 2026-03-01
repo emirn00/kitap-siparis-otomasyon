@@ -15,6 +15,7 @@ export class AdminSendMailComponent {
   emailsInput = '';
   previewRows: MailPreviewRow[] = [];
   showConfirm = false;
+  showTestPreview = false;
   successMessage: string | null = null;
 
   buildPreview(): void {
@@ -39,7 +40,22 @@ export class AdminSendMailComponent {
     }
     if (this.previewRows.length === 0) return;
     this.showConfirm = true;
+    this.showTestPreview = false;
     this.successMessage = null;
+  }
+
+  openTestPreview(): void {
+    if (this.previewRows.length === 0) {
+      this.buildPreview();
+    }
+    if (this.previewRows.length === 0) return;
+    this.showTestPreview = true;
+    this.showConfirm = false;
+    this.successMessage = null;
+  }
+
+  closeTestPreview(): void {
+    this.showTestPreview = false;
   }
 
   cancelSend(): void {
