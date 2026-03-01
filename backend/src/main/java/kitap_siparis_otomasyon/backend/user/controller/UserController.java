@@ -36,14 +36,14 @@ public class UserController {
         return userService.getById(id);
     }
 
-    @Operation(summary = "Update user (ADMIN)")
-    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Update user (ADMIN or Self)")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     @PutMapping("/{id}")
     public UserResponse update(
             @PathVariable UUID id,
-            @RequestBody UpdateUserRequest request
-    ) {
-        return userService.update(id, request);
+            @RequestBody UpdateUserRequest request,
+            @AuthenticationPrincipal User currentUser) {
+        return userService.update(id, request, currentUser);
     }
 
     @Operation(summary = "Delete user (ADMIN)")
@@ -58,5 +58,12 @@ public class UserController {
     public UserResponse me(@AuthenticationPrincipal User user) {
         return userService.getCurrentUser(user);
     }
-}
 
+    @Operation(summary = "Update current user profile")
+    @PutMapping("/me")
+    public UserResponse updateMe(
+            @RequestBody UpdateUserRequest request,
+            @AuthenticationPrincipal User user) {
+        return userService.update(user.getId(), request, user);
+    }
+}

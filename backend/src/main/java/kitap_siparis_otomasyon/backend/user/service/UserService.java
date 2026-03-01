@@ -30,14 +30,18 @@ public class UserService {
         return toResponse(user);
     }
 
-    public UserResponse update(UUID id, UpdateUserRequest request) {
+    public UserResponse update(UUID id, UpdateUserRequest request, User currentUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
         user.setPhone(request.phone());
-        user.setRole(Role.valueOf(request.role()));
+
+        // Only admin can change role
+        if (currentUser.getRole() == Role.ADMIN && request.role() != null) {
+            user.setRole(Role.valueOf(request.role()));
+        }
 
         return toResponse(userRepository.save(user));
     }
@@ -60,8 +64,6 @@ public class UserService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getPhone(),
-                user.getRole().name()
-        );
+                user.getRole().name());
     }
 }
-
