@@ -41,6 +41,12 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
+    @GetMapping("/my-orders")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<List<OrderResponse>> getMyOrders(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId()));
+    }
+
     @GetMapping("/by-date")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<OrderResponse>> getOrdersByDateRange(

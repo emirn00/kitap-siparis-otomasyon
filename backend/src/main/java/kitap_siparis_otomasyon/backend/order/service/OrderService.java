@@ -59,6 +59,13 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public List<OrderResponse> getOrdersByUserId(UUID userId) {
+        return orderRepository.findByUserId(userId).stream()
+                .map(OrderResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByDateRange(LocalDate startDate, LocalDate endDate, OrderStatus status) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(LocalTime.MAX);
@@ -98,6 +105,8 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         return OrderResponse.fromEntity(savedOrder);
     }
+
+
 
     @Transactional
     public void deleteOrder(UUID id) {
