@@ -19,6 +19,7 @@ import { AdminBooksComponent } from './admin-books/admin-books.component';
 import { AdminSendMailComponent } from './admin-send-mail/admin-send-mail.component';
 import { AdminLisencodeCsvComponent } from './admin-lisencode-csv/admin-lisencode-csv.component';
 import { AdminBulkMailComponent } from './admin-bulk-mail/admin-bulk-mail.component';
+import { UserOrdersComponent } from './user-orders/user-orders.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -32,6 +33,11 @@ const routes: Routes = [
   {
     path: 'profile',
     component: ProfileComponent,
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'orders',
+    component: UserOrdersComponent,
     canActivate: [AuthGuard]
   },
   {

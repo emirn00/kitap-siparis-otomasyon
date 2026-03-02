@@ -188,5 +188,10 @@ export class OrderFormComponent implements OnInit {
   goToProfile(): void {
     this.router.navigate(['/profile']);
   }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }
 

@@ -1,0 +1,73 @@
+<div class="user-orders-container">
+  <!-- Back Button -->
+  <button class="back-button" type="button" (click)="goBack()">
+    ← {{ 'backBtn' | translate }}
+  </button>
+
+  <div class="hueber-header">
+    <div class="logo-container">
+      <h1 class="hueber-logo">HUEBER</h1>
+      <h2 class="header-subtitle">{{ 'myOrdersTitle' | translate }}</h2>
+    </div>
+  </div>
+
+  <mat-card class="orders-card">
+    <mat-card-content>
+      <div class="orders-header">
+        <h2 class="orders-title">{{ 'myOrdersSectionTitle' | translate }}</h2>
+        <p class="orders-subtitle">{{ 'myOrdersSectionDesc' | translate }}</p>
+      </div>
+
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>{{ 'loading' | translate }}</p>
+      </div>
+
+      <div *ngIf="error && !loading" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+
+      <div *ngIf="!loading && !error && orders.length > 0" class="orders-list">
+        <mat-card class="order-item" *ngFor="let order of orders">
+          <mat-card-content>
+            <div class="order-main">
+              <div class="order-meta">
+                <div class="meta-row">
+                  <span class="meta-label">{{ 'dateLabel' | translate }}:</span>
+                  <span class="meta-value">{{ formatDate(order.createdAt) }}</span>
+                </div>
+                <div class="meta-row" *ngIf="order.institution">
+                  <span class="meta-label">{{ 'schoolLabel' | translate }}:</span>
+                  <span class="meta-value">{{ order.institution }}</span>
+                </div>
+                <div class="meta-row" *ngIf="order.city">
+                  <span class="meta-label">{{ 'cityLabel' | translate }}:</span>
+                  <span class="meta-value">{{ order.city }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label">{{ 'status' | translate }}:</span>
+                  <span class="meta-value status-chip">{{ getStatusLabel(order.status) }}</span>
+                </div>
+              </div>
+              <div class="order-books">
+                <div class="books-label">{{ 'selectedBooksLabel' | translate }}</div>
+                <ul class="books-list" *ngIf="order.books.length > 0; else noBooks">
+                  <li *ngFor="let book of order.books">{{ book }}</li>
+                </ul>
+                <ng-template #noBooks>
+                  <div class="no-books">{{ 'noBooksSelected' | translate }}</div>
+                </ng-template>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div *ngIf="!loading && !error && orders.length === 0" class="empty-state">
+        <p>{{ 'myOrdersEmpty' | translate }}</p>
+        <p class="empty-hint">{{ 'myOrdersEmptyHint' | translate }}</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
+

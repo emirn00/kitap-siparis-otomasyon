@@ -8,17 +8,22 @@
   position: relative;
 }
 
-// Profile Button - Sağ üst köşede yuvarlak buton
-.profile-button {
+.top-right-buttons {
   position: fixed;
   top: 1.5rem;
   right: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  z-index: 1000;
+}
+
+// Profile Button - Sağ üst köşede yuvarlak buton
+.profile-button {
   width: 56px;
   height: 56px;
   border-radius: 50%;
   background: #d32f2f;
   color: white;
-  z-index: 1000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   display: flex;
@@ -50,6 +55,23 @@
 
   &:active {
     transform: scale(0.95);
+  }
+}
+
+.orders-button {
+  background: white;
+  color: #d32f2f;
+  border-radius: 999px;
+  border: 2px solid #d32f2f;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #d32f2f;
+    color: white;
   }
 }
 
@@ -93,7 +115,8 @@
       display: block;
     }
 
-    .help-link {
+    .help-link,
+    .logout-btn {
       color: white;
       text-decoration: none;
       font-size: 1rem;
@@ -103,6 +126,9 @@
       transition: all 0.3s ease;
       display: inline-block;
       margin-top: 0.5rem;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
 
       &:hover {
         background: white;
