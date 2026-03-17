@@ -1,4 +1,4 @@
-package kitap_siparis_otomasyon.backend.mail;
+package kitap_siparis_otomasyon.backend.mail.config;
 
 import lombok.Getter;
 import lombok.Setter;
