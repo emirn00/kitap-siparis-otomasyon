@@ -19,3 +19,8 @@ spring:
 jwt:
   secret: "N4pFv0mYkYyKzN9v+6xQp2mYk6l2r9b0J1zR8mZpA7E="
   expiration: 86400000
+
+mailgun:
+  api-key: "ask-me-later"
+  domain: "ask-me-later"
+  from: "emirnar2701@gmail.com"

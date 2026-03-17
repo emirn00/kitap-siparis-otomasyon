@@ -74,6 +74,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/mail/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
                         .anyRequest().authenticated())
