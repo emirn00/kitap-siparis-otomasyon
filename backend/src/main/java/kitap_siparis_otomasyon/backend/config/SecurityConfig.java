@@ -77,6 +77,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/mail/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
+                        .requestMatchers("/api/chatbot/**").authenticated()
                         .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtAuthenticationFilter(),

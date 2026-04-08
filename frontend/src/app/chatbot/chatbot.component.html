@@ -1,0 +1,48 @@
+<div class="chatbot-container" [class.open]="isOpen">
+  <!-- Trigger Button -->
+  <button class="chat-trigger" (click)="toggleChat()">
+    <i class="fas" [class.fa-comments]="!isOpen" [class.fa-times]="isOpen"></i>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window shadow-xl border border-gray-200" *ngIf="isOpen">
+    <div class="chat-header bg-primary text-white p-4 flex justify-between items-center rounded-t-xl">
+      <div class="flex items-center gap-2">
+        <div class="bot-icon">🤖</div>
+        <span class="font-bold">Kitapçı Asistanı</span>
+      </div>
+      <button class="close-btn" (click)="toggleChat()">✖</button>
+    </div>
+
+    <div class="chat-messages p-4 overflow-y-auto" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+      <div *ngFor="let msg of messages" class="message-wrapper" [class.user]="msg.sender === 'user'">
+        <div class="message shadow-sm" [class.user]="msg.sender === 'user'">
+          <p>{{ msg.text }}</p>
+          <span class="time">{{ msg.timestamp | date:'HH:mm' }}</span>
+        </div>
+      </div>
+      <div *ngIf="isLoading" class="message-wrapper">
+        <div class="message bot loading">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input p-4 border-t flex gap-2">
+      <input 
+        type="text" 
+        [(ngModel)]="currentMessage" 
+        (keyup.enter)="sendMessage()"
+        placeholder="Bir şeyler sorun..."
+        class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+      >
+      <button 
+        class="send-btn bg-primary text-white rounded-full p-2 w-10 h-10 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
+        (click)="sendMessage()"
+        [disabled]="isLoading || !currentMessage.trim()"
+      >
+        <i class="fas fa-paper-plane text-sm"></i>
+      </button>
+    </div>
+  </div>
+</div>

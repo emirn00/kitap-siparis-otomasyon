@@ -24,3 +24,7 @@ mailgun:
   api-key: "ask-me-later"
   domain: "ask-me-later"
   from: "emirnar2701@gmail.com"
+
+deepseek:
+  api-key: "ask-me-later"
+  api-url: "https://api.deepseek.com/v1"

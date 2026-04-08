@@ -43,6 +43,7 @@ import { AdminBulkMailComponent } from './admin-bulk-mail/admin-bulk-mail.compon
 import { UserOrdersComponent } from './user-orders/user-orders.component';
 import { BookCardComponent } from './admin-books/components/book-card/book-card.component';
 import { TranslatePipe } from './i18n/translate.pipe';
+import { ChatbotComponent } from './chatbot/chatbot.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { TranslatePipe } from './i18n/translate.pipe';
     AdminLisencodeCsvComponent,
     AdminBulkMailComponent,
     UserOrdersComponent,
-    BookCardComponent
+    BookCardComponent,
+    ChatbotComponent
   ],
   imports: [
     BrowserModule,
