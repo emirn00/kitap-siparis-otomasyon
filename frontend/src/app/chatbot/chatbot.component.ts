@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ChatbotService, ChatbotResponse } from './chatbot.service';
+import { AuthService } from '../auth/auth.service';
 
 interface Message {
   text: string;
@@ -14,13 +15,19 @@ interface Message {
 })
 export class ChatbotComponent {
   isOpen = false;
+  isAdmin = false;
   messages: Message[] = [
     { text: 'Merhaba! Ben Kitapçı Asistanı. Size nasıl yardımcı olabilirim?', sender: 'bot', timestamp: new Date() }
   ];
   currentMessage = '';
   isLoading = false;
 
-  constructor(private chatbotService: ChatbotService) {}
+  constructor(
+    private chatbotService: ChatbotService,
+    private authService: AuthService
+  ) {
+    this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+  }
 
   toggleChat() {
     this.isOpen = !this.isOpen;
