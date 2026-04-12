@@ -26,7 +26,13 @@ export class ChatbotComponent {
     private chatbotService: ChatbotService,
     private authService: AuthService
   ) {
+    // Initial check
     this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+    
+    // Reactive update
+    this.authService.loginState$.subscribe(isLoggedIn => {
+      this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+    });
   }
 
   toggleChat() {
