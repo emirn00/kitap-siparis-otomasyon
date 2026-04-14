@@ -1,13 +1,28 @@
 <div class="user-orders-container">
-  <!-- Back Button -->
-  <button class="back-button" type="button" (click)="goBack()">
-    ← {{ 'backBtn' | translate }}
-  </button>
-
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <button class="header-nav-btn" type="button" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> {{ 'backBtn' | translate }}
+      </button>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'myOrdersTitle' | translate }}</h2>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> {{ 'logout' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="welcome-section">
+    <div class="welcome-greeting">
+      <h2 class="welcome-title">Hoş Geldin, <span class="name">{{ userName }}</span> 👋</h2>
+      <div class="datetime-info">
+        <span class="date-badge"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
+        <span class="time-badge"><i class="fas fa-clock"></i> {{ currentTime }}</span>
+      </div>
     </div>
   </div>
 

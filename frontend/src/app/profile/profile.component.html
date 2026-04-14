@@ -1,15 +1,16 @@
 <div class="profile-container">
-  <!-- Back Button -->
-  <button class="back-button" (click)="goBack()" [attr.aria-label]="'backBtn' | translate" type="button">
-    ← {{ 'backBtn' | translate }}
-  </button>
-
   <!-- Hueber Header -->
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <button class="header-nav-btn" (click)="goBack()" type="button">
+        <i class="fas fa-arrow-left"></i> {{ 'backBtn' | translate }}
+      </button>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'profileMy' | translate }}</h2>
     </div>
+    <div class="header-spacer"></div>
   </div>
 
   <mat-card class="profile-card">

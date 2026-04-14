@@ -1,15 +1,26 @@
 <div class="admin-container">
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-spacer"></div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'adminPanel' | translate }}</h2>
-      <button type="button" class="logout-btn" (click)="logout()">{{ 'logout' | translate }}</button>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> {{ 'logout' | translate }}
+      </button>
     </div>
   </div>
 
   <div class="dashboard-container">
     <div class="welcome-section">
-      <h2 class="welcome-title">{{ 'welcome' | translate }}</h2>
+      <div class="welcome-greeting">
+        <h2 class="welcome-title">Hoş Geldin, <span class="name">{{ userName }}</span> 👋</h2>
+        <div class="datetime-info">
+          <span class="date-badge"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
+          <span class="time-badge"><i class="fas fa-clock"></i> {{ currentTime }}</span>
+        </div>
+      </div>
       <p class="welcome-subtitle">{{ 'welcomeSub' | translate }}</p>
     </div>
 

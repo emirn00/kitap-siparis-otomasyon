@@ -1,18 +1,31 @@
 <div class="order-form-container">
-  <div class="top-right-buttons">
-    <button class="profile-button" (click)="goToProfile()" [attr.aria-label]="'profile' | translate" type="button">
-      {{ 'profile' | translate }}
-    </button>
-    <button class="orders-button" routerLink="/orders" type="button">
-      {{ 'myOrdersButton' | translate }}
-    </button>
-  </div>
-
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <button class="header-nav-btn" (click)="goToProfile()" type="button">
+        <i class="fas fa-user-circle"></i> {{ 'profile' | translate }}
+      </button>
+      <button class="header-nav-btn" routerLink="/orders" type="button">
+        <i class="fas fa-box-open"></i> {{ 'myOrdersButton' | translate }}
+      </button>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'orderTitle' | translate }}</h2>
-      <button type="button" class="help-link logout-btn" (click)="logout()">{{ 'logout' | translate }}</button>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="logout-btn" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> {{ 'logout' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="welcome-section">
+    <div class="welcome-greeting">
+      <h2 class="welcome-title">Hoş Geldin, <span class="name">{{ userName }}</span> 👋</h2>
+      <div class="datetime-info">
+        <span class="date-badge"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
+        <span class="time-badge"><i class="fas fa-clock"></i> {{ currentTime }}</span>
+      </div>
     </div>
   </div>
 

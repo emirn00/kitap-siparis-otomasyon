@@ -1,22 +1,32 @@
-<div class="chatbot-container" [class.open]="isOpen" *ngIf="isAdmin">
-  <!-- Trigger Button -->
-  <button class="chat-trigger" (click)="toggleChat()">
+<ng-container *ngIf="isAdmin">
+  <!-- FAB Trigger Button -->
+  <button class="chat-trigger" (click)="toggleChat()" [class.active]="isOpen" title="Asistan">
     <i class="fas" [class.fa-comments]="!isOpen" [class.fa-times]="isOpen"></i>
   </button>
 
-  <!-- Chat Window -->
-  <div class="chat-window shadow-xl border border-gray-200" *ngIf="isOpen">
-    <div class="chat-header text-white p-4 flex justify-between items-center">
+  <!-- Backdrop -->
+  <div class="chat-backdrop" [class.visible]="isOpen" (click)="toggleChat()"></div>
+
+  <!-- Side Drawer -->
+  <div class="chat-drawer" [class.open]="isOpen">
+    <!-- Header -->
+    <div class="chat-header">
       <div class="bot-info">
-        <div class="bot-icon">🤖</div>
-        <span class="bot-name">Kitapçı Asistanı</span>
+        <div class="bot-avatar">🤖</div>
+        <div class="bot-details">
+          <span class="bot-name">Kitapçı Asistanı</span>
+          <span class="bot-status"><span class="status-dot"></span>Çevrimiçi</span>
+        </div>
       </div>
-      <button class="close-btn" (click)="toggleChat()">✖</button>
+      <button class="close-btn" (click)="toggleChat()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
 
-    <div class="chat-messages p-4 overflow-y-auto" #scrollMe [scrollTop]="scrollMe.scrollHeight">
+    <!-- Messages -->
+    <div class="chat-messages" #scrollMe [scrollTop]="scrollMe.scrollHeight">
       <div *ngFor="let msg of messages" class="message-wrapper" [class.user]="msg.sender === 'user'">
-        <div class="message shadow-sm" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
+        <div class="message" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
           <p>{{ msg.text }}</p>
           <span class="time">{{ msg.timestamp | date:'HH:mm' }}</span>
         </div>
@@ -28,21 +38,34 @@
       </div>
     </div>
 
-    <div class="chat-input p-4 flex gap-2">
-      <input 
-        type="text" 
-        [(ngModel)]="currentMessage" 
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <span class="quick-label">Hızlı Sorular:</span>
+      <div class="chips">
+        <button
+          *ngFor="let action of quickActions"
+          class="chip"
+          (click)="sendQuickAction(action.message)"
+          [disabled]="isLoading"
+        >{{ action.label }}</button>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+      <input
+        type="text"
+        [(ngModel)]="currentMessage"
         (keyup.enter)="sendMessage()"
         placeholder="Bir şeyler sorun..."
-        class="flex-1 px-4 py-2 focus:outline-none"
       >
-      <button 
-        class="send-btn text-white rounded-xl p-2 w-10 h-10 flex items-center justify-center transition-all active:scale-95"
+      <button
+        class="send-btn"
         (click)="sendMessage()"
         [disabled]="isLoading || !currentMessage.trim()"
       >
-        <i class="fas fa-paper-plane text-sm"></i>
+        <i class="fas fa-paper-plane"></i>
       </button>
     </div>
   </div>
-</div>
+</ng-container>

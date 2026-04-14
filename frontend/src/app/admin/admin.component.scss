@@ -11,24 +11,27 @@
 .hueber-header {
   width: 100%;
   background: #d32f2f;
-  padding: 2rem 0;
+  padding: 1.5rem 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
 
-  .logo-container {
+  .header-spacer {
+    flex: 1;
+  }
+
+  .header-center {
+    flex: 0 0 auto;
     text-align: center;
-    width: 100%;
-    padding: 0 1rem;
 
     .hueber-logo {
       color: white;
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: 700;
       letter-spacing: 0.2rem;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.25rem 0;
       padding: 0;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       line-height: 1.2;
@@ -37,49 +40,47 @@
 
     .header-subtitle {
       color: white;
-      font-size: 1.2rem;
+      font-size: 1rem;
       font-weight: 400;
-      margin: 0 0 1rem 0;
+      margin: 0;
       padding: 0;
       letter-spacing: 0.05rem;
-      opacity: 0.95;
+      opacity: 0.9;
       line-height: 1.4;
       display: block;
     }
+  }
 
-    .help-link {
-      color: white;
-      text-decoration: none;
-      font-size: 1rem;
-      padding: 0.5rem 1.5rem;
-      border: 2px solid white;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-      display: inline-block;
-      margin-top: 0.5rem;
-      margin-right: 0.75rem;
-
-      &:hover {
-        background: white;
-        color: #d32f2f;
-      }
-    }
+  .header-actions {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 
     .logout-btn {
-      margin-top: 0.5rem;
-      padding: 0.5rem 1.5rem;
-      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.95rem;
       font-weight: 600;
-      border: 2px solid white;
-      border-radius: 4px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 8px;
       background: transparent;
       color: white;
       cursor: pointer;
       transition: all 0.3s ease;
+      letter-spacing: 0.02rem;
+
+      i {
+        font-size: 0.9rem;
+      }
 
       &:hover {
         background: white;
         color: #d32f2f;
+        border-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       }
     }
   }
@@ -88,29 +89,70 @@
 .dashboard-container {
   max-width: 1400px;
   width: 100%;
-  padding: 0 2rem 2rem 2rem;
+  padding: 1.75rem 2rem 2rem 2rem;
 }
 
 .welcome-section {
-  text-align: center;
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: white;
+  padding: 1.1rem 1.75rem;
+  background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  .welcome-greeting {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
 
   .welcome-title {
-    color: #d32f2f;
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
+    color: #222;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+
+    span.name {
+      color: #d32f2f;
+      font-weight: 700;
+    }
+  }
+
+  .datetime-info {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .date-badge,
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #f5f5f5;
+      color: #555;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 0.28rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+
+      i {
+        font-size: 0.72rem;
+        color: #d32f2f;
+        opacity: 0.9;
+      }
+    }
   }
 
   .welcome-subtitle {
-    color: #666;
-    font-size: 1rem;
+    color: #999;
+    font-size: 0.85rem;
     margin: 0;
-    line-height: 1.6;
   }
 }
 
@@ -162,17 +204,43 @@
   }
 
   .hueber-header {
-    padding: 1.5rem 0;
+    padding: 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
 
-    .logo-container {
+    .header-spacer {
+      display: none;
+    }
+
+    .header-center {
+      flex: 1;
+      text-align: left;
+
       .hueber-logo {
-        font-size: 2rem;
+        font-size: 1.75rem;
       }
 
       .header-subtitle {
-        font-size: 1rem;
-        padding: 0 1rem;
+        font-size: 0.85rem;
       }
+    }
+
+    .header-actions {
+      flex: 0 0 auto;
+
+      .logout-btn {
+        padding: 0.4rem 0.9rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  .welcome-section {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .welcome-subtitle {
+      text-align: left;
     }
   }
 

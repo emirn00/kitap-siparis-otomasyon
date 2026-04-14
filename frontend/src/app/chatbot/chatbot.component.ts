@@ -22,21 +22,32 @@ export class ChatbotComponent {
   currentMessage = '';
   isLoading = false;
 
+  quickActions = [
+    { label: '📚 Kitap öner', message: 'Bana kitap önerir misin?' },
+    { label: '🕐 Çalışma saatleri', message: 'Çalışma saatleri nedir?' },
+    { label: '📦 Sipariş durumu', message: 'Sipariş durumunu nasıl sorgularım?' },
+    { label: '🆕 Yeni eklemeler', message: 'Son eklenen kitaplar neler?' },
+    { label: '❓ Yardım', message: 'Neler yapabilirsin?' },
+  ];
+
   constructor(
     private chatbotService: ChatbotService,
     private authService: AuthService
   ) {
-    // Initial check
     this.isAdmin = this.authService.getUserRole() === 'ADMIN';
-    
-    // Reactive update
-    this.authService.loginState$.subscribe(isLoggedIn => {
+
+    this.authService.loginState$.subscribe(() => {
       this.isAdmin = this.authService.getUserRole() === 'ADMIN';
     });
   }
 
   toggleChat() {
     this.isOpen = !this.isOpen;
+  }
+
+  sendQuickAction(message: string) {
+    this.currentMessage = message;
+    this.sendMessage();
   }
 
   sendMessage() {

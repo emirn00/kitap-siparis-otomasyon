@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatCheckboxChange } from '@angular/material/checkbox';
@@ -22,10 +22,19 @@ export interface Book {
   templateUrl: './order-form.component.html',
   styleUrls: ['./order-form.component.scss']
 })
-export class OrderFormComponent implements OnInit {
+export class OrderFormComponent implements OnInit, OnDestroy {
   orderForm!: FormGroup;
   showSummary = false;
   userInfo: { email: string; fullName: string; phoneNumber: string } | null = null;
+  userName = '';
+  currentDate = '';
+  currentTime = '';
+  private timer: any;
+
+  private readonly MONTHS = [
+    'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+    'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+  ];
 
   /** GET /api/books ile API'den çekilen kitaplar */
   books: Book[] = [];
@@ -49,6 +58,9 @@ export class OrderFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.userInfo = this.authService.getUserInfo();
+    this.userName = this.userInfo?.fullName ?? 'Kullanıcı';
+    this.updateDateTime();
+    this.timer = setInterval(() => this.updateDateTime(), 1000);
 
     this.orderForm = this.fb.group({
       school: ['', [Validators.required]],
@@ -58,6 +70,16 @@ export class OrderFormComponent implements OnInit {
     });
 
     this.loadBooksFromApi();
+  }
+
+  ngOnDestroy(): void {
+    if (this.timer) clearInterval(this.timer);
+  }
+
+  private updateDateTime(): void {
+    const now = new Date();
+    this.currentDate = `${now.getDate()} ${this.MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+    this.currentTime = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
   /** Kitapları GET /api/books ile API'den çeker (giriş yapmış kullanıcı token ile istek atar) */

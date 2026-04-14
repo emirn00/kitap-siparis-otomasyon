@@ -6,47 +6,149 @@
   align-items: center;
 }
 
-.back-button {
-  position: fixed;
-  top: 4.5rem;
-  left: 1.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  border: none;
-  background: #ffffff;
-  color: #d32f2f;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  cursor: pointer;
-  font-weight: 500;
-}
-
 .hueber-header {
   width: 100%;
   background: #d32f2f;
-  padding: 2rem 0;
+  padding: 1.25rem 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+  gap: 1rem;
 
-  .logo-container {
+  .header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    i { font-size: 0.8rem; }
+
+    &:hover {
+      background: white;
+      color: #d32f2f;
+      border-color: white;
+    }
+  }
+
+  .header-center {
+    flex: 0 0 auto;
     text-align: center;
-    width: 100%;
-    padding: 0 1rem;
 
     .hueber-logo {
       color: white;
-      font-size: 3rem;
+      font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: 0.2rem;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.15rem 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      display: block;
     }
 
     .header-subtitle {
       color: white;
-      font-size: 1.2rem;
+      font-size: 0.95rem;
+      font-weight: 400;
       margin: 0;
+      opacity: 0.9;
+      display: block;
+    }
+  }
+
+  .header-actions {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      border-radius: 8px;
+      background: transparent;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      i { font-size: 0.85rem; }
+
+      &:hover {
+        background: white;
+        color: #d32f2f;
+        border-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+}
+
+.welcome-section {
+  width: 100%;
+  max-width: 900px;
+  padding: 1.1rem 1.75rem;
+  margin-bottom: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+
+  .welcome-greeting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .welcome-title {
+    color: #222;
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+
+    span.name {
+      color: #d32f2f;
+      font-weight: 700;
+    }
+  }
+
+  .datetime-info {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    .date-badge,
+    .time-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: #f5f5f5;
+      color: #555;
+      border: 1px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 0.28rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+
+      i { font-size: 0.72rem; color: #d32f2f; opacity: 0.9; }
     }
   }
 }
@@ -55,6 +157,7 @@
   max-width: 900px;
   width: 100%;
   margin: 0 2rem 2rem 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
 .orders-header {

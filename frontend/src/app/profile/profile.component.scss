@@ -8,74 +8,61 @@
   position: relative;
 }
 
-// Back Button - Sol üst köşede yuvarlak buton
-.back-button {
-  position: fixed;
-  top: 4.5rem;
-  left: 1.5rem;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #d32f2f;
-  color: white;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  line-height: 1;
-  vertical-align: middle;
-
-  mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    color: white;
-    display: block;
-    margin: 0;
-    padding: 0;
-  }
-
-  &:hover {
-    background: #b71c1c;
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
 // Hueber Header with Red Background
 .hueber-header {
   width: 100%;
   background: #d32f2f;
-  padding: 2rem 0;
+  padding: 1.25rem 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
+  gap: 1rem;
 
-  .logo-container {
+  .header-left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-spacer {
+    flex: 1;
+  }
+
+  .header-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    i { font-size: 0.8rem; }
+
+    &:hover {
+      background: white;
+      color: #d32f2f;
+      border-color: white;
+    }
+  }
+
+  .header-center {
+    flex: 0 0 auto;
     text-align: center;
-    width: 100%;
-    padding: 0 1rem;
 
     .hueber-logo {
       color: white;
-      font-size: 3rem;
+      font-size: 2.2rem;
       font-weight: 700;
       letter-spacing: 0.2rem;
-      margin: 0 0 0.5rem 0;
-      padding: 0;
+      margin: 0 0 0.15rem 0;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       line-height: 1.2;
       display: block;
@@ -83,13 +70,10 @@
 
     .header-subtitle {
       color: white;
-      font-size: 1.2rem;
+      font-size: 0.95rem;
       font-weight: 400;
       margin: 0;
-      padding: 0;
-      letter-spacing: 0.05rem;
-      opacity: 0.95;
-      line-height: 1.4;
+      opacity: 0.9;
       display: block;
     }
   }
@@ -279,32 +263,12 @@ mat-card-content {
     padding: 0;
   }
 
-  .back-button {
-    top: 1rem;
-    left: 1rem;
-    width: 48px;
-    height: 48px;
-
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-      line-height: 28px;
-    }
-  }
-
   .hueber-header {
-    padding: 1.5rem 0;
+    padding: 1rem;
 
-    .logo-container {
-      .hueber-logo {
-        font-size: 2rem;
-      }
-
-      .header-subtitle {
-        font-size: 1rem;
-        padding: 0 1rem;
-      }
+    .header-center {
+      .hueber-logo { font-size: 1.75rem; }
+      .header-subtitle { font-size: 0.85rem; }
     }
   }
 
