@@ -10,111 +10,371 @@
     <div class="header-spacer"></div>
   </div>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <h2 class="section-title">{{ 'sendMailSectionTitle' | translate }}</h2>
-      <p class="section-description">
-        {{ 'sendMailSectionDesc' | translate }}
-      </p>
+  <!-- Success banner -->
+  <div class="success-banner" *ngIf="successMessage">
+    <i class="fas fa-check-circle"></i>
+    {{ successMessage }}
+  </div>
 
-      <div *ngIf="successMessage" class="alert alert-success">
-        <span>{{ successMessage }}</span>
+  <div class="workflow-grid">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         PANEL 1 — SİPARİŞLER
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="panel" [class.panel-ready]="selectedOrderCount > 0">
+      <div class="panel-header">
+        <div class="panel-step">1</div>
+        <div class="panel-title-group">
+          <h3 class="panel-title">{{ 'smPanelOrders' | translate }}</h3>
+          <span class="panel-subtitle">{{ 'smPanelOrdersDesc' | translate }}</span>
+        </div>
+        <div class="panel-status" *ngIf="selectedOrderCount > 0">
+          <i class="fas fa-check-circle"></i>
+          {{ selectedOrderCount }} {{ 'smOrdersSelected' | translate }}
+        </div>
       </div>
 
-      <div class="input-section">
-        <mat-form-field appearance="outline" class="emails-field">
-          <mat-label>{{ 'recipientEmailsLabel' | translate }}</mat-label>
-          <textarea
-            matInput
-            [(ngModel)]="emailsInput"
-            [ngModelOptions]="{ standalone: true }"
-            rows="4"
-            placeholder="ornek1@okul.edu.tr, ornek2@okul.edu.tr"></textarea>
-        </mat-form-field>
-        <button mat-raised-button color="primary" type="button" (click)="buildPreview()" class="build-preview-btn">
-          {{ 'buildPreview' | translate }}
+      <!-- Loading -->
+      <div class="panel-loading" *ngIf="ordersLoading">
+        <mat-spinner diameter="36"></mat-spinner>
+        <span>{{ 'loading' | translate }}</span>
+      </div>
+
+      <!-- Error -->
+      <div class="panel-error" *ngIf="ordersError && !ordersLoading">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ 'smOrdersError' | translate }}
+        <button class="retry-btn" (click)="loadOrders()">
+          <i class="fas fa-redo"></i> {{ 'smRetry' | translate }}
         </button>
       </div>
 
-      <div class="preview-section" *ngIf="previewRows.length > 0">
-        <h3 class="preview-title">{{ 'previewTitle' | translate }}</h3>
-        <div class="preview-table-wrap">
-          <table class="preview-table">
-            <thead>
-              <tr>
-                <th>{{ 'nameColumn' | translate }}</th>
-                <th>{{ 'email' | translate }}</th>
-                <th>{{ 'bookCodesColumn' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of previewRows; let i = index">
-                <td>
-                  <input
-                    class="table-input"
-                    [(ngModel)]="row.fullName"
-                    [ngModelOptions]="{ standalone: true }"
-                    [placeholder]="'namePlaceholder' | translate">
-                </td>
-                <td><span class="email-cell">{{ row.email }}</span></td>
-                <td>
-                  <input
-                    class="table-input table-input-codes"
-                    [(ngModel)]="row.bookCodes"
-                    [ngModelOptions]="{ standalone: true }"
-                    [placeholder]="'codesPlaceholder' | translate">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- Orders list -->
+      <div class="panel-body" *ngIf="!ordersLoading && !ordersError">
 
-        <div class="send-actions" *ngIf="!showConfirm && !showTestPreview">
-          <button mat-raised-button type="button" (click)="openTestPreview()" class="test-btn">
-            {{ 'testSendBtn' | translate }}
+        <!-- Status tabs -->
+        <div class="orders-tabs">
+          <button
+            class="orders-tab"
+            [class.tab-active]="ordersStatusFilter === 'PENDING'"
+            (click)="setOrdersFilter('PENDING')">
+            <i class="fas fa-clock"></i>
+            {{ 'smTabPending' | translate }}
+            <span class="tab-count pending-count">{{ pendingCount }}</span>
           </button>
-          <button mat-raised-button color="primary" type="button" (click)="openConfirm()" class="send-btn">
-            {{ 'sendMailBtn' | translate }}
+          <button
+            class="orders-tab"
+            [class.tab-active]="ordersStatusFilter === 'COMPLETED'"
+            (click)="setOrdersFilter('COMPLETED')">
+            <i class="fas fa-check-circle"></i>
+            {{ 'smTabCompleted' | translate }}
+            <span class="tab-count completed-count">{{ completedCount }}</span>
+          </button>
+          <button
+            class="orders-tab"
+            [class.tab-active]="ordersStatusFilter === 'ALL'"
+            (click)="setOrdersFilter('ALL')">
+            {{ 'smTabAll' | translate }}
+            <span class="tab-count">{{ allOrders.length }}</span>
           </button>
         </div>
 
-        <div class="test-preview-section" *ngIf="showTestPreview">
-          <h3 class="test-preview-title">{{ 'testSendTitle' | translate }}</h3>
-          <p class="test-preview-desc">{{ 'testSendDesc' | translate }}</p>
-          <div class="test-preview-list">
-            <div class="test-preview-card" *ngFor="let row of previewRows; let i = index">
-              <div class="test-preview-card-header">
-                <span class="test-preview-to">{{ 'testSendTo' | translate }} {{ i + 1 }}:</span>
-                <strong>{{ row.fullName }}</strong>
-                <span class="test-preview-email">({{ row.email }})</span>
+        <div class="orders-toolbar" *ngIf="orders.length > 0 && ordersStatusFilter !== 'COMPLETED'">
+          <span class="orders-total">{{ orders.length }} {{ 'smOrdersShown' | translate }}</span>
+          <div class="orders-toolbar-actions">
+            <button class="toolbar-link" (click)="toggleAllOrders(true)">{{ 'smSelectAll' | translate }}</button>
+            <span class="toolbar-sep">|</span>
+            <button class="toolbar-link" (click)="toggleAllOrders(false)">{{ 'smDeselectAll' | translate }}</button>
+          </div>
+        </div>
+
+        <div class="orders-list" *ngIf="orders.length > 0">
+          <div
+            class="order-row"
+            *ngFor="let o of orders"
+            [class.order-selected]="o.selected && o.status === 'PENDING'"
+            [class.order-completed]="o.status === 'COMPLETED'"
+            [class.order-non-selectable]="o.status !== 'PENDING'"
+            (click)="toggleOrder(o)">
+
+            <!-- Checkbox (only for PENDING) -->
+            <div class="order-check" *ngIf="o.status === 'PENDING'">
+              <div class="check-box" [class.checked]="o.selected">
+                <i class="fas fa-check" *ngIf="o.selected"></i>
               </div>
-              <div class="test-preview-bookcodes">
-                <span class="test-preview-label">{{ 'bookCodesColumn' | translate }}:</span>
-                <span class="test-preview-codes">{{ row.bookCodes || ('codesPlaceholder' | translate) }}</span>
+            </div>
+            <!-- Status icon (for COMPLETED) -->
+            <div class="order-status-icon" *ngIf="o.status === 'COMPLETED'">
+              <i class="fas fa-check-circle completed-icon"></i>
+            </div>
+
+            <div class="order-info">
+              <span class="order-name">{{ o.fullName }}</span>
+              <span class="order-email">{{ o.email }}</span>
+            </div>
+            <div class="order-books">
+              <span class="book-tag" *ngFor="let b of o.bookNames">{{ b }}</span>
+              <span class="completed-tag" *ngIf="o.status === 'COMPLETED'">
+                <i class="fas fa-paper-plane"></i>
+                {{ 'smSent' | translate }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-empty" *ngIf="orders.length === 0">
+          <i class="fas" [class.fa-inbox]="ordersStatusFilter === 'PENDING'" [class.fa-check-double]="ordersStatusFilter === 'COMPLETED'" [class.fa-list]="ordersStatusFilter === 'ALL'"></i>
+          <p>{{ ordersStatusFilter === 'COMPLETED' ? ('smNoCompleted' | translate) : ('smNoOrders' | translate) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         PANEL 2 — LİSANS CSV
+    ═══════════════════════════════════════════════════════════════ -->
+    <div class="panel" [class.panel-ready]="csvReady">
+      <div class="panel-header">
+        <div class="panel-step">2</div>
+        <div class="panel-title-group">
+          <h3 class="panel-title">{{ 'smPanelCsv' | translate }}</h3>
+          <span class="panel-subtitle">{{ 'smPanelCsvDesc' | translate }}</span>
+        </div>
+        <div class="panel-status" *ngIf="csvReady">
+          <i class="fas fa-check-circle"></i>
+          {{ csvDataRows.length }} {{ 'smCsvCodes' | translate }}
+        </div>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- Upload area -->
+        <div class="upload-area" [class.has-file]="csvFileName">
+          <input type="file" #csvInput accept=".csv" (change)="onFileSelected($event)" class="file-hidden">
+          <button class="upload-btn" (click)="csvInput.click()" [disabled]="csvLoading">
+            <i class="fas fa-cloud-upload-alt"></i>
+            {{ csvFileName ? ('smCsvReplace' | translate) : ('smCsvUpload' | translate) }}
+          </button>
+          <span class="file-name-badge" *ngIf="csvFileName">
+            <i class="fas fa-file-csv"></i>
+            {{ csvFileName }}
+          </span>
+        </div>
+
+        <div class="panel-error" *ngIf="csvError">
+          <i class="fas fa-exclamation-triangle"></i>
+          {{ 'smCsvError' | translate }}
+        </div>
+
+        <!-- Column mapping -->
+        <div class="col-mapping" *ngIf="csvHeaders.length > 0">
+          <h4 class="col-mapping-title">{{ 'smColMapping' | translate }}</h4>
+          <div class="col-mapping-row">
+            <div class="col-mapping-item">
+              <label class="col-label">
+                <i class="fas fa-book col-label-icon book-icon"></i>
+                {{ 'smBookNameCol' | translate }}
+              </label>
+              <select class="col-select" [(ngModel)]="csvBookCol" [ngModelOptions]="{standalone: true}">
+                <option [value]="-1">-- {{ 'smSelectCol' | translate }} --</option>
+                <option *ngFor="let h of csvHeaders; let i = index" [value]="i">{{ h || ('smColN' | translate) + ' ' + (i+1) }}</option>
+              </select>
+            </div>
+            <div class="col-mapping-item">
+              <label class="col-label">
+                <i class="fas fa-key col-label-icon key-icon"></i>
+                {{ 'smLicenseCodeCol' | translate }}
+              </label>
+              <select class="col-select" [(ngModel)]="csvCodeCol" [ngModelOptions]="{standalone: true}">
+                <option [value]="-1">-- {{ 'smSelectCol' | translate }} --</option>
+                <option *ngFor="let h of csvHeaders; let i = index" [value]="i">{{ h || ('smColN' | translate) + ' ' + (i+1) }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Book stats from CSV -->
+        <div class="csv-book-stats" *ngIf="csvReady && csvBookStats.length > 0">
+          <h4 class="csv-stats-title">{{ 'smCsvBooksFound' | translate }}</h4>
+          <div class="csv-stats-list">
+            <div class="csv-stat-row" *ngFor="let s of csvBookStats">
+              <span class="csv-stat-name">{{ s.name }}</span>
+              <span class="csv-stat-count">{{ s.count }} {{ 'smCodesAvail' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /workflow-grid -->
+
+  <!-- ══════════════════════════════════════════════════════════════
+       MATCH BUTTON
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="match-action-bar">
+    <div class="match-conditions">
+      <span class="condition" [class.met]="selectedOrderCount > 0">
+        <i class="fas" [class.fa-check-circle]="selectedOrderCount > 0" [class.fa-circle]="selectedOrderCount === 0"></i>
+        {{ selectedOrderCount }} {{ 'smOrdersSelected' | translate }}
+      </span>
+      <span class="condition" [class.met]="csvReady">
+        <i class="fas" [class.fa-check-circle]="csvReady" [class.fa-circle]="!csvReady"></i>
+        {{ 'smCsvCondition' | translate }}
+      </span>
+    </div>
+    <button
+      class="match-btn"
+      [disabled]="!csvReady || selectedOrderCount === 0"
+      (click)="runMatch()">
+      <i class="fas fa-magic"></i>
+      {{ 'smMatchBtn' | translate }}
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       PANEL 3 — ÖNİZLEME
+  ═══════════════════════════════════════════════════════════════ -->
+  <div class="panel preview-panel" *ngIf="matchDone">
+    <div class="panel-header">
+      <div class="panel-step">3</div>
+      <div class="panel-title-group">
+        <h3 class="panel-title">{{ 'smPanelPreview' | translate }}</h3>
+        <span class="panel-subtitle">{{ 'smPanelPreviewDesc' | translate }}</span>
+      </div>
+      <div class="preview-summary">
+        <span class="summary-badge matched">
+          <i class="fas fa-check-circle"></i>
+          {{ matchedCount }} {{ 'smFullMatch' | translate }}
+        </span>
+        <span class="summary-badge unmatched" *ngIf="unmatchedCount > 0">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ unmatchedCount }} {{ 'smPartialMatch' | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- Preview cards -->
+      <div class="preview-list">
+        <div
+          class="preview-card"
+          *ngFor="let row of mailRows"
+          [class.card-all-matched]="row.allMatched"
+          [class.card-partial]="!row.allMatched"
+          [class.card-excluded]="!row.include">
+
+          <div class="preview-card-header">
+            <div class="preview-card-left">
+              <div class="preview-check" (click)="row.include = !row.include" [class.preview-check-on]="row.include">
+                <i class="fas fa-check" *ngIf="row.include"></i>
+              </div>
+              <div class="preview-instructor">
+                <div class="preview-avatar" [class.avatar-partial]="!row.allMatched">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                  <div class="preview-name">{{ row.fullName }}</div>
+                  <div class="preview-email"><i class="fas fa-envelope"></i> {{ row.email }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="preview-card-badges">
+              <span class="match-badge" [class.badge-ok]="row.allMatched" [class.badge-warn]="!row.allMatched">
+                <i class="fas" [class.fa-check-circle]="row.allMatched" [class.fa-exclamation-circle]="!row.allMatched"></i>
+                {{ row.books.length }} {{ 'smBooks' | translate }}
+              </span>
+              <span class="exclude-note" *ngIf="!row.include">{{ 'smExcluded' | translate }}</span>
+            </div>
+          </div>
+
+          <div class="preview-divider"></div>
+
+          <div class="preview-books">
+            <div class="preview-book-row" *ngFor="let book of row.books">
+              <div class="preview-book-name">
+                <span class="book-num"></span>
+                <span>{{ book.name }}</span>
+              </div>
+              <div class="preview-book-code" *ngIf="book.code">
+                <code class="license-snippet">{{ book.code }}</code>
+              </div>
+              <div class="preview-book-no-code" *ngIf="!book.code">
+                <i class="fas fa-times-circle"></i>
+                {{ 'smNoCodeFound' | translate }}
               </div>
             </div>
           </div>
-          <button mat-button type="button" (click)="closeTestPreview()" class="test-close-btn">
-            {{ 'testSendClose' | translate }}
-          </button>
-        </div>
 
-        <div class="confirm-box" *ngIf="showConfirm">
-          <p class="confirm-text">{{ 'confirmSendText' | translate }}</p>
-          <div class="confirm-actions">
-            <button mat-raised-button color="primary" type="button" (click)="confirmSend()">
-              {{ 'yesSend' | translate }}
-            </button>
-            <button mat-button type="button" (click)="cancelSend()">
-              {{ 'cancel' | translate }}
-            </button>
-          </div>
         </div>
       </div>
 
-      <div class="empty-preview" *ngIf="previewRows.length === 0 && !successMessage">
-        <p>{{ 'emptyPreviewHint' | translate }}</p>
+      <!-- Send action -->
+      <div class="send-action-row">
+        <span class="send-info">
+          {{ includedCount }} {{ 'smWillSend' | translate }}
+        </span>
+        <button
+          class="send-final-btn"
+          [disabled]="includedCount === 0"
+          (click)="openSendModal()">
+          <i class="fas fa-paper-plane"></i>
+          {{ 'sendMailBtn' | translate }}
+        </button>
       </div>
-    </mat-card-content>
-  </mat-card>
+
+    </div>
+  </div>
+
+</div><!-- /admin-container -->
+
+<!-- ══════════════════════════════════════════════════════════════
+     SEND CONFIRMATION MODAL
+═══════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" *ngIf="showSendModal" (click)="closeSendModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="fas fa-paper-plane"></i>
+        {{ 'smConfirmTitle' | translate }}
+      </div>
+      <button class="modal-close-btn" (click)="closeSendModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-desc">{{ 'smConfirmDesc' | translate }}</p>
+      <div class="modal-summary">
+        <div class="modal-sum-row">
+          <i class="fas fa-users"></i>
+          <span><strong>{{ includedCount }}</strong> {{ 'smRecipients' | translate }}</span>
+        </div>
+        <div class="modal-sum-row">
+          <i class="fas fa-key"></i>
+          <span>
+            <strong>{{ totalIncludedCodes }}</strong> {{ 'smTotalCodes' | translate }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Per-recipient summary -->
+      <div class="modal-recipients">
+        <div class="modal-recipient-row" *ngFor="let row of mailRows" [class.excluded]="!row.include">
+          <i class="fas fa-envelope-open-text" *ngIf="row.include"></i>
+          <i class="fas fa-ban excluded-icon" *ngIf="!row.include"></i>
+          <span class="modal-rec-name">{{ row.fullName }}</span>
+          <span class="modal-rec-email">{{ row.email }}</span>
+          <span class="modal-rec-count" *ngIf="row.include">{{ row.books.length }} {{ 'smBooks' | translate }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="send-error" *ngIf="sendError">
+        <i class="fas fa-exclamation-circle"></i> {{ sendError }}
+      </div>
+      <button class="modal-cancel-btn" (click)="closeSendModal()" [disabled]="sending">{{ 'cancel' | translate }}</button>
+      <button class="modal-send-btn" (click)="confirmSend()" [disabled]="sending">
+        <span *ngIf="!sending"><i class="fas fa-paper-plane"></i> {{ 'yesSend' | translate }}</span>
+        <span *ngIf="sending"><i class="fas fa-spinner fa-spin"></i> {{ 'loading' | translate }}</span>
+      </button>
+    </div>
+  </div>
 </div>
