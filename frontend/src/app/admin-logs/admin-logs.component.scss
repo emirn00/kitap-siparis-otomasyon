@@ -1,155 +1,459 @@
 @import '../admin-users/admin-users.component.scss';
 
-.logs-container {
+// ─── Filters Row Override ─────────────────────────────────────────────────────
+
+.filters-row {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 2rem;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+
+  .search-field {
+    flex: 2;
+    min-width: 180px;
+  }
+
+  .level-field {
+    flex: 1;
+    min-width: 120px;
+    max-width: 160px;
+  }
 }
 
-.log-entry {
-  padding: 1.5rem;
+.date-field {
+  flex: 1;
+  min-width: 140px;
+  max-width: 180px;
+}
+
+.clear-date-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid #ffcdd2;
   border-radius: 8px;
-  border-left: 4px solid;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  background: #fff5f5;
+  color: #c62828;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 4px;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateX(4px);
-  }
-
-  &.log-info {
-    border-left-color: #2196f3;
-    background: #e3f2fd;
-  }
-
-  &.log-warning {
-    border-left-color: #ff9800;
-    background: #fff3e0;
-  }
-
-  &.log-error {
-    border-left-color: #f44336;
     background: #ffebee;
-  }
-
-  &.log-success {
-    border-left-color: #4caf50;
-    background: #e8f5e9;
-  }
-}
-
-.log-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.log-level {
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-transform: uppercase;
-
-  &.level-info {
-    background: #2196f3;
-    color: white;
-  }
-
-  &.level-warning {
-    background: #ff9800;
-    color: white;
-  }
-
-  &.level-error {
-    background: #f44336;
-    color: white;
-  }
-
-  &.level-success {
-    background: #4caf50;
-    color: white;
-  }
-}
-
-.log-date {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.log-message {
-  color: #333;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  line-height: 1.5;
-}
-
-.log-details {
-  color: #666;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-
-  strong {
-    color: #d32f2f;
-  }
-}
-
-.log-meta {
-  display: flex;
-  gap: 1.5rem;
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  flex-wrap: wrap;
-}
-
-.log-user,
-.log-action {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #666;
-  font-size: 0.85rem;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: #d32f2f;
-  }
-}
-
-.stats-row {
-  .stat-card.info {
-    background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
-  }
-
-  .stat-card.warning {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-  }
-
-  .stat-card.error {
-    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+    border-color: #ef9a9a;
   }
 }
 
 @media (max-width: 768px) {
-  .log-header {
+  .filters-row {
+    flex-direction: column;
+
+    .search-field,
+    .level-field,
+    .date-field {
+      max-width: 100%;
+      flex: unset;
+      width: 100%;
+    }
+  }
+
+  .clear-date-btn {
+    width: 100%;
+    height: 36px;
+  }
+}
+
+// ─── Mail Logs List ──────────────────────────────────────────────────────────
+
+.mail-logs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+// ─── Mail Summary Card ───────────────────────────────────────────────────────
+
+.mail-summary-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+
+  &:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  &.error-card {
+    border-left: 4px solid #ef5350;
+  }
+
+  &:not(.error-card) {
+    border-left: 4px solid #43a047;
+  }
+}
+
+// ─── Card Header ─────────────────────────────────────────────────────────────
+
+.mail-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.instructor-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.instructor-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+
+  i {
+    color: #fff;
+    font-size: 1.2rem;
+  }
+
+  &.error-avatar {
+    background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+    box-shadow: 0 2px 8px rgba(239, 83, 80, 0.3);
+  }
+}
+
+.instructor-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.instructor-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.instructor-email {
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  i {
+    color: #d32f2f;
+    font-size: 0.8rem;
+  }
+}
+
+.mail-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.badge-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+
+    i { color: #43a047; }
+  }
+
+  &.badge-error {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+
+    i { color: #ef5350; }
+  }
+}
+
+.sent-date,
+.book-count-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #777;
+  white-space: nowrap;
+
+  i {
+    color: #bbb;
+    font-size: 0.8rem;
+  }
+}
+
+.book-count-badge {
+  background: #f5f5f5;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+
+  i { color: #d32f2f; }
+}
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+
+.mail-card-divider {
+  height: 1px;
+  background: linear-gradient(to right, #f5f5f5, #e0e0e0, #f5f5f5);
+  margin: 0 1.5rem;
+}
+
+// ─── Books List ───────────────────────────────────────────────────────────────
+
+.books-list {
+  padding: 0.75rem 1.5rem 1.25rem;
+}
+
+.books-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #aaa;
+}
+
+.book-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  gap: 1rem;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #fafafa;
+  }
+
+  & + .book-row {
+    border-top: 1px solid #f0f0f0;
+  }
+}
+
+.book-name {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.book-index {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.book-title {
+  font-size: 0.92rem;
+  color: #2c2c2c;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ─── License Key / Code Snippet ───────────────────────────────────────────────
+
+.license-key-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.license-code {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #c62828;
+  background: #fff5f5;
+  border: 1px solid #ffcdd2;
+  border-radius: 6px;
+  padding: 0.3rem 0.7rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  user-select: all;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+  color: #777;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  i { font-size: 0.8rem; }
+
+  &:hover {
+    background: #f5f5f5;
+    border-color: #ccc;
+    color: #333;
+  }
+
+  &.copied {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+    color: #2e7d32;
+  }
+}
+
+// ─── Stat Card Overrides ──────────────────────────────────────────────────────
+
+.stats-row {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.9rem 0.75rem;
+
+    .stat-icon {
+      font-size: 1.1rem;
+      opacity: 0.85;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    &.books {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    }
+
+    &.success {
+      background: linear-gradient(135deg, #43a047 0%, #2e7d32 100%);
+    }
+
+    &.error {
+      background: linear-gradient(135deg, #ef5350 0%, #c62828 100%);
+    }
+  }
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #bbb;
+
+  .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    color: #999;
+  }
+
+  .empty-hint {
+    font-size: 0.9rem;
+    color: #bbb;
+  }
+}
+
+// ─── Responsive ───────────────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .mail-card-header {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .log-meta {
+  .mail-card-meta {
+    width: 100%;
+  }
+
+  .book-row {
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.5rem;
+  }
+
+  .license-key-section {
+    width: 100%;
+
+    .license-code {
+      flex: 1;
+    }
+  }
+
+  .books-list-header span:last-child {
+    display: none;
   }
 }

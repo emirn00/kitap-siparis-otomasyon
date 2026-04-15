@@ -18,9 +18,32 @@ export class AdminBooksComponent implements OnInit {
   updateError: string | null = null;
   deletingBookId: string | null = null;
   deleteError: string | null = null;
-  /** GET /api/books listesi yükleniyor mu */
   booksLoading = true;
   booksLoadError: string | null = null;
+
+  currentPage = 1;
+  readonly pageSize = 5;
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredBooks.length / this.pageSize);
+  }
+
+  get paginatedBooks(): AdminBook[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredBooks.slice(start, start + this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  get pageRangeStart(): number {
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageRangeEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredBooks.length);
+  }
 
   constructor(
     private bookStore: AdminBookStoreService,
@@ -68,21 +91,22 @@ export class AdminBooksComponent implements OnInit {
   }
 
   applyFilters(): void {
-    // With server-side filtering, we just show what's in the store
     this.filteredBooks = [...this.books];
+    this.currentPage = 1;
   }
 
   onSearch(): void {
+    this.currentPage = 1;
     this.loadBooksFromApi();
   }
 
-  onLoadMore(): void {
-    this.bookStore.loadMore();
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
   }
 
-  hasMore(): boolean {
-    return this.bookStore.hasMore();
-  }
+  prevPage(): void { this.goToPage(this.currentPage - 1); }
+  nextPage(): void { this.goToPage(this.currentPage + 1); }
 
   startEdit(book: AdminBook): void {
     this.editingBook = { ...book };

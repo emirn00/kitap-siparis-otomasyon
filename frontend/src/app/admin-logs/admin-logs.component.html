@@ -1,19 +1,19 @@
 <div class="admin-container">
-  <!-- Header -->
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'logsTitle' | translate }}</h2>
-      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
+    <div class="header-spacer"></div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">{{ 'logsSectionTitle' | translate }}</h2>
-      <p class="section-description">
-        {{ 'logsSectionDesc' | translate }}
-      </p>
+      <h2 class="section-title">{{ 'mailLogsSectionTitle' | translate }}</h2>
+      <p class="section-description">{{ 'mailLogsSectionDesc' | translate }}</p>
 
       <!-- Filters -->
       <div class="filters-section">
@@ -25,69 +25,143 @@
               [(ngModel)]="searchTerm"
               [ngModelOptions]="{ standalone: true }"
               (input)="onSearch()"
-              [placeholder]="'searchLogsPlaceholder' | translate">
+              [placeholder]="'searchMailLogsPlaceholder' | translate">
+            <mat-icon matPrefix style="margin-right: 6px; color: #d32f2f; font-size: 18px;">search</mat-icon>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="level-field">
-            <mat-label>{{ 'level' | translate }}</mat-label>
+            <mat-label>{{ 'status' | translate }}</mat-label>
             <mat-select
-              [(ngModel)]="levelFilter"
+              [(ngModel)]="statusFilter"
               [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="onLevelFilterChange()">
+              (selectionChange)="onStatusFilterChange()">
               <mat-option value="all">{{ 'all' | translate }}</mat-option>
-              <mat-option value="INFO">{{ 'levelInfo' | translate }}</mat-option>
-              <mat-option value="WARNING">{{ 'levelWarning' | translate }}</mat-option>
-              <mat-option value="ERROR">{{ 'levelError' | translate }}</mat-option>
               <mat-option value="SUCCESS">{{ 'levelSuccess' | translate }}</mat-option>
+              <mat-option value="ERROR">{{ 'levelError' | translate }}</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>{{ 'dateFrom' | translate }}</mat-label>
+            <input matInput [matDatepicker]="pickerFrom" [(ngModel)]="dateFrom"
+              [ngModelOptions]="{ standalone: true }" (dateChange)="onDateChange()" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFrom></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="date-field">
+            <mat-label>{{ 'dateTo' | translate }}</mat-label>
+            <input matInput [matDatepicker]="pickerTo" [(ngModel)]="dateTo"
+              [ngModelOptions]="{ standalone: true }" (dateChange)="onDateChange()" readonly>
+            <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+            <mat-datepicker #pickerTo></mat-datepicker>
+          </mat-form-field>
+
+          <button class="clear-date-btn" *ngIf="dateFrom || dateTo"
+            (click)="clearDateFilter()" [title]="'clearDate' | translate">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
 
         <!-- Stats -->
         <div class="stats-row">
           <div class="stat-card">
-            <div class="stat-value">{{ getTotalLogs() }}</div>
-            <div class="stat-label">{{ 'totalLogs' | translate }}</div>
+            <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+            <div class="stat-value">{{ getTotalMails() }}</div>
+            <div class="stat-label">{{ 'totalMails' | translate }}</div>
           </div>
-          <div class="stat-card info">
-            <div class="stat-value">{{ getInfoLogs() }}</div>
-            <div class="stat-label">{{ 'levelInfo' | translate }}</div>
+          <div class="stat-card books">
+            <div class="stat-icon"><i class="fas fa-book"></i></div>
+            <div class="stat-value">{{ getTotalBooks() }}</div>
+            <div class="stat-label">{{ 'totalBooksLabel' | translate }}</div>
           </div>
-          <div class="stat-card warning">
-            <div class="stat-value">{{ getWarningLogs() }}</div>
-            <div class="stat-label">{{ 'levelWarning' | translate }}</div>
+          <div class="stat-card success">
+            <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-value">{{ getSuccessCount() }}</div>
+            <div class="stat-label">{{ 'levelSuccess' | translate }}</div>
           </div>
           <div class="stat-card error">
-            <div class="stat-value">{{ getErrorLogs() }}</div>
+            <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+            <div class="stat-value">{{ getErrorCount() }}</div>
             <div class="stat-label">{{ 'levelError' | translate }}</div>
           </div>
         </div>
       </div>
 
-      <!-- Logs List -->
-      <div class="logs-container" *ngIf="filteredLogs.length > 0">
-        <div class="log-entry" *ngFor="let log of filteredLogs" [class]="'log-' + log.level.toLowerCase()">
-          <div class="log-header">
-            <span class="log-level" [class]="'level-' + log.level.toLowerCase()">
-              {{ getLevelLabel(log.level) }}
-            </span>
-            <span class="log-date">{{ formatDate(log.timestamp) }}</span>
+      <!-- Mail Summary Cards -->
+      <div class="mail-logs-list" *ngIf="filteredLogs.length > 0">
+        <div
+          class="mail-summary-card"
+          *ngFor="let log of filteredLogs"
+          [class.error-card]="log.status === 'ERROR'">
+
+          <!-- Card Header -->
+          <div class="mail-card-header">
+            <div class="instructor-info">
+              <div class="instructor-avatar" [class.error-avatar]="log.status === 'ERROR'">
+                <i class="fas fa-user-tie"></i>
+              </div>
+              <div class="instructor-details">
+                <h3 class="instructor-name">{{ log.instructorName }}</h3>
+                <span class="instructor-email">
+                  <i class="fas fa-envelope-open-text"></i>
+                  {{ log.instructorEmail }}
+                </span>
+              </div>
+            </div>
+
+            <div class="mail-card-meta">
+              <div class="status-badge" [class.badge-success]="log.status === 'SUCCESS'" [class.badge-error]="log.status === 'ERROR'">
+                <i class="fas" [class.fa-check-circle]="log.status === 'SUCCESS'" [class.fa-times-circle]="log.status === 'ERROR'"></i>
+                {{ (log.status === 'SUCCESS' ? 'mailSentSuccess' : 'mailSentError') | translate }}
+              </div>
+              <div class="sent-date">
+                <i class="fas fa-calendar-alt"></i>
+                {{ formatDate(log.sentAt) }}
+              </div>
+              <div class="book-count-badge">
+                <i class="fas fa-book"></i>
+                {{ log.books.length }} {{ 'bookCount' | translate }}
+              </div>
+            </div>
           </div>
-          <div class="log-message">{{ log.message }}</div>
-          <div class="log-details" *ngIf="log.details">
-            <strong>{{ 'details' | translate }}:</strong> {{ log.details }}
+
+          <!-- Divider -->
+          <div class="mail-card-divider"></div>
+
+          <!-- Books List -->
+          <div class="books-list">
+            <div class="books-list-header">
+              <span>{{ 'bookNameColumn' | translate }}</span>
+              <span>{{ 'licenseKeyColumn' | translate }}</span>
+            </div>
+            <div class="book-row" *ngFor="let book of log.books; let i = index">
+              <div class="book-name">
+                <span class="book-index">{{ i + 1 }}</span>
+                <span class="book-title">{{ book.bookName }}</span>
+              </div>
+              <div class="license-key-section">
+                <code class="license-code">{{ book.licenseKey }}</code>
+                <button
+                  class="copy-btn"
+                  [class.copied]="copiedId === (log.id + '-' + i)"
+                  (click)="copyLicense(book.licenseKey, log.id + '-' + i)"
+                  [title]="'copyCode' | translate">
+                  <i class="fas" [class.fa-copy]="copiedId !== (log.id + '-' + i)" [class.fa-check]="copiedId === (log.id + '-' + i)"></i>
+                  <span>{{ (copiedId === (log.id + '-' + i) ? 'copied' : 'copyCode') | translate }}</span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div class="log-meta" *ngIf="log.user || log.action">
-            <span *ngIf="log.user" class="log-user">{{ log.user }}</span>
-            <span *ngIf="log.action" class="log-action">{{ log.action }}</span>
-          </div>
+
         </div>
       </div>
 
       <!-- Empty State -->
       <div class="empty-state" *ngIf="filteredLogs.length === 0">
-        <p>{{ 'noLogsFound' | translate }}</p>
-        <p class="empty-hint">{{ 'emptyHintLogs' | translate }}</p>
+        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+        <p>{{ 'noMailLogsFound' | translate }}</p>
+        <p class="empty-hint">{{ 'emptyHintMailLogs' | translate }}</p>
       </div>
     </mat-card-content>
   </mat-card>

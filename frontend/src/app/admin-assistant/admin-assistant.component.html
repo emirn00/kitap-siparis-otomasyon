@@ -1,11 +1,13 @@
 <div class="admin-container">
-  <!-- Header -->
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'assistantSubtitle' | translate }}</h2>
-      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
+    <div class="header-spacer"></div>
   </div>
 
   <mat-card class="form-card">

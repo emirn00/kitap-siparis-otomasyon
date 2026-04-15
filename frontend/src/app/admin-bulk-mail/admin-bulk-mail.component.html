@@ -1,62 +1,271 @@
 <div class="admin-container">
   <div class="hueber-header">
-    <div class="logo-container">
+    <div class="header-left">
+      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+    </div>
+    <div class="header-center">
       <h1 class="hueber-logo">HUEBER</h1>
       <h2 class="header-subtitle">{{ 'bulkMailSubtitle' | translate }}</h2>
-      <a routerLink="/admin" class="help-link">{{ 'adminHome' | translate }}</a>
     </div>
+    <div class="header-spacer"></div>
   </div>
 
   <mat-card class="form-card">
     <mat-card-content>
-      <h2 class="section-title">{{ 'bulkMailTitle' | translate }}</h2>
-      <p class="section-description">
-        {{ 'bulkMailDesc' | translate }}
-      </p>
 
+      <!-- Alerts -->
       <div *ngIf="successMessage" class="alert alert-success">
+        <i class="fas fa-check-circle"></i>
         <span>{{ successMessage }}</span>
       </div>
       <div *ngIf="errorMessage" class="alert alert-error">
+        <i class="fas fa-times-circle"></i>
         <span>{{ errorMessage }}</span>
       </div>
 
-      <div class="input-section">
-        <mat-form-field appearance="outline" class="emails-field">
-          <mat-label>{{ 'bulkMailRecipientsLabel' | translate }}</mat-label>
-          <textarea
-            matInput
-            [(ngModel)]="emailsInput"
-            [ngModelOptions]="{ standalone: true }"
-            rows="6"
-            [placeholder]="'bulkMailRecipientsPlaceholder' | translate"></textarea>
-        </mat-form-field>
-        <p class="recipient-count" *ngIf="recipientList.length > 0">
-          {{ 'bulkMailRecipientCount' | translate }}: {{ recipientList.length }}
-        </p>
+      <!-- Page header -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2 class="section-title">{{ 'bulkMailTitle' | translate }}</h2>
+          <p class="section-description">{{ 'bulkMailTemplatePageDesc' | translate }}</p>
+        </div>
+        <button class="send-trigger-btn" type="button" (click)="openModal()">
+          <i class="fas fa-paper-plane"></i>
+          {{ 'bulkMailSend' | translate }}
+        </button>
       </div>
 
-      <div class="template-section">
-        <button mat-button type="button" (click)="toggleTemplate()" class="toggle-template-btn">
-          {{ showTemplate ? ('bulkMailHideTemplate' | translate) : ('bulkMailShowTemplate' | translate) }}
+      <!-- Templates section header -->
+      <div class="templates-section-header">
+        <span class="templates-label">
+          <i class="fas fa-layer-group"></i>
+          {{ 'bulkMailTemplatesLabel' | translate }}
+          <span class="templates-count">{{ templates.length }}</span>
+        </span>
+        <button class="add-template-btn" type="button" (click)="addTemplate()">
+          <i class="fas fa-plus"></i>
+          {{ 'bulkMailAddTemplate' | translate }}
         </button>
-        <div class="template-preview" *ngIf="showTemplate">
-          <pre class="template-content">{{ mailTemplate }}</pre>
+      </div>
+
+      <!-- Template cards list -->
+      <div class="templates-list">
+        <div
+          class="template-card"
+          *ngFor="let tpl of templates"
+          [class.active-card]="tpl.id === activeTemplateId"
+          [class.editing-card]="tpl.editing">
+
+          <!-- Card header -->
+          <div class="template-card-header">
+
+            <!-- Left: active indicator + name -->
+            <div class="template-header-left" (click)="!tpl.editing && selectTemplate(tpl)">
+              <div class="active-dot" [class.is-active]="tpl.id === activeTemplateId">
+                <i class="fas fa-check" *ngIf="tpl.id === activeTemplateId"></i>
+              </div>
+              <span class="template-name" *ngIf="!tpl.editing">{{ tpl.name }}</span>
+              <input
+                *ngIf="tpl.editing"
+                class="template-name-input"
+                type="text"
+                [(ngModel)]="tpl.editName"
+                [ngModelOptions]="{ standalone: true }"
+                [placeholder]="'bulkMailTemplateName' | translate"
+                (click)="$event.stopPropagation()">
+              <span class="default-tag" *ngIf="tpl.isDefault && !tpl.editing">
+                {{ 'bulkMailDefaultTag' | translate }}
+              </span>
+            </div>
+
+            <!-- Right: action buttons -->
+            <div class="template-actions">
+
+              <!-- View mode actions -->
+              <ng-container *ngIf="!tpl.editing">
+                <button
+                  class="tpl-btn toggle-btn"
+                  type="button"
+                  (click)="toggleVisible(tpl)"
+                  [title]="(tpl.visible ? 'bulkMailHideTemplate' : 'bulkMailShowTemplate') | translate">
+                  <i class="fas" [class.fa-eye]="tpl.visible" [class.fa-eye-slash]="!tpl.visible"></i>
+                  <span>{{ (tpl.visible ? 'bulkMailHideTemplate' : 'bulkMailShowTemplate') | translate }}</span>
+                </button>
+                <button
+                  class="tpl-btn edit-btn"
+                  type="button"
+                  (click)="startEdit(tpl)"
+                  [title]="'bulkMailEditTemplate' | translate">
+                  <i class="fas fa-pen"></i>
+                  <span>{{ 'bulkMailEditTemplate' | translate }}</span>
+                </button>
+                <button
+                  class="tpl-btn delete-btn"
+                  type="button"
+                  *ngIf="!tpl.isDefault"
+                  (click)="deleteTemplate(tpl)"
+                  [title]="'bulkMailDeleteTemplate' | translate">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </ng-container>
+
+              <!-- Edit mode actions -->
+              <ng-container *ngIf="tpl.editing">
+                <button
+                  class="tpl-btn save-btn"
+                  type="button"
+                  [disabled]="!tpl.editName.trim() || !tpl.editContent.trim()"
+                  (click)="saveEdit(tpl)">
+                  <i class="fas fa-check"></i>
+                  <span>{{ 'save' | translate }}</span>
+                </button>
+                <button
+                  class="tpl-btn cancel-edit-btn"
+                  type="button"
+                  (click)="cancelEdit(tpl)">
+                  <i class="fas fa-times"></i>
+                  <span>{{ 'cancel' | translate }}</span>
+                </button>
+              </ng-container>
+
+            </div>
+          </div>
+
+          <!-- Card body: view mode -->
+          <div class="template-body" *ngIf="!tpl.editing && tpl.visible">
+            <pre class="template-content">{{ tpl.content }}</pre>
+          </div>
+
+          <!-- Card body: collapsed hint -->
+          <div class="template-collapsed" *ngIf="!tpl.editing && !tpl.visible">
+            <i class="fas fa-eye-slash"></i>
+            <span>{{ 'bulkMailTemplateHidden' | translate }}</span>
+          </div>
+
+          <!-- Card body: edit mode -->
+          <div class="template-edit-body" *ngIf="tpl.editing">
+            <textarea
+              class="template-textarea"
+              [(ngModel)]="tpl.editContent"
+              [ngModelOptions]="{ standalone: true }"
+              [placeholder]="'bulkMailTemplateContentPlaceholder' | translate"
+              rows="16"
+              spellcheck="false"></textarea>
+          </div>
+
+        </div>
+
+        <!-- Empty state (all deleted) -->
+        <div class="templates-empty" *ngIf="templates.length === 0">
+          <i class="fas fa-envelope-open"></i>
+          <p>{{ 'bulkMailNoTemplates' | translate }}</p>
         </div>
       </div>
 
-      <div class="send-actions">
-        <button
-          mat-raised-button
-          color="primary"
-          type="button"
-          [disabled]="!canSend"
-          (click)="sendBulkMail()"
-          class="send-btn">
-          <span *ngIf="!sending">{{ 'bulkMailSend' | translate }}</span>
-          <span *ngIf="sending">{{ 'loading' | translate }}</span>
-        </button>
-      </div>
     </mat-card-content>
   </mat-card>
+</div>
+
+<!-- ── Recipients Modal ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <div class="modal-title">
+        <i class="fas fa-users"></i>
+        {{ 'bulkMailAddRecipientsTitle' | translate }}
+      </div>
+      <button class="modal-close-btn" (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Active template info -->
+    <div class="modal-template-info" *ngIf="activeTemplate">
+      <i class="fas fa-envelope"></i>
+      <span>{{ 'bulkMailActiveTemplate' | translate }}: <strong>{{ activeTemplate.name }}</strong></span>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Email input -->
+      <div class="email-input-row">
+        <div class="email-input-wrap" [class.has-error]="emailInputError">
+          <i class="fas fa-envelope email-input-icon"></i>
+          <input
+            class="email-input"
+            type="email"
+            [(ngModel)]="emailInput"
+            [ngModelOptions]="{ standalone: true }"
+            (keydown)="onEmailKeydown($event)"
+            [placeholder]="'bulkMailEmailPlaceholder' | translate"
+            autocomplete="off">
+        </div>
+        <button class="add-email-btn" type="button" (click)="addEmail()">
+          <i class="fas fa-plus"></i>
+          {{ 'bulkMailAddEmail' | translate }}
+        </button>
+      </div>
+
+      <p class="email-error" *ngIf="emailInputError === 'invalid'">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ 'validEmailError' | translate }}
+      </p>
+      <p class="email-error" *ngIf="emailInputError === 'duplicate'">
+        <i class="fas fa-exclamation-circle"></i>
+        {{ 'bulkMailDuplicateEmail' | translate }}
+      </p>
+
+      <!-- Recipients list -->
+      <div class="recipients-section" *ngIf="recipients.length > 0">
+        <div class="recipients-header">
+          <span class="recipients-count">
+            <i class="fas fa-check-circle"></i>
+            {{ recipients.length }} {{ 'bulkMailRecipientCount' | translate }}
+          </span>
+          <button class="clear-all-btn" type="button" (click)="clearAll()">
+            <i class="fas fa-trash-alt"></i>
+            {{ 'bulkMailClearAll' | translate }}
+          </button>
+        </div>
+        <div class="recipients-list">
+          <div class="recipient-chip" *ngFor="let email of recipients; let i = index">
+            <i class="fas fa-user-circle chip-icon"></i>
+            <span class="chip-email">{{ email }}</span>
+            <button class="chip-remove" type="button" (click)="removeEmail(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="recipients-empty" *ngIf="recipients.length === 0">
+        <i class="fas fa-inbox"></i>
+        <p>{{ 'bulkMailNoRecipientsYet' | translate }}</p>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="modal-cancel-btn" type="button" (click)="closeModal()">
+        {{ 'cancel' | translate }}
+      </button>
+      <button
+        class="modal-send-btn"
+        type="button"
+        [disabled]="recipients.length === 0 || sending"
+        (click)="sendBulkMail()">
+        <span *ngIf="!sending">
+          <i class="fas fa-paper-plane"></i>
+          {{ 'bulkMailSend' | translate }}
+          <span class="send-count" *ngIf="recipients.length > 0">({{ recipients.length }})</span>
+        </span>
+        <span *ngIf="sending">
+          <i class="fas fa-spinner fa-spin"></i>
+          {{ 'loading' | translate }}
+        </span>
+      </button>
+    </div>
+
+  </div>
 </div>
