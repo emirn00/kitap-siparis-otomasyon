@@ -80,7 +80,7 @@
 
       <!-- Users List -->
       <div class="users-list" *ngIf="!loading && filteredUsers.length > 0">
-        <mat-card *ngFor="let user of filteredUsers" class="user-card">
+        <mat-card *ngFor="let user of pagedUsers" class="user-card">
           <mat-card-header>
             <div class="user-header">
               <div class="user-title-section">
@@ -202,6 +202,47 @@
             </div>
           </mat-card-content>
         </mat-card>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-bar" *ngIf="!loading && filteredUsers.length > 0">
+
+        <!-- Page size selector -->
+        <div class="page-size-wrap">
+          <span class="page-size-label">{{ 'pageSize' | translate }}:</span>
+          <select class="page-size-select" [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }" (change)="onPageSizeChange()">
+            <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+
+        <!-- Info -->
+        <span class="pagination-info">
+          {{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize > filteredUsers.length ? filteredUsers.length : currentPage * pageSize }}
+          {{ 'paginationOf' | translate }} {{ filteredUsers.length }}
+        </span>
+
+        <!-- Page buttons -->
+        <div class="page-buttons">
+          <button class="page-btn nav-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+
+          <ng-container *ngFor="let p of pageNumbers">
+            <span class="page-ellipsis" *ngIf="p === -1">…</span>
+            <button
+              *ngIf="p !== -1"
+              class="page-btn"
+              [class.active]="p === currentPage"
+              (click)="goToPage(p)">
+              {{ p }}
+            </button>
+          </ng-container>
+
+          <button class="page-btn nav-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+
       </div>
 
       <!-- Empty State -->

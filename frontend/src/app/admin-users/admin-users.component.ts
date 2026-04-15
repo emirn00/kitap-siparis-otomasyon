@@ -32,6 +32,48 @@ export class AdminUsersComponent implements OnInit {
   deleteLoading = false;
   deleteError: string | null = null;
 
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  readonly pageSizeOptions = [5, 10, 25, 50];
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredUsers.length / this.pageSize);
+  }
+
+  get pagedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(start, start + this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    const total = this.totalPages;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: number[] = [];
+    const around = 2;
+    for (let i = 1; i <= total; i++) {
+      if (i === 1 || i === total || (i >= this.currentPage - around && i <= this.currentPage + around)) {
+        pages.push(i);
+      }
+    }
+    // Insert ellipsis markers (-1)
+    const result: number[] = [];
+    for (let i = 0; i < pages.length; i++) {
+      result.push(pages[i]);
+      if (i < pages.length - 1 && pages[i + 1] - pages[i] > 1) result.push(-1);
+    }
+    return result;
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+  }
+
   private apiUrl = 'http://localhost:8080/users';
 
   constructor(
@@ -120,7 +162,8 @@ export class AdminUsersComponent implements OnInit {
 
   applyFilters(): void {
     const searchTermTrimmed = this.searchTerm.trim().toLowerCase();
-    
+    this.currentPage = 1;
+
     this.filteredUsers = this.users.filter(user => {
       const matchesSearch = !searchTermTrimmed ||
         user.firstName.toLowerCase().includes(searchTermTrimmed) ||
