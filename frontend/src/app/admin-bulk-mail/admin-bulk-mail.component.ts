@@ -1,5 +1,15 @@
 import { Component } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BULK_MAIL_TEMPLATE } from './bulk-mail-template';
+
+interface BulkEmailResponse {
+  id: string;
+  recipientEmail: string;
+  subject: string;
+  status: string;
+  sentAt: string | null;
+  errorMessage: string | null;
+}
 
 interface MailTemplate {
   id: string;
@@ -18,6 +28,8 @@ interface MailTemplate {
   styleUrls: ['./admin-bulk-mail.component.scss']
 })
 export class AdminBulkMailComponent {
+
+  private readonly mailUrl = 'http://localhost:8080/api/mail/send-bulk';
 
   templates: MailTemplate[] = [
     {
@@ -46,6 +58,8 @@ export class AdminBulkMailComponent {
   sending = false;
   successMessage: string | null = null;
   errorMessage: string | null = null;
+
+  constructor(private http: HttpClient) {}
 
   get activeTemplate(): MailTemplate | undefined {
     return this.templates.find(t => t.id === this.activeTemplateId);
@@ -141,17 +155,38 @@ export class AdminBulkMailComponent {
 
   sendBulkMail(): void {
     if (this.recipients.length === 0 || this.sending) return;
+    const tpl = this.activeTemplate;
+    if (!tpl) return;
+
     this.errorMessage = null;
     this.successMessage = null;
     this.sending = true;
-    // TODO: Backend API çağrısı
-    setTimeout(() => {
-      this.sending = false;
-      this.showModal = false;
-      this.successMessage = `Mail başarıyla gönderildi. (${this.recipients.length} alıcı)`;
-      this.recipients = [];
-      setTimeout(() => (this.successMessage = null), 6000);
-    }, 1500);
+
+    const payload = {
+      toList: [...this.recipients],
+      subject: tpl.name,
+      text: tpl.content,
+      includeActivationCode: false,
+    };
+
+    this.http.post<BulkEmailResponse[]>(this.mailUrl, payload).subscribe({
+      next: (results) => {
+        this.sending = false;
+        this.showModal = false;
+        const failed = results.filter(r => r.status === 'FAILED');
+        if (failed.length === 0) {
+          this.successMessage = `Mail başarıyla gönderildi. (${results.length} alıcı)`;
+        } else {
+          this.successMessage = `${results.length - failed.length} alıcıya gönderildi, ${failed.length} başarısız.`;
+        }
+        this.recipients = [];
+        setTimeout(() => (this.successMessage = null), 6000);
+      },
+      error: (err) => {
+        this.sending = false;
+        this.errorMessage = err?.error?.message ?? 'Mail gönderilemedi. Lütfen tekrar deneyin.';
+      },
+    });
   }
 
   private isValidEmail(email: string): boolean {
