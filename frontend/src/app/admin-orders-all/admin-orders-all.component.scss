@@ -48,23 +48,54 @@ $red-dark: #b71c1c;
 // ─── Date Filter Bar ───────────────────────────────────────
 .date-filter-bar {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 0.75rem;
   flex-wrap: wrap;
   margin-bottom: 0.75rem;
+}
 
-  .date-field {
-    flex: 1;
-    min-width: 150px;
-    max-width: 210px;
-    width: 100%;
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 150px;
+  max-width: 210px;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.date-native-input {
+  height: 42px;
+  padding: 0 0.85rem;
+  border: 1.5px solid #e0e4ef;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  color: #333;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  width: 100%;
+
+  &:focus {
+    border-color: $red;
+    box-shadow: 0 0 0 3px rgba($red, 0.08);
   }
 
-  @media (max-width: 600px) {
-    flex-direction: column;
-    .date-field { max-width: 100%; }
+  &::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+    &:hover { opacity: 1; }
   }
 }
+
 
 .date-filter-hint {
   font-size: 0.8rem;

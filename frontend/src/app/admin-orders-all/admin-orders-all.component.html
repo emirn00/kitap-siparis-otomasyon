@@ -5,17 +5,15 @@
 
     <!-- Date Filter Bar -->
     <div class="date-filter-bar">
-      <mat-form-field appearance="outline" class="date-field">
-        <mat-label>{{ 'startDate' | translate }}</mat-label>
-        <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
-        <mat-icon matSuffix style="font-size:16px;color:#aaa;">calendar_today</mat-icon>
-      </mat-form-field>
+      <div class="date-input-group">
+        <label class="date-label">{{ 'startDate' | translate }}</label>
+        <input type="date" class="date-native-input" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+      </div>
 
-      <mat-form-field appearance="outline" class="date-field">
-        <mat-label>{{ 'endDate' | translate }}</mat-label>
-        <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
-        <mat-icon matSuffix style="font-size:16px;color:#aaa;">calendar_today</mat-icon>
-      </mat-form-field>
+      <div class="date-input-group">
+        <label class="date-label">{{ 'endDate' | translate }}</label>
+        <input type="date" class="date-native-input" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+      </div>
 
       <button class="filter-btn primary-btn" (click)="fetchOrdersByDate()"
         [disabled]="!startDate || !endDate || loading">
