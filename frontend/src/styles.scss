@@ -7,7 +7,22 @@ html, body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-// Shared admin sub-page header — compact, consistent across all admin pages
+// ── Admin layout: reset sub-page container styles ──────────
+// Sub-page components use .admin-container for layout; inside the
+// AdminLayoutComponent the shell handles background & min-height.
+app-admin-layout .admin-container {
+  background: transparent !important;
+  min-height: auto !important;
+  padding-bottom: 24px;
+}
+
+app-admin-layout .form-card {
+  margin: 0 24px 24px 24px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07) !important;
+}
+
+// Shared admin sub-page header — kept for any non-layout pages
 .hueber-header {
   width: 100%;
   background: #d32f2f;

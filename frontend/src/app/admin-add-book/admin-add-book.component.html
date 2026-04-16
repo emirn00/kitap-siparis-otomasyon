@@ -1,65 +1,63 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+<mat-card class="form-card">
+  <mat-card-content>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="fas fa-check-circle"></i> {{ successMessage }}
     </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'addBook' | translate }}</h2>
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
     </div>
-    <div class="header-spacer"></div>
-  </div>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <h2 class="section-title">{{ 'newBook' | translate }}</h2>
-      <p class="section-description">{{ 'newBookDesc' | translate }}</p>
+    <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()">
 
-      <div *ngIf="successMessage" class="alert alert-success">
-        <span>{{ successMessage }}</span>
-      </div>
-      <div *ngIf="errorMessage" class="alert alert-error">
-        <span>{{ errorMessage }}</span>
-      </div>
+      <!-- Form Section -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <div class="section-icon book-icon"><i class="fas fa-book"></i></div>
+          <span>{{ 'newBook' | translate }}</span>
+        </div>
+        <p class="section-description">{{ 'newBookDesc' | translate }}</p>
 
-      <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()">
-        <div class="form-section">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'requestName' | translate }} *</mat-label>
-              <input matInput formControlName="requestName" [placeholder]="'requestName' | translate">
-              <mat-error *ngIf="requestName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-            </mat-form-field>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'requestName' | translate }} *</mat-label>
+            <input matInput formControlName="requestName" [placeholder]="'requestName' | translate">
+            <mat-error *ngIf="requestName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
+          </mat-form-field>
 
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'orderName' | translate }} *</mat-label>
-              <input matInput formControlName="orderName" [placeholder]="'orderName' | translate">
-              <mat-error *ngIf="orderName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-            </mat-form-field>
-          </div>
-
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'lisencodeName' | translate }} *</mat-label>
-              <input matInput formControlName="lisencodeName" [placeholder]="'lisencodeName' | translate">
-              <mat-error *ngIf="lisencodeName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'isbn' | translate }} *</mat-label>
-              <input matInput formControlName="isbn" [placeholder]="'isbn' | translate">
-              <mat-error *ngIf="isbn?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'orderName' | translate }} *</mat-label>
+            <input matInput formControlName="orderName" [placeholder]="'orderName' | translate">
+            <mat-error *ngIf="orderName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
+          </mat-form-field>
         </div>
 
-        <div class="form-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="addBookForm.invalid" class="submit-button">
-            {{ 'addBook' | translate }}
-          </button>
-          <a mat-button [routerLink]="['/admin/books']" [queryParams]="{ added: 'true' }">{{ 'goToBooks' | translate }}</a>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'lisencodeName' | translate }} *</mat-label>
+            <input matInput formControlName="lisencodeName" [placeholder]="'lisencodeName' | translate">
+            <mat-error *ngIf="lisencodeName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'isbn' | translate }} *</mat-label>
+            <input matInput formControlName="isbn" [placeholder]="'isbn' | translate">
+            <mat-error *ngIf="isbn?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
+          </mat-form-field>
         </div>
-      </form>
-    </mat-card-content>
-  </mat-card>
-</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button class="submit-btn" type="submit" [disabled]="addBookForm.invalid">
+          <i class="fas fa-plus-circle"></i> {{ 'addBook' | translate }}
+        </button>
+        <a class="back-link" [routerLink]="['/admin/books']" [queryParams]="{ added: 'true' }">
+          <i class="fas fa-arrow-left"></i> {{ 'goToBooks' | translate }}
+        </a>
+      </div>
+
+    </form>
+
+  </mat-card-content>
+</mat-card>

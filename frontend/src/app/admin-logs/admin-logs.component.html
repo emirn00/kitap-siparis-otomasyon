@@ -1,16 +1,4 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
-    </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'logsTitle' | translate }}</h2>
-    </div>
-    <div class="header-spacer"></div>
-  </div>
-
-  <mat-card class="form-card">
+<mat-card class="form-card">
     <mat-card-content>
       <h2 class="section-title">{{ 'mailLogsSectionTitle' | translate }}</h2>
       <p class="section-description">{{ 'mailLogsSectionDesc' | translate }}</p>
@@ -26,7 +14,6 @@
               [ngModelOptions]="{ standalone: true }"
               (input)="onSearch()"
               [placeholder]="'searchMailLogsPlaceholder' | translate">
-            <mat-icon matPrefix style="margin-right: 6px; color: #d32f2f; font-size: 18px;">search</mat-icon>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="level-field">
@@ -165,4 +152,3 @@
       </div>
     </mat-card-content>
   </mat-card>
-</div>

@@ -1,62 +1,93 @@
-<mat-card class="book-card-inner">
-  <div class="book-card-content">
-    <div class="book-image-container">
-      <img [src]="placeholderImage" alt="Book Cover" class="book-cover">
-    </div>
+<div class="book-summary-card" [class.editing-card]="isEditing" [class.deleting-card]="isDeleting">
 
-    <div class="book-info">
-      <div *ngIf="!isEditing" class="view-mode">
+  <!-- View Mode Header -->
+  <div class="book-card-header" *ngIf="!isEditing">
+    <div class="book-info-left">
+      <div class="book-avatar">
+        <i class="fas fa-book"></i>
+      </div>
+      <div class="book-details">
         <h3 class="book-title">{{ book.requestName }}</h3>
-        <p class="book-isbn"><strong>ISBN:</strong> {{ book.isbn }}</p>
-        <p class="book-order"><strong>Order:</strong> {{ book.orderName }}</p>
-        <p *ngIf="book.lisencodeName" class="book-license"><strong>License:</strong> {{ book.lisencodeName }}</p>
-        <p class="book-id-tag">#{{ book.id }}</p>
+        <div class="book-chips">
+          <span class="detail-chip isbn-chip">
+            <i class="fas fa-barcode"></i> {{ book.isbn }}
+          </span>
+          <span class="detail-chip" *ngIf="book.lisencodeName">
+            <i class="fas fa-key"></i> {{ book.lisencodeName }}
+          </span>
+          <span class="detail-chip order-chip" *ngIf="book.orderName">
+            <i class="fas fa-tag"></i> {{ book.orderName }}
+          </span>
+        </div>
       </div>
+    </div>
+    <span class="book-id-badge">#{{ (book.id || '').toString().slice(0,8) }}</span>
+  </div>
 
-      <div *ngIf="isEditing" class="edit-mode">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'requestName' | translate }}</mat-label>
-          <input matInput [(ngModel)]="book.requestName">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'orderName' | translate }}</mat-label>
-          <input matInput [(ngModel)]="book.orderName">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'lisencodeName' | translate }}</mat-label>
-          <input matInput [(ngModel)]="book.lisencodeName" [placeholder]="'optional' | translate">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'isbn' | translate }}</mat-label>
-          <input matInput [(ngModel)]="book.isbn">
-        </mat-form-field>
-      </div>
+  <!-- Edit Mode -->
+  <div class="edit-form" *ngIf="isEditing">
+    <div class="edit-form-header">
+      <div class="section-icon"><i class="fas fa-pen"></i></div>
+      <span class="edit-title">Kitabı Düzenle</span>
+    </div>
+    <div class="edit-fields">
+      <mat-form-field appearance="outline" class="edit-field">
+        <mat-label>{{ 'requestName' | translate }}</mat-label>
+        <input matInput [(ngModel)]="book.requestName">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="edit-field">
+        <mat-label>{{ 'orderName' | translate }}</mat-label>
+        <input matInput [(ngModel)]="book.orderName">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="edit-field">
+        <mat-label>{{ 'lisencodeName' | translate }}</mat-label>
+        <input matInput [(ngModel)]="book.lisencodeName" [placeholder]="'optional' | translate">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="edit-field">
+        <mat-label>{{ 'isbn' | translate }}</mat-label>
+        <input matInput [(ngModel)]="book.isbn">
+      </mat-form-field>
     </div>
   </div>
 
-  <mat-card-actions align="end" class="card-actions">
+  <!-- Delete Confirm -->
+  <div class="delete-confirm-inline" *ngIf="isDeleting && !isEditing">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>{{ 'deleteConfirm' | translate }}</span>
+  </div>
+
+  <!-- Divider + Actions -->
+  <div class="card-divider"></div>
+  <div class="card-actions">
+    <!-- Normal -->
     <ng-container *ngIf="!isEditing && !isDeleting">
-      <button mat-stroked-button color="primary" (click)="onEdit()" class="btn-put" title="PUT /api/books/{{ book.id }}">
-        {{ 'edit' | translate }}
+      <button class="action-btn edit-btn" (click)="onEdit()">
+        <i class="fas fa-pen"></i> {{ 'edit' | translate }}
       </button>
-      <button mat-stroked-button color="warn" (click)="onDelete()" class="btn-delete" title="DELETE /api/books/{{ book.id }}">
-        {{ 'delete' | translate }}
+      <button class="action-btn delete-btn" (click)="onDelete()">
+        <i class="fas fa-trash"></i> {{ 'delete' | translate }}
       </button>
     </ng-container>
 
+    <!-- Editing -->
     <ng-container *ngIf="isEditing">
-      <button mat-raised-button color="primary" (click)="onSave()">
-        {{ 'save' | translate }}
+      <button class="action-btn save-btn" (click)="onSave()">
+        <i class="fas fa-check"></i> {{ 'save' | translate }}
       </button>
-      <button mat-button (click)="onCancel()">{{ 'cancel' | translate }}</button>
+      <button class="action-btn cancel-btn" (click)="onCancel()">
+        <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+      </button>
     </ng-container>
 
+    <!-- Deleting -->
     <ng-container *ngIf="isDeleting">
-      <span class="delete-hint">{{ 'deleteConfirm' | translate }}</span>
-      <button mat-raised-button color="warn" (click)="onConfirmDelete()">
-        {{ 'deleteYes' | translate }}
+      <button class="action-btn confirm-delete-btn" (click)="onConfirmDelete()">
+        <i class="fas fa-trash"></i> {{ 'deleteYes' | translate }}
       </button>
-      <button mat-button (click)="onCancelDelete()">{{ 'cancel' | translate }}</button>
+      <button class="action-btn cancel-btn" (click)="onCancelDelete()">
+        <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+      </button>
     </ng-container>
-  </mat-card-actions>
-</mat-card>
+  </div>
+
+</div>

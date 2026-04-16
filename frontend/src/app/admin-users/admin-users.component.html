@@ -1,255 +1,195 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+<mat-card class="form-card">
+  <mat-card-content>
+    <h2 class="section-title">{{ 'usersSectionTitle' | translate }}</h2>
+    <p class="section-description">{{ 'usersSectionDesc' | translate }}</p>
+
+    <!-- Loading & Alerts -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ 'loading' | translate }}</p>
     </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'usersSubtitle' | translate }}</h2>
+    <div *ngIf="error"         class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+    <div *ngIf="updateSuccess" class="alert alert-success"><i class="fas fa-check-circle"></i> {{ updateSuccess }}</div>
+    <div *ngIf="updateError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ updateError }}</div>
+    <div *ngIf="deleteError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ deleteError }}</div>
+
+    <!-- Filters + Stats -->
+    <div class="filters-section" *ngIf="!loading">
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{ 'search' | translate }}</mat-label>
+          <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{ standalone: true }"
+            (input)="onSearch()" [placeholder]="'searchUsersPlaceholder' | translate">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="role-field">
+          <mat-label>{{ 'role' | translate }}</mat-label>
+          <mat-select [(ngModel)]="roleFilter" [ngModelOptions]="{ standalone: true }"
+            (selectionChange)="onRoleFilterChange()">
+            <mat-option value="all">{{ 'all' | translate }}</mat-option>
+            <mat-option value="USER">{{ 'roleUser' | translate }}</mat-option>
+            <mat-option value="ADMIN">{{ 'roleAdmin' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Compact Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-value">{{ getTotalUsers() }}</div>
+          <div class="stat-label">{{ 'totalUsers' | translate }}</div>
+        </div>
+        <div class="stat-card admin-stat">
+          <div class="stat-icon"><i class="fas fa-user-shield"></i></div>
+          <div class="stat-value">{{ getAdminUsers() }}</div>
+          <div class="stat-label">{{ 'roleAdmin' | translate }}</div>
+        </div>
+        <div class="stat-card user-stat">
+          <div class="stat-icon"><i class="fas fa-user"></i></div>
+          <div class="stat-value">{{ getNormalUsers() }}</div>
+          <div class="stat-label">{{ 'roleUser' | translate }}</div>
+        </div>
+        <div class="stat-card filtered-stat">
+          <div class="stat-icon"><i class="fas fa-filter"></i></div>
+          <div class="stat-value">{{ filteredUsers.length }}</div>
+          <div class="stat-label">Görüntülenen</div>
+        </div>
+      </div>
     </div>
-    <div class="header-spacer"></div>
-  </div>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <h2 class="section-title">{{ 'usersSectionTitle' | translate }}</h2>
-      <p class="section-description">
-        {{ 'usersSectionDesc' | translate }}
-      </p>
+    <!-- Users List -->
+    <div class="users-list" *ngIf="!loading && filteredUsers.length > 0">
+      <div class="user-summary-card" *ngFor="let user of pagedUsers"
+        [class.admin-card]="user.role === 'ADMIN'"
+        [class.editing-card]="editingUser && editingUser.id === user.id">
 
-      <!-- Loading & Error -->
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>{{ 'loading' | translate }}</p>
-      </div>
-      <div *ngIf="error" class="alert alert-error">
-        <span>{{ error }}</span>
-      </div>
-      <div *ngIf="updateSuccess" class="alert alert-success">
-        <span>{{ updateSuccess }}</span>
-      </div>
-      <div *ngIf="updateError" class="alert alert-error">
-        <span>{{ updateError }}</span>
-      </div>
-      <div *ngIf="deleteError" class="alert alert-error">
-        <span>{{ deleteError }}</span>
-      </div>
-
-      <!-- Filters -->
-      <div class="filters-section" *ngIf="!loading">
-        <div class="filters-row">
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-label>{{ 'search' | translate }}</mat-label>
-            <input
-              matInput
-              [(ngModel)]="searchTerm"
-              [ngModelOptions]="{ standalone: true }"
-              (input)="onSearch()"
-              [placeholder]="'searchUsersPlaceholder' | translate">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="role-field">
-            <mat-label>{{ 'role' | translate }}</mat-label>
-            <mat-select
-              [(ngModel)]="roleFilter"
-              [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="onRoleFilterChange()">
-              <mat-option value="all">{{ 'all' | translate }}</mat-option>
-              <mat-option value="USER">{{ 'roleUser' | translate }}</mat-option>
-              <mat-option value="ADMIN">{{ 'roleAdmin' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <!-- Stats -->
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-value">{{ getTotalUsers() }}</div>
-            <div class="stat-label">{{ 'totalUsers' | translate }}</div>
+        <!-- Card Header Row -->
+        <div class="user-card-header">
+          <div class="user-info-left">
+            <div class="user-avatar" [class.admin-avatar]="user.role === 'ADMIN'">
+              <i class="fas" [class.fa-user-shield]="user.role === 'ADMIN'" [class.fa-user]="user.role !== 'ADMIN'"></i>
+            </div>
+            <div class="user-details">
+              <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
+              <span class="user-email"><i class="fas fa-envelope"></i> {{ user.email }}</span>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-value">{{ getAdminUsers() }}</div>
-            <div class="stat-label">{{ 'roleAdmin' | translate }}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">{{ getNormalUsers() }}</div>
-            <div class="stat-label">{{ 'roleUser' | translate }}</div>
+
+          <div class="user-meta">
+            <span class="role-badge" [class.badge-admin]="user.role === 'ADMIN'" [class.badge-user]="user.role !== 'ADMIN'">
+              <i class="fas" [class.fa-user-shield]="user.role === 'ADMIN'" [class.fa-user]="user.role !== 'ADMIN'"></i>
+              {{ getRoleLabel(user.role) }}
+            </span>
+            <span class="user-date"><i class="fas fa-calendar-alt"></i> {{ formatDate(user.createdAt) }}</span>
+            <span class="user-id-badge">#{{ (user.id || '').toString().slice(0,8) }}</span>
           </div>
         </div>
-      </div>
 
-      <!-- Users List -->
-      <div class="users-list" *ngIf="!loading && filteredUsers.length > 0">
-        <mat-card *ngFor="let user of pagedUsers" class="user-card">
-          <mat-card-header>
-            <div class="user-header">
-              <div class="user-title-section">
-                <h3 class="user-name">{{ user.firstName }} {{ user.lastName }}</h3>
-                <span class="user-id">#{{ user.id }}</span>
-              </div>
-              <span class="user-role"
-                [style.backgroundColor]="getRoleColor(user.role)">
-                {{ getRoleLabel(user.role) }}
-              </span>
+        <!-- Edit Form (inline expand) -->
+        <div class="edit-form" *ngIf="editingUser && editingUser.id === user.id">
+          <div class="edit-form-divider"></div>
+          <div class="edit-fields">
+            <div class="edit-field">
+              <label>{{ 'firstNameLabel' | translate }}</label>
+              <input class="inline-input" [(ngModel)]="editingUser.firstName" [ngModelOptions]="{ standalone: true }"
+                [placeholder]="'firstNameLabel' | translate">
             </div>
-          </mat-card-header>
-
-          <mat-card-content>
-            <div class="user-details-grid">
-              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>{{ 'firstNameLabel' | translate }}:</strong>
-                <input
-                  class="inline-input"
-                  [(ngModel)]="editingUser.firstName"
-                  [ngModelOptions]="{ standalone: true }"
-                  [placeholder]="'firstNameLabel' | translate">
-              </div>
-              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>{{ 'lastNameLabel' | translate }}:</strong>
-                <input
-                  class="inline-input"
-                  [(ngModel)]="editingUser.lastName"
-                  [ngModelOptions]="{ standalone: true }"
-                  [placeholder]="'lastNameLabel' | translate">
-              </div>
-              <div class="detail-item">
-                <strong>{{ 'email' | translate }}:</strong>
-                <span>{{ user.email }}</span>
-              </div>
-              <div class="detail-item" [class.full-width]="editingUser && editingUser.id === user.id">
-                <strong>{{ 'phone' | translate }}:</strong>
-                <ng-container *ngIf="editingUser && editingUser.id === user.id; else phoneView">
-                  <input
-                    class="inline-input"
-                    [(ngModel)]="editingUser.phone"
-                    [ngModelOptions]="{ standalone: true }"
-                    [placeholder]="'phone' | translate">
-                </ng-container>
-                <ng-template #phoneView>
-                  <span>{{ user.phone }}</span>
-                </ng-template>
-              </div>
-              <div class="detail-item">
-                <strong>{{ 'regDate' | translate }}:</strong>
-                <span>{{ formatDate(user.createdAt) }}</span>
-              </div>
-              <div class="detail-item" *ngIf="editingUser && editingUser.id === user.id">
-                <strong>{{ 'role' | translate }}:</strong>
-                <select
-                  class="inline-select"
-                  [(ngModel)]="editingUser.role"
-                  [ngModelOptions]="{ standalone: true }">
-                  <option value="USER">{{ 'roleUser' | translate }}</option>
-                  <option value="ADMIN">{{ 'roleAdmin' | translate }}</option>
-                </select>
-              </div>
+            <div class="edit-field">
+              <label>{{ 'lastNameLabel' | translate }}</label>
+              <input class="inline-input" [(ngModel)]="editingUser.lastName" [ngModelOptions]="{ standalone: true }"
+                [placeholder]="'lastNameLabel' | translate">
             </div>
-
-            <div class="user-actions">
-              <button
-                mat-stroked-button
-                color="primary"
-                *ngIf="!editingUser || editingUser.id !== user.id"
-                (click)="startEdit(user)">
-                {{ 'editUser' | translate }}
-              </button>
-              <button
-                mat-stroked-button
-                color="warn"
-                type="button"
-                (click)="confirmDelete(user)"
-                *ngIf="!deletingUserId || deletingUserId !== user.id">
-                {{ 'deleteUser' | translate }}
-              </button>
-              <div
-                class="edit-actions"
-                *ngIf="editingUser && editingUser.id === user.id">
-                <button
-                  mat-raised-button
-                  color="primary"
-                  (click)="saveUser()"
-                  [disabled]="updateLoading">
-                  {{ 'saveUser' | translate }}
-                </button>
-                <button
-                  mat-button
-                  type="button"
-                  (click)="cancelEdit()"
-                  [disabled]="updateLoading">
-                  {{ 'cancel' | translate }}
-                </button>
-              </div>
-              <div
-                class="delete-confirm"
-                *ngIf="deletingUserId === user.id">
-                <span>{{ 'deleteUserConfirm' | translate }}</span>
-                <button
-                  mat-raised-button
-                  color="warn"
-                  type="button"
-                  (click)="deleteUser()"
-                  [disabled]="deleteLoading">
-                  {{ 'yesDelete' | translate }}
-                </button>
-                <button
-                  mat-button
-                  type="button"
-                  (click)="cancelDelete()"
-                  [disabled]="deleteLoading">
-                  {{ 'cancel' | translate }}
-                </button>
-              </div>
+            <div class="edit-field">
+              <label>{{ 'phone' | translate }}</label>
+              <input class="inline-input" [(ngModel)]="editingUser.phone" [ngModelOptions]="{ standalone: true }"
+                [placeholder]="'phone' | translate">
             </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination-bar" *ngIf="!loading && filteredUsers.length > 0">
-
-        <!-- Page size selector -->
-        <div class="page-size-wrap">
-          <span class="page-size-label">{{ 'pageSize' | translate }}:</span>
-          <select class="page-size-select" [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }" (change)="onPageSizeChange()">
-            <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
-          </select>
+            <div class="edit-field">
+              <label>{{ 'role' | translate }}</label>
+              <select class="inline-select" [(ngModel)]="editingUser.role" [ngModelOptions]="{ standalone: true }">
+                <option value="USER">{{ 'roleUser' | translate }}</option>
+                <option value="ADMIN">{{ 'roleAdmin' | translate }}</option>
+              </select>
+            </div>
+          </div>
         </div>
 
-        <!-- Info -->
-        <span class="pagination-info">
-          {{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize > filteredUsers.length ? filteredUsers.length : currentPage * pageSize }}
-          {{ 'paginationOf' | translate }} {{ filteredUsers.length }}
-        </span>
+        <!-- Phone detail row (view mode) -->
+        <div class="user-phone-row" *ngIf="!(editingUser && editingUser.id === user.id) && user.phone">
+          <i class="fas fa-phone"></i> {{ user.phone }}
+        </div>
 
-        <!-- Page buttons -->
-        <div class="page-buttons">
-          <button class="page-btn nav-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-
-          <ng-container *ngFor="let p of pageNumbers">
-            <span class="page-ellipsis" *ngIf="p === -1">…</span>
-            <button
-              *ngIf="p !== -1"
-              class="page-btn"
-              [class.active]="p === currentPage"
-              (click)="goToPage(p)">
-              {{ p }}
+        <!-- Actions -->
+        <div class="user-card-divider"></div>
+        <div class="user-actions">
+          <!-- View mode actions -->
+          <ng-container *ngIf="!(editingUser && editingUser.id === user.id) && !(deletingUserId === user.id)">
+            <button class="action-btn edit-btn" (click)="startEdit(user)">
+              <i class="fas fa-pen"></i> {{ 'editUser' | translate }}
+            </button>
+            <button class="action-btn delete-btn" (click)="confirmDelete(user)">
+              <i class="fas fa-trash"></i> {{ 'deleteUser' | translate }}
             </button>
           </ng-container>
 
-          <button class="page-btn nav-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
-            <i class="fas fa-chevron-right"></i>
-          </button>
+          <!-- Edit mode actions -->
+          <ng-container *ngIf="editingUser && editingUser.id === user.id">
+            <button class="action-btn save-btn" (click)="saveUser()" [disabled]="updateLoading">
+              <i class="fas fa-check"></i> {{ 'saveUser' | translate }}
+            </button>
+            <button class="action-btn cancel-btn" (click)="cancelEdit()" [disabled]="updateLoading">
+              <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+            </button>
+          </ng-container>
+
+          <!-- Delete confirm -->
+          <ng-container *ngIf="deletingUserId === user.id">
+            <span class="delete-confirm-text"><i class="fas fa-exclamation-triangle"></i> {{ 'deleteUserConfirm' | translate }}</span>
+            <button class="action-btn confirm-delete-btn" (click)="deleteUser()" [disabled]="deleteLoading">
+              <i class="fas fa-trash"></i> {{ 'yesDelete' | translate }}
+            </button>
+            <button class="action-btn cancel-btn" (click)="cancelDelete()" [disabled]="deleteLoading">
+              <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+            </button>
+          </ng-container>
         </div>
 
       </div>
+    </div>
 
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!loading && filteredUsers.length === 0">
-        <p>{{ 'noResultsUsers' | translate }}</p>
-        <p class="empty-hint">{{ 'emptyHintUsers' | translate }}</p>
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="!loading && filteredUsers.length > 0">
+      <div class="page-size-wrap">
+        <span class="page-size-label">{{ 'pageSize' | translate }}:</span>
+        <select class="page-size-select" [(ngModel)]="pageSize" [ngModelOptions]="{ standalone: true }" (change)="onPageSizeChange()">
+          <option *ngFor="let s of pageSizeOptions" [value]="s">{{ s }}</option>
+        </select>
       </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+      <span class="pagination-info">
+        {{ (currentPage - 1) * pageSize + 1 }}–{{ currentPage * pageSize > filteredUsers.length ? filteredUsers.length : currentPage * pageSize }}
+        {{ 'paginationOf' | translate }} {{ filteredUsers.length }}
+      </span>
+      <div class="page-buttons">
+        <button class="page-btn nav-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <ng-container *ngFor="let p of pageNumbers">
+          <span class="page-ellipsis" *ngIf="p === -1">…</span>
+          <button *ngIf="p !== -1" class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+        </ng-container>
+        <button class="page-btn nav-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && filteredUsers.length === 0">
+      <div class="empty-icon"><i class="fas fa-users-slash"></i></div>
+      <p>{{ 'noResultsUsers' | translate }}</p>
+      <p class="empty-hint">{{ 'emptyHintUsers' | translate }}</p>
+    </div>
+
+  </mat-card-content>
+</mat-card>

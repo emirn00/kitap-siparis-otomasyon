@@ -16,8 +16,9 @@ interface Message {
 export class ChatbotComponent {
   isOpen = false;
   isAdmin = false;
+  unreadCount = 1;
   messages: Message[] = [
-    { text: 'Merhaba! Ben Kitapçı Asistanı. Size nasıl yardımcı olabilirim?', sender: 'bot', timestamp: new Date() }
+    { text: 'Merhaba! Ben Hueber Asistan. Size nasıl yardımcı olabilirim?', sender: 'bot', timestamp: new Date() }
   ];
   currentMessage = '';
   isLoading = false;
@@ -43,6 +44,7 @@ export class ChatbotComponent {
 
   toggleChat() {
     this.isOpen = !this.isOpen;
+    if (this.isOpen) this.unreadCount = 0;
   }
 
   sendQuickAction(message: string) {

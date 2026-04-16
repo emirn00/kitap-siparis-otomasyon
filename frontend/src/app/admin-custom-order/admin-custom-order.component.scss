@@ -1,192 +1,188 @@
-@import '../admin-orders-all/admin-orders-all.component.scss';
+$red: #d32f2f;
+$red-dark: #b71c1c;
 
-.section-description {
-  color: #666;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
+// ─── Header ────────────────────────────────────────────────
+.section-title {
+  color: $red;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.3rem;
 }
 
-.form-section {
-  margin-bottom: 2.5rem;
-  padding: 1.5rem;
-  background: #fafafa;
+.section-description {
+  color: #888;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+// ─── Alerts ────────────────────────────────────────────────
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.7rem 1rem;
   border-radius: 8px;
-  border: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+  font-size: 0.86rem;
+  font-weight: 500;
+
+  i { flex-shrink: 0; }
+
+  &.alert-error   { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+  &.alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+}
+
+// ─── Form Sections ─────────────────────────────────────────
+.form-section {
+  background: #fff;
+  border: 1px solid #eaeef5;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.form-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f0f2f8;
+}
+
+.section-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, $red 0%, $red-dark 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba($red, 0.3);
+
+  i { color: #fff; font-size: 0.9rem; }
+
+  &.books-icon {
+    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    box-shadow: 0 2px 6px rgba(21,101,192,0.3);
+  }
+
+  &.notes-icon {
+    background: linear-gradient(135deg, #6a1b9a 0%, #4a148c 100%);
+    box-shadow: 0 2px 6px rgba(106,27,154,0.3);
+  }
 }
 
 .subsection-title {
-  color: #d32f2f;
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #d32f2f;
+  color: #1a1a2e;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.01rem;
 }
 
+// ─── Form Rows ─────────────────────────────────────────────
 .form-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+
+  &:last-child { margin-bottom: 0; }
+
+  @media (max-width: 640px) { grid-template-columns: 1fr; }
 }
 
 .form-field {
   width: 100%;
 
-  &.full-width {
-    grid-column: 1 / -1;
-  }
-
-  ::ng-deep .mat-form-field-outline {
-    color: #d32f2f;
-  }
-
-  ::ng-deep .mat-form-field-label {
-    color: #d32f2f;
-  }
-
-  ::ng-deep .mat-focused .mat-form-field-label {
-    color: #b71c1c;
-  }
-
-  ::ng-deep .mat-form-field-outline-thick {
-    color: #d32f2f;
-  }
-
-  ::ng-deep .mat-form-field-appearance-outline {
-    .mat-form-field-infix {
-      padding: 1em 0 1em 0;
-    }
-
-    .mat-form-field-prefix {
-      top: 0.5em !important;
-      left: 0.75em !important;
-      
-      .mat-icon {
-        width: 24px !important;
-        height: 24px !important;
-        font-size: 24px !important;
-        line-height: 24px !important;
-        color: #d32f2f;
-      }
-    }
-
-    input.mat-input-element,
-    textarea.mat-input-element {
-      padding-left: 2.5em !important;
-      line-height: 1.5;
-      width: 100%;
-      box-sizing: border-box;
-    }
-  }
+  &.full-width { grid-column: 1 / -1; }
 }
 
-.books-selection-section {
-  margin-top: 1.5rem;
-}
+// ─── Books Selection ───────────────────────────────────────
+.books-selection-section { margin-top: 1rem; }
 
 .field-label {
-  display: block;
-  color: #d32f2f;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #444;
   font-weight: 600;
-  margin-bottom: 1rem;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+
+  i { color: $red; font-size: 0.8rem; }
 }
 
 .books-selection-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 0.75rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem;
+
+  @media (max-width: 600px) { grid-template-columns: 1fr; }
 }
 
 .book-checkbox-item {
-  padding: 0.75rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background: white;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: #ffe8e8;
-    border-color: #d32f2f;
-  }
-}
-
-.form-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 2rem;
-
-  .submit-button {
-    padding: 0.75rem 3rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-
-    mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
-
-    &:disabled {
-      background: #ccc;
-      color: #666;
-    }
-  }
-}
-
-.alert {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid #e8eaf0;
+  border-radius: 10px;
+  background: #fafbff;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-size: 0.84rem;
 
-  mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+  &:hover {
+    background: #fff0f0;
+    border-color: #ffcdd2;
   }
 
-  &.alert-success {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #4caf50;
-
-    mat-icon {
-      color: #2e7d32;
-    }
-  }
-
-  &.alert-error {
-    background: #ffebee;
-    color: #c62828;
-    border: 1px solid #ef5350;
-
-    mat-icon {
-      color: #c62828;
-    }
+  &.checked {
+    background: #fff0f0;
+    border-color: $red;
   }
 }
 
-@media (max-width: 768px) {
-  .form-section {
-    padding: 1rem;
+// ─── Submit Button ─────────────────────────────────────────
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 2rem;
+  background: linear-gradient(135deg, $red 0%, $red-dark 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($red, 0.35);
+  transition: all 0.2s ease;
+  letter-spacing: 0.02rem;
+
+  i { font-size: 0.9rem; }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba($red, 0.45);
   }
 
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+  &:active:not(:disabled) { transform: scale(0.97); }
 
-  .books-selection-grid {
-    grid-template-columns: 1fr;
+  &:disabled {
+    background: #e0e0e0;
+    color: #aaa;
+    box-shadow: none;
+    cursor: not-allowed;
   }
 }

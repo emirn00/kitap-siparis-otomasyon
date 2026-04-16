@@ -1,43 +1,48 @@
 .app-lang-selector {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 9999;
+  bottom: 32px;
+  right: 104px; // FAB is right:32px, width:58px → 32+58+14=104
+  z-index: 1100;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  border: 1px solid #e0e0e0;
+  gap: 4px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(6px);
 
   .lang-label {
-    font-size: 0.85rem;
-    color: #666;
-    margin-right: 4px;
+    font-size: 0.75rem;
+    color: #999;
+    margin-right: 2px;
+    font-weight: 500;
   }
 
   .lang-btn {
-    padding: 4px 10px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    border: 1px solid #ccc;
+    padding: 3px 9px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1.5px solid #e0e0e0;
     border-radius: 6px;
-    background: #f5f5f5;
-    color: #333;
+    background: transparent;
+    color: #555;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.18s ease;
+    letter-spacing: 0.04rem;
 
     &:hover {
-      background: #eee;
-      border-color: #999;
+      background: #f5f5f5;
+      border-color: #bbb;
+      color: #222;
     }
 
     &.active {
       background: #d32f2f;
       border-color: #d32f2f;
       color: #fff;
+      box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
     }
   }
 }

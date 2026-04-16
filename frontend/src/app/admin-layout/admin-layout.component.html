@@ -1,0 +1,129 @@
+<div class="admin-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <span class="sidebar-logo" *ngIf="!sidebarCollapsed">HUEBER</span>
+      <button class="toggle-btn" (click)="toggleSidebar()" title="Menüyü Aç/Kapat">
+        <i class="fas" [class.fa-bars]="sidebarCollapsed" [class.fa-chevron-left]="!sidebarCollapsed"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <!-- Dashboard -->
+      <a class="nav-item" routerLink="/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+        <i class="fas fa-tachometer-alt nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Dashboard</span>
+      </a>
+
+      <!-- Siparişler -->
+      <a class="nav-item" routerLink="/admin/orders" routerLinkActive="active">
+        <i class="fas fa-shopping-cart nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Siparişler</span>
+      </a>
+
+      <!-- Kitaplar group -->
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('books')" [class.open]="openGroups['books']">
+          <i class="fas fa-book nav-icon"></i>
+          <span class="nav-label" *ngIf="!sidebarCollapsed">Kitaplar</span>
+          <i class="fas fa-chevron-down arrow-icon" *ngIf="!sidebarCollapsed" [class.rotated]="openGroups['books']"></i>
+        </button>
+        <div class="nav-group-items" [class.expanded]="openGroups['books']" *ngIf="!sidebarCollapsed">
+          <a class="nav-sub-item" routerLink="/admin/books" routerLinkActive="active">
+            <i class="fas fa-list"></i> Kitap Listesi
+          </a>
+          <a class="nav-sub-item" routerLink="/admin/add-book" routerLinkActive="active">
+            <i class="fas fa-plus-circle"></i> Kitap Ekle
+          </a>
+        </div>
+      </div>
+
+      <!-- Mail group -->
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('mail')" [class.open]="openGroups['mail']">
+          <i class="fas fa-envelope nav-icon"></i>
+          <span class="nav-label" *ngIf="!sidebarCollapsed">Mail</span>
+          <i class="fas fa-chevron-down arrow-icon" *ngIf="!sidebarCollapsed" [class.rotated]="openGroups['mail']"></i>
+        </button>
+        <div class="nav-group-items" [class.expanded]="openGroups['mail']" *ngIf="!sidebarCollapsed">
+          <a class="nav-sub-item" routerLink="/admin/send-mail" routerLinkActive="active">
+            <i class="fas fa-paper-plane"></i> Mail Gönder
+          </a>
+          <a class="nav-sub-item" routerLink="/admin/bulk-mail" routerLinkActive="active">
+            <i class="fas fa-mail-bulk"></i> Toplu Mail
+          </a>
+        </div>
+      </div>
+
+      <!-- Özel Sipariş -->
+      <a class="nav-item" routerLink="/admin/custom-order" routerLinkActive="active">
+        <i class="fas fa-pen-nib nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Özel Sipariş</span>
+      </a>
+
+      <!-- Kullanıcılar -->
+      <a class="nav-item" routerLink="/admin/users" routerLinkActive="active">
+        <i class="fas fa-users nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Kullanıcılar</span>
+      </a>
+
+      <!-- Loglar -->
+      <a class="nav-item" routerLink="/admin/logs" routerLinkActive="active">
+        <i class="fas fa-file-alt nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Loglar</span>
+      </a>
+
+      <!-- Form Builder -->
+      <a class="nav-item" routerLink="/admin/order-form-builder" routerLinkActive="active">
+        <i class="fas fa-tools nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Form Builder</span>
+      </a>
+
+      <!-- Lisencode CSV -->
+      <a class="nav-item" routerLink="/admin/lisencode-csv" routerLinkActive="active">
+        <i class="fas fa-file-csv nav-icon"></i>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Lisencode CSV</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
+      <div class="user-info">
+        <i class="fas fa-user-circle"></i>
+        <span>{{ userName }}</span>
+      </div>
+      <button class="logout-btn-sidebar" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i> Çıkış
+      </button>
+    </div>
+    <div class="sidebar-footer-collapsed" *ngIf="sidebarCollapsed">
+      <button class="logout-btn-icon" (click)="logout()" title="Çıkış">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content" [class.expanded]="sidebarCollapsed">
+
+    <!-- Sticky Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">
+          <i class="fas {{ pageIcon }}"></i> {{ pageTitle }}
+        </h1>
+      </div>
+      <div class="topbar-right">
+        <span class="date-chip"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
+        <span class="time-chip"><i class="fas fa-clock"></i> {{ currentTime }}</span>
+        <span class="welcome-chip">Hoş geldin, <strong>{{ userName }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+
+  </div>
+</div>

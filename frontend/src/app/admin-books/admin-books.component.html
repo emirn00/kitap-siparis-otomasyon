@@ -1,99 +1,96 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
-    </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'books' | translate }}</h2>
-    </div>
-    <div class="header-spacer"></div>
-  </div>
+<mat-card class="form-card">
+  <mat-card-content>
+    <h2 class="section-title">{{ 'bookManagement' | translate }}</h2>
+    <p class="section-description">{{ 'bookManagementDesc' | translate }}</p>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <h2 class="section-title">{{ 'bookManagement' | translate }}</h2>
-      <p class="section-description">{{ 'bookManagementDesc' | translate }}</p>
+    <!-- Alerts -->
+    <div *ngIf="addSuccess"    class="alert alert-success"><i class="fas fa-check-circle"></i> {{ addSuccess }}</div>
+    <div *ngIf="updateSuccess" class="alert alert-success"><i class="fas fa-check-circle"></i> {{ updateSuccess }}</div>
+    <div *ngIf="updateError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ updateError }}</div>
+    <div *ngIf="deleteError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ deleteError }}</div>
 
-      <div *ngIf="addSuccess" class="alert alert-success">
-        <span>{{ addSuccess }}</span>
-      </div>
-      <div *ngIf="updateSuccess" class="alert alert-success">
-        <span>{{ updateSuccess }}</span>
-      </div>
-      <div *ngIf="updateError" class="alert alert-error">
-        <span>{{ updateError }}</span>
-      </div>
-      <div *ngIf="deleteError" class="alert alert-error">
-        <span>{{ deleteError }}</span>
-      </div>
-
-      <div class="filters-section">
-        <div class="search-header">
-          <div class="custom-input-group">
-            <div class="search-input-wrapper">
-              <i class="search-icon">🔍</i>
-              <input type="text" class="custom-search-input" [(ngModel)]="searchTerm"
-                [ngModelOptions]="{ standalone: true }" (keyup.enter)="onSearch()"
-                [placeholder]="'searchPlaceholder' | translate">
-            </div>
-            <button class="btn-search" (click)="onSearch()">
-              {{ 'search' | translate }}
-            </button>
-          </div>
-          <a mat-flat-button color="accent" routerLink="/admin/add-book" class="btn-add-book">
-            {{ 'addBook' | translate }}
-          </a>
-        </div>
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-value">{{ getTotalBooks() }}</div>
-            <div class="stat-label">{{ 'totalBooks' | translate }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="books-list" *ngIf="!booksLoading && filteredBooks.length > 0">
-        <app-book-card *ngFor="let book of paginatedBooks" [book]="book" [isEditing]="editingBook?.id === book.id"
-          [isDeleting]="deletingBookId === book.id" (edit)="startEdit($event)" (delete)="confirmDelete($event)"
-          (save)="saveBook()" (cancel)="cancelEdit()" (confirmDelete)="deleteBook()" (cancelDelete)="cancelDelete()">
-        </app-book-card>
-      </div>
-
-      <!-- Pagination -->
-      <div class="pagination-container" *ngIf="!booksLoading && totalPages > 1">
-        <div class="pagination-info">
-          {{ pageRangeStart }}–{{ pageRangeEnd }} / {{ filteredBooks.length }} kitap
-        </div>
-        <div class="pagination-controls">
-          <button class="page-btn nav-btn" (click)="prevPage()" [disabled]="currentPage === 1">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-
-          <ng-container *ngFor="let p of pageNumbers">
-            <button class="page-btn" [class.active]="p === currentPage" (click)="goToPage(p)">
-              {{ p }}
-            </button>
-          </ng-container>
-
-          <button class="page-btn nav-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-            <i class="fas fa-chevron-right"></i>
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="search-row">
+        <div class="search-box">
+          <input type="text" class="search-input" [(ngModel)]="searchTerm"
+            [ngModelOptions]="{ standalone: true }" (keyup.enter)="onSearch()"
+            [placeholder]="'searchPlaceholder' | translate">
+          <button class="search-submit" (click)="onSearch()">
+            <i class="fas fa-search"></i>
           </button>
         </div>
+        <a routerLink="/admin/add-book" class="add-book-btn">
+          <i class="fas fa-plus"></i> {{ 'addBook' | translate }}
+        </a>
       </div>
 
-      <div *ngIf="booksLoading" class="books-loading">
-        {{ 'booksLoading' | translate }}
+      <!-- Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-book"></i></div>
+          <div class="stat-value">{{ getTotalBooks() }}</div>
+          <div class="stat-label">{{ 'totalBooks' | translate }}</div>
+        </div>
+        <div class="stat-card search-stat" *ngIf="searchTerm">
+          <div class="stat-icon"><i class="fas fa-search"></i></div>
+          <div class="stat-value">{{ filteredBooks.length }}</div>
+          <div class="stat-label">Sonuç</div>
+        </div>
       </div>
-      <div *ngIf="booksLoadError" class="alert alert-error">
-        <span>{{ booksLoadError }}</span>
-      </div>
+    </div>
 
-      <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && filteredBooks.length === 0">
-        <p>{{ 'noResults' | translate }}</p>
-        <p class="empty-hint">{{ 'noResultsHint' | translate }}</p>
-        <a mat-raised-button color="primary" routerLink="/admin/add-book">{{ 'addBook' | translate }}</a>
+    <!-- Loading -->
+    <div *ngIf="booksLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ 'booksLoading' | translate }}</p>
+    </div>
+    <div *ngIf="booksLoadError" class="alert alert-error">
+      <i class="fas fa-exclamation-circle"></i> {{ booksLoadError }}
+    </div>
+
+    <!-- Books List -->
+    <div class="books-list" *ngIf="!booksLoading && filteredBooks.length > 0">
+      <app-book-card
+        *ngFor="let book of paginatedBooks"
+        [book]="book"
+        [isEditing]="editingBook?.id === book.id"
+        [isDeleting]="deletingBookId === book.id"
+        (edit)="startEdit($event)"
+        (delete)="confirmDelete($event)"
+        (save)="saveBook()"
+        (cancel)="cancelEdit()"
+        (confirmDelete)="deleteBook()"
+        (cancelDelete)="cancelDelete()">
+      </app-book-card>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-bar" *ngIf="!booksLoading && totalPages > 1">
+      <div class="pagination-info">
+        {{ pageRangeStart }}–{{ pageRangeEnd }} / {{ filteredBooks.length }} kitap
       </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+      <div class="page-buttons">
+        <button class="page-btn nav-btn" (click)="prevPage()" [disabled]="currentPage === 1">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="page-btn" *ngFor="let p of pageNumbers"
+          [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
+        <button class="page-btn nav-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && filteredBooks.length === 0">
+      <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+      <p>{{ 'noResults' | translate }}</p>
+      <p class="empty-hint">{{ 'noResultsHint' | translate }}</p>
+      <a routerLink="/admin/add-book" class="add-book-btn">
+        <i class="fas fa-plus"></i> {{ 'addBook' | translate }}
+      </a>
+    </div>
+
+  </mat-card-content>
+</mat-card>

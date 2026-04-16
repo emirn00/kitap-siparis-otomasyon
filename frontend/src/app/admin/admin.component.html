@@ -1,75 +1,148 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-spacer"></div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'adminPanel' | translate }}</h2>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="logout-btn" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> {{ 'logout' | translate }}
-      </button>
-    </div>
-  </div>
+<!-- Loading -->
+<div class="loading-overlay" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Veriler yükleniyor...</p>
+</div>
 
-  <div class="dashboard-container">
-    <div class="welcome-section">
-      <div class="welcome-greeting">
-        <h2 class="welcome-title">Hoş Geldin, <span class="name">{{ userName }}</span> 👋</h2>
-        <div class="datetime-info">
-          <span class="date-badge"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
-          <span class="time-badge"><i class="fas fa-clock"></i> {{ currentTime }}</span>
-        </div>
+<!-- Dashboard -->
+<div class="dashboard-body" *ngIf="!loading">
+
+  <!-- KPI Cards Row -->
+  <div class="kpi-row">
+    <div class="kpi-card kpi-total">
+      <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ totalOrders }}</div>
+        <div class="kpi-label">Toplam Sipariş</div>
       </div>
-      <p class="welcome-subtitle">{{ 'welcomeSub' | translate }}</p>
     </div>
-
-    <div class="admin-cards-grid">
-      <mat-card class="admin-card" routerLink="/admin/orders">
-        <h3 class="card-title">{{ 'orders' | translate }}</h3>
-        <p class="card-description">{{ 'ordersDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/books">
-        <h3 class="card-title">{{ 'books' | translate }}</h3>
-        <p class="card-description">{{ 'booksDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/send-mail">
-        <h3 class="card-title">{{ 'sendMail' | translate }}</h3>
-        <p class="card-description">{{ 'sendMailDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/bulk-mail">
-        <h3 class="card-title">{{ 'bulkMailCardTitle' | translate }}</h3>
-        <p class="card-description">{{ 'bulkMailCardDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/custom-order">
-        <h3 class="card-title">{{ 'customOrder' | translate }}</h3>
-        <p class="card-description">{{ 'customOrderDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/users">
-        <h3 class="card-title">{{ 'users' | translate }}</h3>
-        <p class="card-description">{{ 'usersDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/logs">
-        <h3 class="card-title">{{ 'logs' | translate }}</h3>
-        <p class="card-description">{{ 'logsDesc' | translate }}</p>
-      </mat-card>
-
-      <mat-card class="admin-card" routerLink="/admin/order-form-builder">
-        <h3 class="card-title">{{ 'orderFormBuilder' | translate }}</h3>
-        <p class="card-description">{{ 'orderFormBuilderDesc' | translate }}</p>
-      </mat-card>
-
-
-      <mat-card class="admin-card" routerLink="/admin/lisencode-csv">
-        <h3 class="card-title">{{ 'lisencodeCsv' | translate }}</h3>
-        <p class="card-description">{{ 'lisencodeCsvCardDesc' | translate }}</p>
-      </mat-card>
+    <div class="kpi-card kpi-completed">
+      <div class="kpi-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ completedOrders }}</div>
+        <div class="kpi-label">Tamamlanan</div>
+      </div>
+    </div>
+    <div class="kpi-card kpi-pending">
+      <div class="kpi-icon"><i class="fas fa-hourglass-half"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ pendingOrders }}</div>
+        <div class="kpi-label">Bekleyen</div>
+      </div>
+    </div>
+    <div class="kpi-card kpi-canceled">
+      <div class="kpi-icon"><i class="fas fa-times-circle"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ canceledOrders }}</div>
+        <div class="kpi-label">İptal</div>
+      </div>
+    </div>
+    <div class="kpi-card kpi-books">
+      <div class="kpi-icon"><i class="fas fa-book-open"></i></div>
+      <div class="kpi-info">
+        <div class="kpi-value">{{ totalBooksOrdered }}</div>
+        <div class="kpi-label">Toplam Kitap</div>
+      </div>
     </div>
   </div>
+
+  <!-- Charts Row 1: Monthly trend + Status Doughnut -->
+  <div class="charts-row">
+    <div class="chart-card chart-wide">
+      <div class="chart-header">
+        <h3><i class="fas fa-chart-line"></i> Aylara Göre Siparişler</h3>
+        <span class="chart-sub">Son 12 ay</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="monthlyChartData"
+          [labels]="monthlyChartLabels"
+          [options]="monthlyChartOptions"
+          [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card chart-narrow">
+      <div class="chart-header">
+        <h3><i class="fas fa-chart-pie"></i> Sipariş Durumları</h3>
+        <span class="chart-sub">Dağılım</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="statusDoughnutData"
+          [labels]="statusDoughnutLabels"
+          [options]="doughnutOptions"
+          [type]="'doughnut'">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 2: Status bar + Top books -->
+  <div class="charts-row">
+    <div class="chart-card chart-half">
+      <div class="chart-header">
+        <h3><i class="fas fa-chart-bar"></i> Durumlara Göre Siparişler</h3>
+        <span class="chart-sub">Karşılaştırma</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="statusBarData"
+          [labels]="statusBarLabels"
+          [options]="statusBarOptions"
+          [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card chart-half">
+      <div class="chart-header">
+        <h3><i class="fas fa-book"></i> En Çok Sipariş Edilen Kitaplar</h3>
+        <span class="chart-sub">İlk 8</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="topBooksData"
+          [labels]="topBooksLabels"
+          [options]="topBooksOptions"
+          [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row 3: Weekly trend + Completion rate -->
+  <div class="charts-row">
+    <div class="chart-card chart-half">
+      <div class="chart-header">
+        <h3><i class="fas fa-chart-area"></i> Haftalık Sipariş Trendi</h3>
+        <span class="chart-sub">Son 8 hafta</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="weeklyChartData"
+          [labels]="weeklyChartLabels"
+          [options]="weeklyChartOptions"
+          [type]="'line'">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card chart-half">
+      <div class="chart-header">
+        <h3><i class="fas fa-percentage"></i> Tamamlanma Oranı</h3>
+        <span class="chart-sub">Aylık bazda</span>
+      </div>
+      <div class="chart-body">
+        <canvas baseChart
+          [datasets]="completionRateData"
+          [labels]="completionRateLabels"
+          [options]="completionRateOptions"
+          [type]="'bar'">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
 </div>

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgChartsModule } from 'ng2-charts';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
@@ -21,9 +22,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 
 import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
+import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthInterceptor } from "./auth/auth.interceptor";
@@ -51,6 +54,7 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
     TranslatePipe,
     OrderFormComponent,
     HelpFormComponent,
+    AdminLayoutComponent,
     AdminComponent,
     LoginComponent,
     RegisterComponent,
@@ -89,7 +93,9 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    HttpClientModule
+    MatIconModule,
+    HttpClientModule,
+    NgChartsModule
   ],
   providers: [
     {

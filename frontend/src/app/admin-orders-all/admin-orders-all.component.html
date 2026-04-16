@@ -1,235 +1,243 @@
-<div class="admin-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <a routerLink="/admin" class="header-nav-btn"><i class="fas fa-arrow-left"></i> {{ 'adminHome' | translate }}</a>
+<mat-card class="form-card">
+  <mat-card-content>
+    <h2 class="section-title">{{ 'ordersSectionTitle' | translate }}</h2>
+    <p class="section-description">{{ 'ordersSectionDesc' | translate }}</p>
+
+    <!-- Date Filter Bar -->
+    <div class="date-filter-bar">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>{{ 'startDate' | translate }}</mat-label>
+        <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+        <mat-icon matSuffix style="font-size:16px;color:#aaa;">calendar_today</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>{{ 'endDate' | translate }}</mat-label>
+        <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+        <mat-icon matSuffix style="font-size:16px;color:#aaa;">calendar_today</mat-icon>
+      </mat-form-field>
+
+      <button class="filter-btn primary-btn" (click)="fetchOrdersByDate()"
+        [disabled]="!startDate || !endDate || loading">
+        <i class="fas fa-search"></i> {{ 'fetchByDate' | translate }}
+      </button>
+      <button class="filter-btn ghost-btn" (click)="resetDateFilter()" [disabled]="loading">
+        <i class="fas fa-times"></i> {{ 'allOrders' | translate }}
+      </button>
     </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'ordersAll' | translate }}</h2>
+    <p *ngIf="dateFilterActive && !loading" class="date-filter-hint">
+      <i class="fas fa-info-circle"></i> {{ 'dateFilterHint' | translate }} ({{ startDate }} – {{ endDate }})
+    </p>
+
+    <!-- Loading & Error -->
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>{{ 'loading' | translate }}</p>
     </div>
-    <div class="header-spacer"></div>
-  </div>
+    <div *ngIf="error" class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
 
-  <mat-card class="form-card">
-    <mat-card-content>
-      <!-- Title -->
-      <h2 class="section-title">{{ 'ordersSectionTitle' | translate }}</h2>
-      <p class="section-description">
-        {{ 'ordersSectionDesc' | translate }}
-      </p>
+    <!-- Search + Status Filter + Stats -->
+    <div class="filters-section" *ngIf="!loading">
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>{{ 'search' | translate }}</mat-label>
+          <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{ standalone: true }"
+            (input)="onSearch()" [placeholder]="'searchOrdersPlaceholder' | translate">
+        </mat-form-field>
 
-      <!-- Tarihe göre filtreleme -->
-      <div class="date-filters-section">
-        <div class="date-filters">
-          <mat-form-field appearance="outline" class="date-field">
-            <mat-label>{{ 'startDate' | translate }}</mat-label>
-            <input matInput type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
-          </mat-form-field>
+        <mat-form-field appearance="outline" class="status-field">
+          <mat-label>{{ 'status' | translate }}</mat-label>
+          <mat-select [(ngModel)]="statusFilter" [ngModelOptions]="{ standalone: true }"
+            (selectionChange)="onStatusFilterChange()">
+            <mat-option value="all">{{ 'all' | translate }}</mat-option>
+            <mat-option value="PENDING">{{ 'statusPending' | translate }}</mat-option>
+            <mat-option value="COMPLETED">{{ 'statusCompleted' | translate }}</mat-option>
+            <mat-option value="CANCELED">{{ 'statusCanceled' | translate }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-          <mat-form-field appearance="outline" class="date-field">
-            <mat-label>{{ 'endDate' | translate }}</mat-label>
-            <input matInput type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" (click)="fetchOrdersByDate()"
-            [disabled]="!startDate || !endDate || loading" class="fetch-button">
-            {{ 'fetchByDate' | translate }}
-          </button>
-
-          <button mat-button type="button" (click)="resetDateFilter()" [disabled]="loading">
-            {{ 'allOrders' | translate }}
-          </button>
+      <!-- Compact Stat Cards -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+          <div class="stat-value">{{ getTotalOrders() }}</div>
+          <div class="stat-label">{{ 'total' | translate }}</div>
         </div>
-        <p *ngIf="dateFilterActive && !loading" class="date-filter-hint">
-          {{ 'dateFilterHint' | translate }} ({{ startDate }} – {{ endDate }}).
-        </p>
-      </div>
-
-      <!-- Loading & Error -->
-      <div *ngIf="loading" class="loading-container">
-        <mat-spinner diameter="50"></mat-spinner>
-        <p>{{ 'loading' | translate }}</p>
-      </div>
-      <div *ngIf="error" class="alert alert-error">
-        <span>{{ error }}</span>
-      </div>
-
-      <!-- Filters -->
-      <div class="filters-section" *ngIf="!loading">
-        <div class="filters-row">
-          <mat-form-field appearance="outline" class="search-field">
-            <mat-label>{{ 'search' | translate }}</mat-label>
-            <input matInput [(ngModel)]="searchTerm" [ngModelOptions]="{ standalone: true }" (input)="onSearch()"
-              [placeholder]="'searchOrdersPlaceholder' | translate">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="status-field">
-            <mat-label>{{ 'status' | translate }}</mat-label>
-            <mat-select [(ngModel)]="statusFilter" [ngModelOptions]="{ standalone: true }"
-              (selectionChange)="onStatusFilterChange()">
-              <mat-option value="all">{{ 'all' | translate }}</mat-option>
-              <mat-option value="PENDING">{{ 'statusPending' | translate }}</mat-option>
-              <mat-option value="COMPLETED">{{ 'statusCompleted' | translate }}</mat-option>
-              <mat-option value="CANCELED">{{ 'statusCanceled' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
+        <div class="stat-card pending-stat">
+          <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+          <div class="stat-value">{{ getPendingOrders() }}</div>
+          <div class="stat-label">{{ 'statusPending' | translate }}</div>
         </div>
-
-        <!-- Stats -->
-        <div class="stats-row">
-          <div class="stat-card">
-            <div class="stat-value">{{ getTotalOrders() }}</div>
-            <div class="stat-label">{{ 'total' | translate }}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">{{ getPendingOrders() }}</div>
-            <div class="stat-label">{{ 'statusPending' | translate }}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">{{ getCompletedOrders() }}</div>
-            <div class="stat-label">{{ 'statusCompleted' | translate }}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">{{ getCanceledOrders() }}</div>
-            <div class="stat-label">{{ 'statusCanceled' | translate }}</div>
-          </div>
+        <div class="stat-card completed-stat">
+          <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+          <div class="stat-value">{{ getCompletedOrders() }}</div>
+          <div class="stat-label">{{ 'statusCompleted' | translate }}</div>
+        </div>
+        <div class="stat-card canceled-stat">
+          <div class="stat-icon"><i class="fas fa-times-circle"></i></div>
+          <div class="stat-value">{{ getCanceledOrders() }}</div>
+          <div class="stat-label">{{ 'statusCanceled' | translate }}</div>
         </div>
       </div>
+    </div>
 
-      <!-- Orders List -->
-      <div class="orders-list" *ngIf="!loading && filteredOrders.length > 0">
-        <mat-card *ngFor="let order of filteredOrders" class="order-card">
-          <mat-card-header>
-            <div class="order-header">
-              <div class="order-title-section">
-                <h3 class="order-name">{{ order.fullName }}</h3>
-                <span class="order-id">#{{ order.id }}</span>
-              </div>
-              <span class="order-status" [style.backgroundColor]="getStatusColor(order.status)">
-                {{ getStatusLabel(order.status) }}
+    <!-- Orders List -->
+    <div class="orders-list" *ngIf="!loading && filteredOrders.length > 0">
+      <div class="order-summary-card" *ngFor="let order of filteredOrders"
+        [class.status-pending]="order.status === 'PENDING'"
+        [class.status-completed]="order.status === 'COMPLETED'"
+        [class.status-canceled]="order.status === 'CANCELED'">
+
+        <!-- Card Header -->
+        <div class="order-card-header">
+          <div class="order-info-left">
+            <div class="order-avatar" [class.avatar-completed]="order.status === 'COMPLETED'"
+              [class.avatar-canceled]="order.status === 'CANCELED'">
+              <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="order-details">
+              <h3 class="order-name">{{ order.fullName }}</h3>
+              <span class="order-email" *ngIf="order.email"><i class="fas fa-envelope"></i> {{ order.email }}</span>
+            </div>
+          </div>
+
+          <div class="order-meta">
+            <span class="status-badge"
+              [class.badge-pending]="order.status === 'PENDING'"
+              [class.badge-completed]="order.status === 'COMPLETED'"
+              [class.badge-canceled]="order.status === 'CANCELED'">
+              <i class="fas"
+                [class.fa-hourglass-half]="order.status === 'PENDING'"
+                [class.fa-check-circle]="order.status === 'COMPLETED'"
+                [class.fa-times-circle]="order.status === 'CANCELED'"></i>
+              {{ getStatusLabel(order.status) }}
+            </span>
+            <span class="order-date"><i class="fas fa-calendar-alt"></i> {{ formatDate(order.createdAt) }}</span>
+            <span class="books-count-badge"><i class="fas fa-book"></i> {{ order.selectedBooks.length }} kitap</span>
+          </div>
+        </div>
+
+        <!-- Delete Confirm Box -->
+        <div class="delete-confirm-box" *ngIf="deletingOrderId === order.id">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span>{{ 'deleteOrderConfirm' | translate }}</span>
+          <div *ngIf="deleteOrderError" class="alert alert-error" style="margin:0.5rem 0 0">{{ deleteOrderError }}</div>
+          <div class="delete-confirm-actions">
+            <button class="action-btn confirm-delete-btn" (click)="deleteOrder()">
+              <i class="fas fa-trash"></i> {{ 'yesDelete' | translate }}
+            </button>
+            <button class="action-btn cancel-btn" (click)="cancelDeleteOrder()">
+              <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="order-body" *ngIf="deletingOrderId !== order.id">
+          <div class="order-details-grid">
+            <div class="detail-chip" *ngIf="order.phone">
+              <i class="fas fa-phone"></i> {{ order.phone }}
+            </div>
+            <div class="detail-chip" *ngIf="order.school">
+              <i class="fas fa-school"></i> {{ order.school }}
+            </div>
+            <div class="detail-chip" *ngIf="order.city">
+              <i class="fas fa-map-marker-alt"></i> {{ order.city }}
+            </div>
+            <div class="detail-chip" *ngIf="order.workingBooks">
+              <i class="fas fa-book-open"></i> {{ order.workingBooks }}
+            </div>
+          </div>
+
+          <!-- Books Tags -->
+          <div class="books-section">
+            <div class="books-tags" *ngIf="editingOrderId !== order.id">
+              <span class="book-tag" *ngFor="let book of order.selectedBooks">{{ book }}</span>
+              <span class="no-books" *ngIf="order.selectedBooks.length === 0">
+                {{ 'noBooksSelected' | translate }}
               </span>
-              <div class="order-moderation-actions" *ngIf="order.status === 'PENDING'">
-                <button mat-raised-button color="primary" (click)="updateOrderStatus(order.id, 'COMPLETED')"
-                  class="btn-approve">
-                  {{ 'approve' | translate }}
-                </button>
-                <button mat-stroked-button color="warn" (click)="updateOrderStatus(order.id, 'CANCELED')"
-                  class="btn-reject">
-                  {{ 'reject' | translate }}
-                </button>
-              </div>
-              <div class="order-actions-header">
-                <button mat-stroked-button color="warn" (click)="confirmDeleteOrder(order.id)" type="button"
-                  [disabled]="deletingOrderId !== null && deletingOrderId !== order.id" class="btn-delete-order">
-                  {{ 'deleteOrder' | translate }}
-                </button>
-              </div>
-            </div>
-          </mat-card-header>
-
-          <mat-card-content>
-            <!-- Sipariş silme onayı -->
-            <div *ngIf="deletingOrderId === order.id" class="delete-confirm-box">
-              <p>{{ 'deleteOrderConfirm' | translate }}</p>
-              <div *ngIf="deleteOrderError" class="alert alert-error">{{ deleteOrderError }}</div>
-              <button mat-raised-button color="warn" (click)="deleteOrder()">{{ 'yesDelete' | translate }}</button>
-              <button mat-button (click)="cancelDeleteOrder()">{{ 'cancel' | translate }}</button>
             </div>
 
-            <div class="order-details-grid" *ngIf="deletingOrderId !== order.id">
-              <div class="detail-item">
-                <strong>{{ 'email' | translate }}:</strong>
-                <span>{{ order.email || ('notSpecified' | translate) }}</span>
-              </div>
-              <div class="detail-item">
-                <strong>{{ 'phone' | translate }}:</strong>
-                <span>{{ order.phone || ('notSpecified' | translate) }}</span>
-              </div>
-              <div class="detail-item">
-                <strong>{{ 'schoolLabel' | translate }}:</strong>
-                <span>{{ order.school || ('notSpecified' | translate) }}</span>
-              </div>
-              <div class="detail-item">
-                <strong>{{ 'cityLabel' | translate }}:</strong>
-                <span>{{ order.city || ('notSpecified' | translate) }}</span>
-              </div>
-              <div class="detail-item full-width">
-                <strong>{{ 'workingBooksLabel' | translate }}:</strong>
-                <span>{{ order.workingBooks || ('notSpecified' | translate) }}</span>
-              </div>
-              <div class="detail-item full-width books-section">
-                <strong>{{ 'selectedBooksLabel' | translate }}:</strong>
-                <div class="books-list" *ngIf="editingOrderId !== order.id">
-                  <span *ngFor="let book of order.selectedBooks" class="book-tag">{{ book }}</span>
-                  <span *ngIf="order.selectedBooks.length === 0" class="no-books">
-                    {{ 'noBooksSelected' | translate }}
+            <!-- Edit Books Panel -->
+            <div class="edit-books-panel" *ngIf="editingOrderId === order.id">
+              <div *ngIf="editBooksError" class="alert alert-error">{{ editBooksError }}</div>
+              <div class="edit-books-current">
+                <span class="panel-label">{{ 'currentBooks' | translate }}:</span>
+                <div class="edit-books-tags">
+                  <span class="book-tag with-remove" *ngFor="let book of editBooksList">
+                    {{ book.requestName }}
+                    <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)">×</button>
                   </span>
-                </div>
-                <div *ngIf="editingOrderId !== order.id" class="edit-books-actions">
-                  <button mat-stroked-button color="primary" (click)="startEditBooks(order)" type="button">
-                    {{ 'editSelectedBooks' | translate }}
-                  </button>
-                </div>
-
-                <!-- Düzenleme paneli -->
-                <div *ngIf="editingOrderId === order.id" class="edit-books-panel">
-                  <div *ngIf="editBooksError" class="alert alert-error">{{ editBooksError }}</div>
-                  <div class="edit-books-current">
-                    <strong>{{ 'currentBooks' | translate }}:</strong>
-                    <div class="edit-books-tags">
-                      <span *ngFor="let book of editBooksList" class="book-tag with-remove">
-                        {{ book.requestName }}
-                        <button type="button" class="btn-remove-book" (click)="removeBookFromEdit(book.id)"
-                          [attr.aria-label]="'removeLabel' | translate">×</button>
-                      </span>
-                      <span *ngIf="editBooksList.length === 0" class="no-books">{{ 'noBooksYet' | translate }}</span>
-                    </div>
-                  </div>
-                  <div class="edit-books-add" *ngIf="!allBooksLoading">
-                    <strong>{{ 'addBookFromList' | translate }}:</strong>
-                    <p class="add-books-hint">{{ 'addBooksHint' | translate }}</p>
-                    <div class="add-book-search-row">
-                      <mat-form-field appearance="outline" class="add-book-search-field">
-                        <mat-label>{{ 'search' | translate }} ({{ 'searchBookPlaceholder' | translate }})</mat-label>
-                        <input matInput [(ngModel)]="addBookSearchTerm" [ngModelOptions]="{ standalone: true }"
-                          [placeholder]="'searchBookPlaceholder' | translate">
-                      </mat-form-field>
-                    </div>
-                    <div class="add-book-buttons">
-                      <button mat-stroked-button *ngFor="let book of getFilteredBooksToAdd()" type="button"
-                        (click)="addBookToEdit(book)">
-                        + {{ book.requestName }}
-                      </button>
-                      <span *ngIf="getAvailableBooksToAdd().length === 0" class="no-more-books">{{ 'noMoreBooksToAdd' |
-                        translate }}</span>
-                      <span *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0"
-                        class="no-more-books">{{ 'noMatchBooks' | translate }}</span>
-                    </div>
-                  </div>
-                  <p *ngIf="allBooksLoading" class="loading-books">{{ 'booksLoading' | translate }}</p>
-                  <div class="edit-books-footer">
-                    <button mat-raised-button color="primary" (click)="saveOrderBooks()" [disabled]="editBooksSaving">
-                      {{ editBooksSaving ? ('saving' | translate) : ('save' | translate) }}
-                    </button>
-                    <button mat-button (click)="cancelEditBooks()" [disabled]="editBooksSaving">{{ 'cancel' | translate
-                      }}</button>
-                  </div>
+                  <span class="no-books" *ngIf="editBooksList.length === 0">{{ 'noBooksYet' | translate }}</span>
                 </div>
               </div>
-              <div class="detail-item">
-                <strong>{{ 'dateLabel' | translate }}:</strong>
-                <span>{{ formatDate(order.createdAt) }}</span>
+              <div class="edit-books-add" *ngIf="!allBooksLoading">
+                <span class="panel-label">{{ 'addBookFromList' | translate }}:</span>
+                <div class="add-book-search-row">
+                  <mat-form-field appearance="outline" class="add-book-search-field">
+                    <mat-label>{{ 'search' | translate }}</mat-label>
+                    <input matInput [(ngModel)]="addBookSearchTerm" [ngModelOptions]="{ standalone: true }"
+                      [placeholder]="'searchBookPlaceholder' | translate">
+                  </mat-form-field>
+                </div>
+                <div class="add-book-buttons">
+                  <button class="add-book-btn" *ngFor="let book of getFilteredBooksToAdd()" type="button"
+                    (click)="addBookToEdit(book)">
+                    <i class="fas fa-plus"></i> {{ book.requestName }}
+                  </button>
+                  <span class="no-more-books" *ngIf="getAvailableBooksToAdd().length === 0">{{ 'noMoreBooksToAdd' | translate }}</span>
+                  <span class="no-more-books" *ngIf="getAvailableBooksToAdd().length > 0 && getFilteredBooksToAdd().length === 0">{{ 'noMatchBooks' | translate }}</span>
+                </div>
+              </div>
+              <p *ngIf="allBooksLoading" class="loading-books">{{ 'booksLoading' | translate }}</p>
+              <div class="edit-books-footer">
+                <button class="action-btn save-btn" (click)="saveOrderBooks()" [disabled]="editBooksSaving">
+                  <i class="fas fa-check"></i> {{ editBooksSaving ? ('saving' | translate) : ('save' | translate) }}
+                </button>
+                <button class="action-btn cancel-btn" (click)="cancelEditBooks()" [disabled]="editBooksSaving">
+                  <i class="fas fa-times"></i> {{ 'cancel' | translate }}
+                </button>
               </div>
             </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
+          </div>
+        </div>
 
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
-        <p>{{ 'noResultsOrders' | translate }}</p>
-        <p class="empty-hint">{{ 'emptyHintOrders' | translate }}</p>
+        <!-- Divider + Actions -->
+        <div class="order-card-divider"></div>
+        <div class="order-actions">
+          <ng-container *ngIf="deletingOrderId !== order.id">
+            <!-- Status actions -->
+            <button class="action-btn approve-btn" *ngIf="order.status === 'PENDING'"
+              (click)="updateOrderStatus(order.id, 'COMPLETED')">
+              <i class="fas fa-check"></i> {{ 'approve' | translate }}
+            </button>
+            <button class="action-btn reject-btn" *ngIf="order.status === 'PENDING'"
+              (click)="updateOrderStatus(order.id, 'CANCELED')">
+              <i class="fas fa-ban"></i> {{ 'reject' | translate }}
+            </button>
+            <!-- Edit books -->
+            <button class="action-btn edit-btn" *ngIf="editingOrderId !== order.id"
+              (click)="startEditBooks(order)">
+              <i class="fas fa-pen"></i> {{ 'editSelectedBooks' | translate }}
+            </button>
+            <!-- Delete -->
+            <button class="action-btn delete-btn" (click)="confirmDeleteOrder(order.id)"
+              [disabled]="deletingOrderId !== null && deletingOrderId !== order.id">
+              <i class="fas fa-trash"></i> {{ 'deleteOrder' | translate }}
+            </button>
+          </ng-container>
+        </div>
+
       </div>
-    </mat-card-content>
-  </mat-card>
-</div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && filteredOrders.length === 0">
+      <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+      <p>{{ 'noResultsOrders' | translate }}</p>
+      <p class="empty-hint">{{ 'emptyHintOrders' | translate }}</p>
+    </div>
+
+  </mat-card-content>
+</mat-card>

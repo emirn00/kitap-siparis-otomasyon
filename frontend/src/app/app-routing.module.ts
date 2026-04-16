@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { OrderFormComponent } from './order-form/order-form.component';
 import { HelpFormComponent } from './help-form/help-form.component';
+import { AdminLayoutComponent } from './admin-layout/admin-layout.component';
 import { AdminComponent } from './admin/admin.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './auth/auth.guard';
@@ -23,100 +24,84 @@ import { UserOrdersComponent } from './user-orders/user-orders.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'order', component: OrderFormComponent, canActivate: [AuthGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
+  { path: 'orders', component: UserOrdersComponent, canActivate: [AuthGuard] },
 
-  {
-    path: 'order',
-    component: OrderFormComponent,
-    canActivate: [AuthGuard]
-  },
-
-  {
-    path: 'profile',
-    component: ProfileComponent,
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'orders',
-    component: UserOrdersComponent,
-    canActivate: [AuthGuard]
-  },
+  // Admin shell — sidebar persistent across all admin pages
   {
     path: 'admin',
-    component: AdminComponent,
+    component: AdminLayoutComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
+    data: { role: 'ADMIN' },
+    children: [
+      {
+        path: '',
+        component: AdminComponent,
+        data: { title: 'Dashboard', icon: 'fa-tachometer-alt' }
+      },
+      {
+        path: 'orders',
+        component: AdminOrdersAllComponent,
+        data: { title: 'Siparişler', icon: 'fa-shopping-cart' }
+      },
+      {
+        path: 'books',
+        component: AdminBooksComponent,
+        data: { title: 'Kitap Listesi', icon: 'fa-book' }
+      },
+      {
+        path: 'add-book',
+        component: AdminAddBookComponent,
+        data: { title: 'Kitap Ekle', icon: 'fa-plus-circle' }
+      },
+      {
+        path: 'send-mail',
+        component: AdminSendMailComponent,
+        data: { title: 'Mail Gönder', icon: 'fa-paper-plane' }
+      },
+      {
+        path: 'bulk-mail',
+        component: AdminBulkMailComponent,
+        data: { title: 'Toplu Mail', icon: 'fa-mail-bulk' }
+      },
+      {
+        path: 'custom-order',
+        component: AdminCustomOrderComponent,
+        data: { title: 'Özel Sipariş', icon: 'fa-pen-nib' }
+      },
+      {
+        path: 'users',
+        component: AdminUsersComponent,
+        data: { title: 'Kullanıcılar', icon: 'fa-users' }
+      },
+      {
+        path: 'logs',
+        component: AdminLogsComponent,
+        data: { title: 'Loglar', icon: 'fa-file-alt' }
+      },
+      {
+        path: 'order-form-builder',
+        component: AdminOrderFormBuilderComponent,
+        data: { title: 'Form Builder', icon: 'fa-tools' }
+      },
+      {
+        path: 'lisencode-csv',
+        component: AdminLisencodeCsvComponent,
+        data: { title: 'Lisencode CSV', icon: 'fa-file-csv' }
+      },
+      {
+        path: 'assistant',
+        component: AdminAssistantComponent,
+        data: { title: 'Asistan', icon: 'fa-robot' }
+      }
+    ]
   },
-  {
-    path: 'admin/orders',
-    component: AdminOrdersAllComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/custom-order',
-    component: AdminCustomOrderComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/users',
-    component: AdminUsersComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/logs',
-    component: AdminLogsComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/order-form-builder',
-    component: AdminOrderFormBuilderComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/assistant',
-    component: AdminAssistantComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/add-book',
-    component: AdminAddBookComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/books',
-    component: AdminBooksComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/send-mail',
-    component: AdminSendMailComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/bulk-mail',
-    component: AdminBulkMailComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
-  {
-    path: 'admin/lisencode-csv',
-    component: AdminLisencodeCsvComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { role: 'ADMIN' }
-  },
+
   { path: 'register', component: RegisterComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
