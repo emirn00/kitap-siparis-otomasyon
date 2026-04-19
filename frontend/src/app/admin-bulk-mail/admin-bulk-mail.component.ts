@@ -22,6 +22,15 @@ interface MailTemplate {
   isDefault: boolean;
 }
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: string;
+}
+
 @Component({
   selector: 'app-admin-bulk-mail',
   templateUrl: './admin-bulk-mail.component.html',
@@ -52,7 +61,14 @@ export class AdminBulkMailComponent {
   // Email entry inside modal
   emailInput = '';
   emailInputError = '';
-  recipients: string[] = [];
+  recipients: string[] = []; // Manual emails
+
+  // Registered users
+  allUsers: User[] = [];
+  filteredUsers: User[] = [];
+  userSearchQuery = '';
+  selectedUserEmails: Set<string> = new Set();
+  loadingUsers = false;
 
   // Send state
   sending = false;
@@ -125,6 +141,71 @@ export class AdminBulkMailComponent {
     this.showModal = true;
     this.emailInput = '';
     this.emailInputError = '';
+    this.fetchUsers();
+  }
+
+  fetchUsers(): void {
+    if (this.allUsers.length > 0) {
+      this.applyUserFilter();
+      return;
+    }
+    this.loadingUsers = true;
+    this.http.get<User[]>('http://localhost:8080/users').subscribe({
+      next: (users) => {
+        this.allUsers = users;
+        this.applyUserFilter();
+        this.loadingUsers = false;
+      },
+      error: () => (this.loadingUsers = false),
+    });
+  }
+
+  onUserSearch(): void {
+    this.applyUserFilter();
+  }
+
+  applyUserFilter(): void {
+    const q = this.userSearchQuery.trim().toLowerCase();
+    if (!q) {
+      this.filteredUsers = this.allUsers;
+    } else {
+      this.filteredUsers = this.allUsers.filter(u =>
+        u.firstName.toLowerCase().includes(q) ||
+        u.lastName.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q)
+      );
+    }
+  }
+
+  toggleUserSelection(email: string): void {
+    if (this.selectedUserEmails.has(email)) {
+      this.selectedUserEmails.delete(email);
+    } else {
+      this.selectedUserEmails.add(email);
+    }
+  }
+
+  isUserSelected(email: string): boolean {
+    return this.selectedUserEmails.has(email);
+  }
+
+  toggleSelectAll(event: any): void {
+    const checked = event.target.checked;
+    if (checked) {
+      this.filteredUsers.forEach(u => this.selectedUserEmails.add(u.email));
+    } else {
+      this.filteredUsers.forEach(u => this.selectedUserEmails.delete(u.email));
+    }
+  }
+
+  get areAllFilteredSelected(): boolean {
+    if (this.filteredUsers.length === 0) return false;
+    return this.filteredUsers.every(u => this.selectedUserEmails.has(u.email));
+  }
+
+  get totalRecipientCount(): number {
+    const combined = new Set([...this.recipients, ...Array.from(this.selectedUserEmails)]);
+    return combined.size;
   }
 
   closeModal(): void {
@@ -154,7 +235,8 @@ export class AdminBulkMailComponent {
   }
 
   sendBulkMail(): void {
-    if (this.recipients.length === 0 || this.sending) return;
+    const combinedRecipients = Array.from(new Set([...this.recipients, ...Array.from(this.selectedUserEmails)]));
+    if (combinedRecipients.length === 0 || this.sending) return;
     const tpl = this.activeTemplate;
     if (!tpl) return;
 
@@ -163,7 +245,7 @@ export class AdminBulkMailComponent {
     this.sending = true;
 
     const payload = {
-      toList: [...this.recipients],
+      toList: combinedRecipients,
       subject: tpl.name,
       text: tpl.content,
       includeActivationCode: false,
@@ -180,6 +262,7 @@ export class AdminBulkMailComponent {
           this.successMessage = `${results.length - failed.length} alıcıya gönderildi, ${failed.length} başarısız.`;
         }
         this.recipients = [];
+        this.selectedUserEmails.clear();
         setTimeout(() => (this.successMessage = null), 6000);
       },
       error: (err) => {

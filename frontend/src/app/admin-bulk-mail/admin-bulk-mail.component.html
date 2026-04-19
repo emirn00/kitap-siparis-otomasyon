@@ -175,7 +175,10 @@
 
     <div class="modal-body">
 
-      <!-- Email input -->
+      <!-- Section: Custom Email Add -->
+      <div class="modal-section-title">
+        <i class="fas fa-keyboard"></i> {{ 'bulkMailAddEmail' | translate }}
+      </div>
       <div class="email-input-row">
         <div class="email-input-wrap" [class.has-error]="emailInputError">
           <i class="fas fa-envelope email-input-icon"></i>
@@ -203,30 +206,96 @@
         {{ 'bulkMailDuplicateEmail' | translate }}
       </p>
 
-      <!-- Recipients list -->
-      <div class="recipients-section" *ngIf="recipients.length > 0">
+      <div class="modal-divider"></div>
+
+      <!-- Section: System Users Selection -->
+      <div class="modal-section-header">
+        <div class="modal-section-title">
+          <i class="fas fa-database"></i> {{ 'usersSubtitle' | translate }}
+        </div>
+        <div class="select-all-wrap">
+          <label class="checkbox-container">
+            <input type="checkbox" [checked]="areAllFilteredSelected" (change)="toggleSelectAll($event)">
+            <span class="checkmark"></span>
+            <span class="checkbox-label">{{ 'smSelectAll' | translate }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="user-search-wrap">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          class="user-search-input"
+          [(ngModel)]="userSearchQuery"
+          (input)="onUserSearch()"
+          [placeholder]="'searchUsersPlaceholder' | translate">
+      </div>
+
+      <div class="system-users-list">
+        <div class="loading-overlay" *ngIf="loadingUsers">
+          <i class="fas fa-spinner fa-spin"></i>
+        </div>
+
+        <div class="user-item" *ngFor="let user of filteredUsers" (click)="toggleUserSelection(user.email)">
+          <div class="user-checkbox">
+            <label class="checkbox-container" (click)="$event.stopPropagation()">
+              <input type="checkbox" [checked]="isUserSelected(user.email)" (change)="toggleUserSelection(user.email)">
+              <span class="checkmark"></span>
+            </label>
+          </div>
+          <div class="user-info">
+            <div class="user-name">{{ user.firstName }} {{ user.lastName }}</div>
+            <div class="user-email-text">{{ user.email }}</div>
+          </div>
+          <div class="user-role-tag" [class.admin-tag]="user.role === 'ADMIN'">
+            {{ user.role }}
+          </div>
+        </div>
+
+        <div class="users-empty" *ngIf="!loadingUsers && filteredUsers.length === 0">
+          <i class="fas fa-search"></i>
+          <p>{{ 'noResultsUsers' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+
+      <!-- Section: Summary & Selected -->
+      <div class="recipients-section">
         <div class="recipients-header">
           <span class="recipients-count">
             <i class="fas fa-check-circle"></i>
-            {{ recipients.length }} {{ 'bulkMailRecipientCount' | translate }}
+            {{ totalRecipientCount }} {{ 'bulkMailRecipientCount' | translate }}
           </span>
-          <button class="clear-all-btn" type="button" (click)="clearAll()">
+          <button class="clear-all-btn" type="button" (click)="clearAll(); selectedUserEmails.clear()">
             <i class="fas fa-trash-alt"></i>
             {{ 'bulkMailClearAll' | translate }}
           </button>
         </div>
+
+        <!-- Combined List (Horizontal chips for all selected) -->
         <div class="recipients-list">
-          <div class="recipient-chip" *ngFor="let email of recipients; let i = index">
-            <i class="fas fa-user-circle chip-icon"></i>
+          <!-- Manual Recipients -->
+          <div class="recipient-chip manual-chip" *ngFor="let email of recipients; let i = index">
+            <i class="fas fa-keyboard chip-icon"></i>
             <span class="chip-email">{{ email }}</span>
             <button class="chip-remove" type="button" (click)="removeEmail(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <!-- Selected Users -->
+          <div class="recipient-chip system-chip" *ngFor="let email of selectedUserEmails">
+            <i class="fas fa-user-circle chip-icon"></i>
+            <span class="chip-email">{{ email }}</span>
+            <button class="chip-remove" type="button" (click)="toggleUserSelection(email)">
               <i class="fas fa-times"></i>
             </button>
           </div>
         </div>
       </div>
 
-      <div class="recipients-empty" *ngIf="recipients.length === 0">
+      <div class="recipients-empty" *ngIf="totalRecipientCount === 0">
         <i class="fas fa-inbox"></i>
         <p>{{ 'bulkMailNoRecipientsYet' | translate }}</p>
       </div>
@@ -240,12 +309,12 @@
       <button
         class="modal-send-btn"
         type="button"
-        [disabled]="recipients.length === 0 || sending"
+        [disabled]="totalRecipientCount === 0 || sending"
         (click)="sendBulkMail()">
         <span *ngIf="!sending">
           <i class="fas fa-paper-plane"></i>
           {{ 'bulkMailSend' | translate }}
-          <span class="send-count" *ngIf="recipients.length > 0">({{ recipients.length }})</span>
+          <span class="send-count" *ngIf="totalRecipientCount > 0">({{ totalRecipientCount }})</span>
         </span>
         <span *ngIf="sending">
           <i class="fas fa-spinner fa-spin"></i>

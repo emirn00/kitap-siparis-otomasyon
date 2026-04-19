@@ -671,3 +671,168 @@
     .add-email-btn { width: 100%; justify-content: center; }
   }
 }
+
+/* --- New Styles for Recipients Modal Enhancements --- */
+
+.modal-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  i { color: #d32f2f; font-size: 0.8rem; }
+}
+
+.modal-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 1.5rem 0;
+}
+
+.modal-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  .modal-section-title { margin-bottom: 0; }
+}
+
+.user-search-wrap {
+  position: relative;
+  margin-bottom: 0.75rem;
+  .search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #bbb;
+    font-size: 0.85rem;
+  }
+}
+
+.user-search-input {
+  width: 100%;
+  padding: 0.6rem 0.85rem 0.6rem 2.2rem;
+  border: 1.5px solid #eee;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  outline: none;
+  transition: all 0.2s;
+  background: #fafafa;
+  &:focus {
+    background: #fff;
+    border-color: #d32f2f;
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.08);
+  }
+}
+
+.system-users-list {
+  border: 1.5px solid #eee;
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  position: relative;
+  background: #fff;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  color: #d32f2f;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid #f9f9f9;
+  &:last-child { border-bottom: none; }
+  &:hover { background: #fff8f8; }
+
+  .user-checkbox { flex-shrink: 0; }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 0.875rem; font-weight: 600; color: #333; }
+  .user-email-text { font-size: 0.75rem; color: #777; overflow: hidden; text-overflow: ellipsis; }
+  
+  .user-role-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: #e3f2fd;
+    color: #1565c0;
+    text-transform: uppercase;
+    &.admin-tag { background: #ffebee; color: #c62828; }
+  }
+}
+
+.users-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #ccc;
+  i { font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5; }
+  p { font-size: 0.85rem; margin: 0; }
+}
+
+/* Custom Checkbox */
+.checkbox-container {
+  display: block;
+  position: relative;
+  padding-left: 24px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  user-select: none;
+  line-height: 18px;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0; width: 0;
+  }
+
+  .checkmark {
+    position: absolute;
+    top: 0; left: 0;
+    height: 18px; width: 18px;
+    background-color: #eee;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  &:hover input ~ .checkmark { background-color: #e0e0e0; }
+  input:checked ~ .checkmark { background-color: #d32f2f; }
+
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px; top: 2px;
+    width: 4px; height: 9px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  input:checked ~ .checkmark:after { display: block; }
+}
+
+.select-all-wrap {
+  .checkbox-label { font-weight: 600; color: #666; margin-left: 6px; }
+}
+
+.manual-chip { border-left: 3px solid #ff9800 !important; }
+.system-chip { border-left: 3px solid #d32f2f !important; }
+
