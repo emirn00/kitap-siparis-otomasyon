@@ -3,6 +3,8 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { TranslationService } from '../i18n/translation.service';
+import { Lang } from '../i18n/translations';
 
 @Component({
   selector: 'app-admin-layout',
@@ -31,7 +33,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private translation: TranslationService
   ) {}
 
   ngOnInit(): void {
@@ -76,5 +79,13 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  get currentLang(): Lang {
+    return this.translation.currentLang;
+  }
+
+  setLang(lang: Lang): void {
+    this.translation.setLanguage(lang);
   }
 }

@@ -87,6 +87,12 @@
       </a>
     </nav>
 
+    <div class="sidebar-lang-selector" [class.collapsed]="sidebarCollapsed">
+      <button class="lang-pill" [class.active]="currentLang === 'tr'" (click)="setLang('tr')">TR</button>
+      <button class="lang-pill" [class.active]="currentLang === 'de'" (click)="setLang('de')">DE</button>
+      <button class="lang-pill" [class.active]="currentLang === 'en'" (click)="setLang('en')">EN</button>
+    </div>
+
     <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
       <div class="user-info">
         <i class="fas fa-user-circle"></i>
