@@ -29,12 +29,14 @@ public class OrderService {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final OrderApprovalProducer orderApprovalProducer;
+    private final kitap_siparis_otomasyon.backend.mail.service.EmailService emailService;
 
-    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository, OrderApprovalProducer orderApprovalProducer) {
+    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository, OrderApprovalProducer orderApprovalProducer, kitap_siparis_otomasyon.backend.mail.service.EmailService emailService) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.orderApprovalProducer = orderApprovalProducer;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -141,5 +143,26 @@ public class OrderService {
         }
         
         return OrderResponse.fromEntity(savedOrder);
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getMailReadyOrders() {
+        // Ready for mail = COMPLETED and all books have codes
+        return orderRepository.findAll().stream()
+                .filter(o -> o.getStatus() == OrderStatus.COMPLETED)
+                .filter(o -> o.getOrderBooks().stream().allMatch(ob -> ob.getInteractiveCode() != null && !ob.getInteractiveCode().isEmpty()))
+                .map(OrderResponse::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void sendOrderCodesEmail(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        emailService.queueOrderCodesEmail(order);
+        
+        order.setMailed(true);
+        orderRepository.save(order);
     }
 }

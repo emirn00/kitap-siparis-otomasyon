@@ -25,6 +25,7 @@ public class OrderResponse {
     private OrderStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean mailed;
 
     public static OrderResponse fromEntity(Order order) {
         OrderResponse response = new OrderResponse();
@@ -41,6 +42,7 @@ public class OrderResponse {
         response.setStatus(order.getStatus());
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
+        response.setMailed(order.isMailed());
         return response;
     }
 }

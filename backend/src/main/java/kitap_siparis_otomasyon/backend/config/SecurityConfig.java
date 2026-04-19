@@ -74,9 +74,12 @@ public class SecurityConfig {
                                 "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/orders/mail/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
+                        .requestMatchers("/api/orders/my-orders").hasRole("USER")
+                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
                         .requestMatchers("/api/mail/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
                         .requestMatchers("/api/chatbot/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(

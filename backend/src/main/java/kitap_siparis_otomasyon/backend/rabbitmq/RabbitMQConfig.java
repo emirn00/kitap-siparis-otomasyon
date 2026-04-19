@@ -16,9 +16,18 @@ public class RabbitMQConfig {
     public static final String EXCHANGE_NAME = "order.exchange";
     public static final String ROUTING_KEY = "order.routing.key";
 
+    public static final String EMAIL_QUEUE = "email.task.queue";
+    public static final String EMAIL_EXCHANGE = "email.exchange";
+    public static final String EMAIL_ROUTING_KEY = "email.routing.key";
+
     @Bean
     public Queue queue() {
         return new Queue(QUEUE_NAME, true);
+    }
+
+    @Bean
+    public Queue emailQueue() {
+        return new Queue(EMAIL_QUEUE, true);
     }
 
     @Bean
@@ -27,8 +36,18 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public DirectExchange emailExchange() {
+        return new DirectExchange(EMAIL_EXCHANGE);
+    }
+
+    @Bean
     public Binding binding(Queue queue, DirectExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with(ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding emailBinding() {
+        return BindingBuilder.bind(emailQueue()).to(emailExchange()).with(EMAIL_ROUTING_KEY);
     }
 
     @Bean

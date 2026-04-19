@@ -50,6 +50,9 @@ public class Order {
     @Column(nullable = true)
     private OrderStatus status = OrderStatus.PENDING;
 
+    @Column(nullable = false)
+    private boolean mailed = false;
+
     public Order() {
     }
 

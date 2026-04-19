@@ -20,6 +20,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import kitap_siparis_otomasyon.backend.rabbitmq.EmailTaskMessage;
+import kitap_siparis_otomasyon.backend.rabbitmq.EmailTaskProducer;
+import kitap_siparis_otomasyon.backend.order.entity.Order;
+import kitap_siparis_otomasyon.backend.order.entity.OrderBook;
 
 @Service
 public class EmailService {
@@ -29,10 +33,12 @@ public class EmailService {
     private final MailgunConfig mailgunConfig;
     private final EmailLogRepository emailLogRepository;
     private final RestClient restClient;
+    private final EmailTaskProducer emailTaskProducer;
 
-    public EmailService(MailgunConfig mailgunConfig, EmailLogRepository emailLogRepository) {
+    public EmailService(MailgunConfig mailgunConfig, EmailLogRepository emailLogRepository, EmailTaskProducer emailTaskProducer) {
         this.mailgunConfig = mailgunConfig;
         this.emailLogRepository = emailLogRepository;
+        this.emailTaskProducer = emailTaskProducer;
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.mailgun.net/v3")
                 .build();
@@ -122,6 +128,62 @@ public class EmailService {
                 .body(formData)
                 .retrieve()
                 .body(String.class);
+    }
+
+    @Transactional
+    public void queueOrderCodesEmail(Order order) {
+        String to = order.getUser().getEmail();
+        String subject = "Kitap Siparişiniz - İnteraktif Aktivasyon Kodları";
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append("Merhaba ").append(order.getUser().getFullName()).append(",\n\n");
+        sb.append("Sipariş ettiğiniz dijital kitapların aktivasyon kodları aşağıdadır:\n\n");
+        
+        for (OrderBook ob : order.getOrderBooks()) {
+            sb.append("- ").append(ob.getBook().getRequestName())
+              .append(": ").append(ob.getInteractiveCode() != null ? ob.getInteractiveCode() : "Hata (Lütfen admin ile iletişime geçin)")
+              .append("\n");
+        }
+        
+        sb.append("\nİyi çalışmalar dileriz.");
+        String body = sb.toString();
+
+        EmailLog emailLog = new EmailLog();
+        emailLog.setRecipientEmail(to);
+        emailLog.setSubject(subject);
+        emailLog.setBody(body);
+        emailLog.setStatus(EmailStatus.QUEUED);
+        EmailLog savedLog = emailLogRepository.save(emailLog);
+
+        // Queue the task
+        EmailTaskMessage task = new EmailTaskMessage(savedLog.getId(), to, subject, body);
+        emailTaskProducer.sendEmailTask(task);
+        
+        log.info("Order codes email for orderId {} queued for recipient: {}", order.getId(), to);
+    }
+
+    @Transactional
+    public void processAsyncEmail(EmailTaskMessage task) {
+        EmailLog emailLog = emailLogRepository.findById(task.getLogId())
+                .orElse(null);
+
+        try {
+            callMailgunApi(task.getTo(), task.getSubject(), task.getBody());
+            
+            if (emailLog != null) {
+                emailLog.setStatus(EmailStatus.SENT);
+                emailLog.setSentAt(LocalDateTime.now());
+                emailLogRepository.save(emailLog);
+            }
+            log.info("Async email sent successfully to: {}", task.getTo());
+        } catch (Exception e) {
+            if (emailLog != null) {
+                emailLog.setStatus(EmailStatus.FAILED);
+                emailLog.setErrorMessage(e.getMessage());
+                emailLogRepository.save(emailLog);
+            }
+            log.error("Failed to send async email to: {} - {}", task.getTo(), e.getMessage());
+        }
     }
 
     private String generateActivationCode() {
