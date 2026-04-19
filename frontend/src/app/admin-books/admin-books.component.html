@@ -9,34 +9,26 @@
     <div *ngIf="updateError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ updateError }}</div>
     <div *ngIf="deleteError"   class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ deleteError }}</div>
 
-    <!-- Filters -->
-    <div class="filters-section">
-      <div class="search-row">
-        <div class="search-box">
-          <input type="text" class="search-input" [(ngModel)]="searchTerm"
-            [ngModelOptions]="{ standalone: true }" (keyup.enter)="onSearch()"
-            [placeholder]="'searchPlaceholder' | translate">
-          <button class="search-submit" (click)="onSearch()">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-        <a routerLink="/admin/add-book" class="add-book-btn">
-          <i class="fas fa-plus"></i> {{ 'addBook' | translate }}
-        </a>
+    <!-- Header & Search (Orders Style) -->
+    <div class="table-top-actions">
+      <div class="search-wrap">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" [(ngModel)]="searchTerm" (keyup.enter)="onSearch()" [placeholder]="'searchUsersPlaceholder' | translate" class="admin-search-input">
       </div>
+      <a routerLink="/admin/add-book" class="add-btn primary-btn">
+        <i class="fas fa-plus"></i> {{ 'addBook' | translate }}
+      </a>
+    </div>
 
-      <!-- Stat Cards -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon"><i class="fas fa-book"></i></div>
-          <div class="stat-value">{{ getTotalBooks() }}</div>
-          <div class="stat-label">{{ 'totalBooks' | translate }}</div>
-        </div>
-        <div class="stat-card search-stat" *ngIf="searchTerm">
-          <div class="stat-icon"><i class="fas fa-search"></i></div>
-          <div class="stat-value">{{ filteredBooks.length }}</div>
-          <div class="stat-label">Sonuç</div>
-        </div>
+    <!-- Stats Row (Orders Style) -->
+    <div class="stats-row" *ngIf="!booksLoading">
+      <div class="stat-card">
+        <span class="stat-label">{{ 'total' | translate }}</span>
+        <span class="stat-value">{{ getTotalBooks() }}</span>
+      </div>
+      <div class="stat-card" *ngIf="searchTerm">
+        <span class="stat-label">Arama Sonucu</span>
+        <span class="stat-value" style="color: #1565c0;">{{ totalElements }}</span>
       </div>
     </div>
 
@@ -49,41 +41,115 @@
       <i class="fas fa-exclamation-circle"></i> {{ booksLoadError }}
     </div>
 
-    <!-- Books List -->
-    <div class="books-list" *ngIf="!booksLoading && filteredBooks.length > 0">
-      <app-book-card
-        *ngFor="let book of paginatedBooks"
-        [book]="book"
-        [isEditing]="editingBook?.id === book.id"
-        [isDeleting]="deletingBookId === book.id"
-        (edit)="startEdit($event)"
-        (delete)="confirmDelete($event)"
-        (save)="saveBook()"
-        (cancel)="cancelEdit()"
-        (confirmDelete)="deleteBook()"
-        (cancelDelete)="cancelDelete()">
-      </app-book-card>
+    <!-- Books Table -->
+    <div class="table-container" *ngIf="!booksLoading && books.length > 0">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>{{ 'requestName' | translate }}</th>
+            <th>{{ 'orderName' | translate }}</th>
+            <th>{{ 'isbn' | translate }}</th>
+            <th>{{ 'lisencodeName' | translate }}</th>
+            <th>{{ 'actions' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let book of books">
+            <tr class="book-row">
+              <td class="name-cell">
+                <span class="primary-text">{{ book.requestName }}</span>
+              </td>
+              <td>{{ book.orderName }}</td>
+              <td class="isbn-cell">{{ book.isbn }}</td>
+              <td>
+                <span class="lisencode-tag" *ngIf="book.lisencodeName">
+                  {{ book.lisencodeName }}
+                </span>
+                <span class="no-tag" *ngIf="!book.lisencodeName">-</span>
+              </td>
+              <td class="action-buttons-cell">
+                <button class="small-action-btn edit" (click)="startEdit(book)" title="Düzenle">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="small-action-btn delete" (click)="confirmDelete(book)" title="Sil">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Inline Edit (matching Orders style) -->
+            <tr *ngIf="editingBook?.id === book.id">
+              <td colspan="5" style="background: #fdfdfe; border-left: 4px solid #1565c0; padding: 0;">
+                <div class="inline-edit-panel">
+                  <div class="edit-fields-grid">
+                    <div class="field-item">
+                      <label>{{ 'requestName' | translate }}</label>
+                      <input type="text" [(ngModel)]="book.requestName" class="edit-input">
+                    </div>
+                    <div class="field-item">
+                      <label>{{ 'orderName' | translate }}</label>
+                      <input type="text" [(ngModel)]="book.orderName" class="edit-input">
+                    </div>
+                    <div class="field-item">
+                      <label>{{ 'isbn' | translate }}</label>
+                      <input type="text" [(ngModel)]="book.isbn" class="edit-input">
+                    </div>
+                    <div class="field-item">
+                      <label>{{ 'lisencodeName' | translate }}</label>
+                      <input type="text" [(ngModel)]="book.lisencodeName" class="edit-input">
+                    </div>
+                  </div>
+                  <div class="panel-actions">
+                    <button class="small-action-btn approve" (click)="saveBook()">{{ 'save' | translate }}</button>
+                    <button class="small-action-btn" (click)="cancelEdit()">{{ 'cancel' | translate }}</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Inline Delete Confirm -->
+            <tr *ngIf="deletingBookId === book.id">
+              <td colspan="5" style="background: #fffafa; border-left: 4px solid #c62828;">
+                <div class="delete-confirm-panel">
+                  Bu kitabı silmek istediğinize emin misiniz?
+                  <button class="small-action-btn delete" (click)="deleteBook()">Evet, Sil</button>
+                  <button class="small-action-btn" (click)="cancelDelete()">Vazgeç</button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
     </div>
 
     <!-- Pagination -->
-    <div class="pagination-bar" *ngIf="!booksLoading && totalPages > 1">
-      <div class="pagination-info">
-        {{ pageRangeStart }}–{{ pageRangeEnd }} / {{ filteredBooks.length }} kitap
-      </div>
-      <div class="page-buttons">
-        <button class="page-btn nav-btn" (click)="prevPage()" [disabled]="currentPage === 1">
-          <i class="fas fa-chevron-left"></i>
-        </button>
-        <button class="page-btn" *ngFor="let p of pageNumbers"
-          [class.active]="p === currentPage" (click)="goToPage(p)">{{ p }}</button>
-        <button class="page-btn nav-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-          <i class="fas fa-chevron-right"></i>
-        </button>
-      </div>
+    <div class="pagination-container" *ngIf="!booksLoading && totalPages > 1">
+      <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button *ngFor="let page of pageNumbers" class="page-btn" [class.active]="page === currentPage" (click)="goToPage(page)">
+        {{ page }}
+      </button>
+      <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+      <span class="page-info">
+        Toplam {{ totalElements }} kitap | Sayfa {{ currentPage }} / {{ totalPages }}
+      </span>
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && filteredBooks.length === 0">
+    <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && books.length === 0">
+      <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+      <p>{{ 'noResults' | translate }}</p>
+      <p class="empty-hint">{{ 'noResultsHint' | translate }}</p>
+      <a routerLink="/admin/add-book" class="add-book-btn">
+        <i class="fas fa-plus"></i> {{ 'addBook' | translate }}
+      </a>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!booksLoading && !booksLoadError && books.length === 0">
       <div class="empty-icon"><i class="fas fa-book-open"></i></div>
       <p>{{ 'noResults' | translate }}</p>
       <p class="empty-hint">{{ 'noResultsHint' | translate }}</p>

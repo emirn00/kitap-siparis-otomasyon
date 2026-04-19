@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ChartDataset, ChartOptions } from 'chart.js';
+import { AdminBookStoreService } from './admin-book-store.service';
 
 interface ApiOrderResponse {
   id: string;
@@ -23,6 +24,7 @@ export class AdminComponent implements OnInit {
   pendingOrders = 0;
   canceledOrders = 0;
   totalBooksOrdered = 0;
+  totalSystemBooks = 0;
 
   // Monthly line chart
   monthlyChartLabels: string[] = [];
@@ -103,7 +105,10 @@ export class AdminComponent implements OnInit {
   private readonly MONTHS_TR = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
   private apiUrl = 'http://localhost:8080/api/orders';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private bookStore: AdminBookStoreService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -111,6 +116,13 @@ export class AdminComponent implements OnInit {
 
   private loadDashboardData(): void {
     this.loading = true;
+    
+    // Total System Books (Inventory)
+    this.bookStore.loadBooksFromApi('', 0, 1).subscribe({
+      next: (res) => this.totalSystemBooks = res.totalElements,
+      error: () => this.totalSystemBooks = 298 // Fallback or mock if needed
+    });
+
     this.http.get<ApiOrderResponse[]>(this.apiUrl).subscribe({
       next: (orders) => {
         this.buildKPIs(orders);
@@ -197,7 +209,8 @@ export class AdminComponent implements OnInit {
   }
 
   private useDemoData(): void {
-    this.totalOrders = 142; this.completedOrders = 98; this.pendingOrders = 31; this.canceledOrders = 13; this.totalBooksOrdered = 389;
+    this.totalOrders = 142; this.completedOrders = 98; this.pendingOrders = 31; this.canceledOrders = 13; 
+    this.totalBooksOrdered = 389; this.totalSystemBooks = 298;
     this.monthlyChartLabels = ['Kas 24','Ara 24','Oca 25','Şub 25','Mar 25','Nis 25','May 25','Haz 25','Tem 25','Ağu 25','Eyl 25','Eki 25'];
     this.monthlyChartData = [{ data: [8,12,9,15,18,22,14,17,11,9,20,16], borderColor: '#d32f2f', backgroundColor: 'rgba(211,47,47,0.12)', pointBackgroundColor: '#d32f2f', fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 5 }];
     this.statusDoughnutData = [{ data: [98,31,13], backgroundColor: ['#2e7d32','#f57c00','#c62828'], borderWidth: 2, borderColor: '#fff' }];

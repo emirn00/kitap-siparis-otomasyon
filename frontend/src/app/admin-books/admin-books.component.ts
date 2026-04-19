@@ -10,7 +10,6 @@ import { TranslationService } from '../i18n/translation.service';
 })
 export class AdminBooksComponent implements OnInit {
   books: AdminBook[] = [];
-  filteredBooks: AdminBook[] = [];
   searchTerm = '';
   editingBook: AdminBook | null = null;
   addSuccess: string | null = null;
@@ -22,15 +21,15 @@ export class AdminBooksComponent implements OnInit {
   booksLoadError: string | null = null;
 
   currentPage = 1;
-  readonly pageSize = 5;
+  pageSize = 10;
+  totalElements = 0;
 
   get totalPages(): number {
-    return Math.ceil(this.filteredBooks.length / this.pageSize);
+    return Math.ceil(this.totalElements / this.pageSize);
   }
 
   get paginatedBooks(): AdminBook[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredBooks.slice(start, start + this.pageSize);
+    return this.books; // Now directly refers to the server-fetched page
   }
 
   get pageNumbers(): number[] {
@@ -42,7 +41,7 @@ export class AdminBooksComponent implements OnInit {
   }
 
   get pageRangeEnd(): number {
-    return Math.min(this.currentPage * this.pageSize, this.filteredBooks.length);
+    return Math.min(this.currentPage * this.pageSize, this.totalElements);
   }
 
   constructor(
@@ -55,10 +54,12 @@ export class AdminBooksComponent implements OnInit {
   ngOnInit(): void {
     this.bookStore.getBooksObservable().subscribe(books => {
       this.books = books;
-      this.applyFilters();
     });
 
-    // Kitaplar listesini GET api/books ile API'den çek
+    this.bookStore.getTotalElementsObservable().subscribe(total => {
+      this.totalElements = total;
+    });
+
     this.loadBooksFromApi();
 
     const added = this.route.snapshot.queryParamMap.get('added');
@@ -78,7 +79,7 @@ export class AdminBooksComponent implements OnInit {
   loadBooksFromApi(): void {
     this.booksLoading = true;
     this.booksLoadError = null;
-    this.bookStore.loadBooksFromApi(this.searchTerm).subscribe({
+    this.bookStore.loadBooksFromApi(this.searchTerm, this.currentPage - 1, this.pageSize).subscribe({
       next: () => {
         this.booksLoading = false;
         this.booksLoadError = null;
@@ -90,11 +91,6 @@ export class AdminBooksComponent implements OnInit {
     });
   }
 
-  applyFilters(): void {
-    this.filteredBooks = [...this.books];
-    this.currentPage = 1;
-  }
-
   onSearch(): void {
     this.currentPage = 1;
     this.loadBooksFromApi();
@@ -103,6 +99,7 @@ export class AdminBooksComponent implements OnInit {
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage = page;
+    this.loadBooksFromApi();
   }
 
   prevPage(): void { this.goToPage(this.currentPage - 1); }
@@ -162,6 +159,6 @@ export class AdminBooksComponent implements OnInit {
   }
 
   getTotalBooks(): number {
-    return this.books.length;
+    return this.totalElements;
   }
 }

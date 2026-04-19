@@ -27,6 +27,7 @@ export class AdminBookStoreService {
   private apiUrl = 'http://localhost:8080/api/books';
   private books: AdminBook[] = [];
   private books$ = new BehaviorSubject<AdminBook[]>([]);
+  private totalElements$ = new BehaviorSubject<number>(0);
   private isLastPage = false;
   private currentPage = 0;
   private currentSearch = '';
@@ -41,18 +42,20 @@ export class AdminBookStoreService {
     this.fetchBooks(this.currentPage, size, this.currentSearch).subscribe(res => {
       this.books = res.content;
       this.isLastPage = res.last;
+      this.totalElements$.next(res.totalElements);
       this.books$.next([...this.books]);
     });
   }
 
   /** Tüm kitaplar listesi: GET /api/books (id yok, sayfa parametreleri ile) */
-  loadBooksFromApi(searchTerm: string = '', size: number = 50): Observable<PageResponse<AdminBook>> {
+  loadBooksFromApi(searchTerm: string = '', page: number = 0, size: number = 20): Observable<PageResponse<AdminBook>> {
     this.currentSearch = searchTerm;
-    this.currentPage = 0;
-    return this.fetchBooks(this.currentPage, size, this.currentSearch).pipe(
+    this.currentPage = page;
+    return this.fetchBooks(page, size, this.currentSearch).pipe(
       tap(res => {
         this.books = res.content;
         this.isLastPage = res.last;
+        this.totalElements$.next(res.totalElements);
         this.books$.next([...this.books]);
       })
     );
@@ -91,6 +94,10 @@ export class AdminBookStoreService {
 
   getBooksObservable(): Observable<AdminBook[]> {
     return this.books$.asObservable();
+  }
+
+  getTotalElementsObservable(): Observable<number> {
+    return this.totalElements$.asObservable();
   }
 
   addBook(book: Omit<AdminBook, 'id'>): Observable<AdminBook> {
