@@ -6,8 +6,10 @@ import kitap_siparis_otomasyon.backend.order.dto.CreateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.OrderResponse;
 import kitap_siparis_otomasyon.backend.order.dto.UpdateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.entity.Order;
+import kitap_siparis_otomasyon.backend.order.entity.OrderBook;
 import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import kitap_siparis_otomasyon.backend.order.repository.OrderRepository;
+import kitap_siparis_otomasyon.backend.rabbitmq.OrderApprovalProducer;
 import kitap_siparis_otomasyon.backend.user.entity.User;
 import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,11 +28,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final OrderApprovalProducer orderApprovalProducer;
 
-    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository) {
+    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository, OrderApprovalProducer orderApprovalProducer) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
+        this.orderApprovalProducer = orderApprovalProducer;
     }
 
     @Transactional
@@ -44,7 +48,11 @@ public class OrderService {
             throw new RuntimeException("Some books were not found");
         }
 
-        Order order = new Order(user, books);
+        Order order = new Order(user);
+        List<OrderBook> orderBooks = books.stream()
+                .map(book -> new OrderBook(order, book))
+                .collect(Collectors.toList());
+        order.setOrderBooks(orderBooks);
         order.setCity(request.getCity());
         order.setInstitution(request.getInstitution());
         Order savedOrder = orderRepository.save(order);
@@ -99,7 +107,11 @@ public class OrderService {
             throw new RuntimeException("Some books were not found");
         }
 
-        order.setBooks(books);
+        order.getOrderBooks().clear();
+        List<OrderBook> orderBooks = books.stream()
+                .map(book -> new OrderBook(order, book))
+                .collect(Collectors.toList());
+        order.getOrderBooks().addAll(orderBooks);
         order.setCity(request.getCity());
         order.setInstitution(request.getInstitution());
         Order savedOrder = orderRepository.save(order);
@@ -123,6 +135,11 @@ public class OrderService {
 
         order.setStatus(status);
         Order savedOrder = orderRepository.save(order);
+        
+        if (status == OrderStatus.COMPLETED) {
+            orderApprovalProducer.sendOrderApprovedMessage(savedOrder.getId());
+        }
+        
         return OrderResponse.fromEntity(savedOrder);
     }
 }

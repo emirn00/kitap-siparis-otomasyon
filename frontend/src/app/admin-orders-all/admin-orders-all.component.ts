@@ -9,7 +9,7 @@ interface ApiOrderResponse {
   userName: string;
   email?: string;
   phone?: string;
-  books: { id: string; title?: string; requestName?: string }[];
+  books: { id: string; title?: string; requestName?: string; interactiveCode?: string }[];
   city?: string;
   institution?: string;
   status: string;
@@ -22,6 +22,7 @@ type OrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELED';
 export interface OrderBookItem {
   id: string;
   requestName: string;
+  interactiveCode?: string;
 }
 
 interface AdminOrder {
@@ -57,6 +58,10 @@ export class AdminOrdersAllComponent implements OnInit {
   showAddOrderForm: boolean = false;
   newOrderForm!: FormGroup;
 
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 20;
+
   // Kitap listesi (frontend tarafı için)
   availableBooks: string[] = [
     'Beste Freunde A 1.1 Arbeitsbuch',
@@ -91,6 +96,10 @@ export class AdminOrdersAllComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
+  // Books Modal
+  showBooksModal: boolean = false;
+  selectedOrderForModal: AdminOrder | null = null;
+
   private apiUrl = 'http://localhost:8080/api/orders';
   private booksUrl = 'http://localhost:8080/api/books';
 
@@ -103,6 +112,16 @@ export class AdminOrdersAllComponent implements OnInit {
   ngOnInit(): void {
     this.initNewOrderForm();
     this.fetchOrders();
+  }
+
+  openBooksModal(order: AdminOrder): void {
+    this.selectedOrderForModal = order;
+    this.showBooksModal = true;
+  }
+
+  closeBooksModal(): void {
+    this.showBooksModal = false;
+    this.selectedOrderForModal = null;
   }
 
   initNewOrderForm(): void {
@@ -121,7 +140,8 @@ export class AdminOrdersAllComponent implements OnInit {
   private mapApiOrderToAdmin(d: ApiOrderResponse): AdminOrder {
     const books: OrderBookItem[] = (d.books || []).map(b => ({
       id: b.id,
-      requestName: b.requestName || b.title || 'Kitap'
+      requestName: b.requestName || b.title || 'Kitap',
+      interactiveCode: b.interactiveCode
     }));
     return {
       id: d.id,
@@ -379,12 +399,37 @@ export class AdminOrdersAllComponent implements OnInit {
     return selectedBooks.includes(bookName);
   }
 
-  onSearch(): void {
+  onStatusFilterChange(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
-  onStatusFilterChange(): void {
+  onSearch(): void {
+    this.currentPage = 1;
     this.applyFilters();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredOrders.length / this.pageSize);
+  }
+
+  get paginatedOrders(): AdminOrder[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    return this.filteredOrders.slice(startIndex, startIndex + this.pageSize);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  getPages(): number[] {
+    const pages: number[] = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
   }
 
   applyFilters(): void {

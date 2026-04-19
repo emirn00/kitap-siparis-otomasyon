@@ -1,12 +1,13 @@
 package kitap_siparis_otomasyon.backend.order.dto;
 
-import kitap_siparis_otomasyon.backend.book.entity.Book;
 import kitap_siparis_otomasyon.backend.order.entity.Order;
+import kitap_siparis_otomasyon.backend.order.entity.OrderBook;
 import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class OrderResponse {
     private String userName;
     private String email;
     private String phone;
-    private List<Book> books;
+    private List<OrderBookResponse> books;
     private String city;
     private String institution;
     private OrderStatus status;
@@ -32,7 +33,9 @@ public class OrderResponse {
         response.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
         response.setEmail(order.getUser().getEmail());
         response.setPhone(order.getUser().getPhone());
-        response.setBooks(order.getBooks());
+        response.setBooks(order.getOrderBooks().stream()
+                .map(OrderBookResponse::fromEntity)
+                .collect(Collectors.toList()));
         response.setCity(order.getCity());
         response.setInstitution(order.getInstitution());
         response.setStatus(order.getStatus());

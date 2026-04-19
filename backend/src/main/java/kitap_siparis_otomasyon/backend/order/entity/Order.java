@@ -29,9 +29,8 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
-    @JoinTable(name = "order_books", joinColumns = @JoinColumn(name = "order_id"), inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private List<Book> books;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderBook> orderBooks;
 
     @Column(nullable = false)
     private String city;
@@ -54,9 +53,8 @@ public class Order {
     public Order() {
     }
 
-    public Order(User user, List<Book> books) {
+    public Order(User user) {
         this.user = user;
-        this.books = books;
         this.status = OrderStatus.PENDING;
     }
 }
