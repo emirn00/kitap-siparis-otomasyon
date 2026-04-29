@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatbotResponse {
     private String reply;
-    private String sql; // Optional: For debugging or transparency
+    private String sessionId;
 }

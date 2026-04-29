@@ -22,6 +22,7 @@ export class ChatbotComponent {
   ];
   currentMessage = '';
   isLoading = false;
+  currentSessionId: string | undefined = undefined;
 
   quickActions = [
     { label: '📚 Kitap öner', message: 'Bana kitap önerir misin?' },
@@ -66,8 +67,9 @@ export class ChatbotComponent {
     this.currentMessage = '';
     this.isLoading = true;
 
-    this.chatbotService.ask(messageToSend).subscribe({
+    this.chatbotService.ask(messageToSend, this.currentSessionId).subscribe({
       next: (res: ChatbotResponse) => {
+        this.currentSessionId = res.sessionId;
         this.messages.push({
           text: res.reply,
           sender: 'bot',

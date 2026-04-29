@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatbotRequest {
     private String message;
+    private String sessionId;
 }

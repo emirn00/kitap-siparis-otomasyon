@@ -18,6 +18,6 @@ public class ChatbotController {
 
     @PostMapping("/ask")
     public ChatbotResponse ask(@RequestBody ChatbotRequest request) {
-        return chatbotService.processMessage(request.getMessage());
+        return chatbotService.processMessage(request.getMessage(), request.getSessionId());
     }
 }

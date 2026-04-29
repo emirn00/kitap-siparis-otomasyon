@@ -4,11 +4,12 @@ import { Observable } from 'rxjs';
 
 export interface ChatbotRequest {
   message: string;
+  sessionId?: string;
 }
 
 export interface ChatbotResponse {
   reply: string;
-  sql?: string;
+  sessionId: string;
 }
 
 @Injectable({
@@ -19,7 +20,7 @@ export class ChatbotService {
 
   constructor(private http: HttpClient) { }
 
-  ask(message: string): Observable<ChatbotResponse> {
-    return this.http.post<ChatbotResponse>(this.apiUrl, { message });
+  ask(message: string, sessionId?: string): Observable<ChatbotResponse> {
+    return this.http.post<ChatbotResponse>(this.apiUrl, { message, sessionId });
   }
 }
