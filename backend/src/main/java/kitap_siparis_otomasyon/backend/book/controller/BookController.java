@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class BookController {
 
     private final BookService bookService;
+    private final kitap_siparis_otomasyon.backend.book.service.BookRecommendationService recommendationService;
 
     @GetMapping
     public ResponseEntity<org.springframework.data.domain.Page<Book>> getAllBooks(
@@ -46,5 +48,10 @@ public class BookController {
     public ResponseEntity<Void> deleteBook(@PathVariable UUID id) {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/recommendations")
+    public ResponseEntity<List<Book>> getRecommendations(@RequestBody List<UUID> bookIds) {
+        return ResponseEntity.ok(recommendationService.getRecommendations(bookIds));
     }
 }

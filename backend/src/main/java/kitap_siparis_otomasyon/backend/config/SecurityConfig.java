@@ -73,14 +73,13 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**")
                         .permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/orders/mail/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("USER")
-                        .requestMatchers("/api/orders/my-orders").hasRole("USER")
-                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
-                        .requestMatchers("/api/mail/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/books").authenticated()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/orders/**", "/api/orders").authenticated()
+                        .requestMatchers("/api/books/recommendations").hasRole("ADMIN")
+                        .requestMatchers("/api/books/**").authenticated()
                         .requestMatchers("/api/chatbot/**").hasRole("ADMIN")
+                        .requestMatchers("/api/mail/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtAuthenticationFilter(),

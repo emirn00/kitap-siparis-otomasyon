@@ -2,6 +2,7 @@ package kitap_siparis_otomasyon.backend.order.service;
 
 import kitap_siparis_otomasyon.backend.book.entity.Book;
 import kitap_siparis_otomasyon.backend.book.repository.BookRepository;
+import kitap_siparis_otomasyon.backend.order.dto.CreateCustomOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.CreateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.OrderResponse;
 import kitap_siparis_otomasyon.backend.order.dto.UpdateOrderRequest;
@@ -57,6 +58,37 @@ public class OrderService {
         order.setOrderBooks(orderBooks);
         order.setCity(request.getCity());
         order.setInstitution(request.getInstitution());
+        order.setCustomOrder(false);
+        Order savedOrder = orderRepository.save(order);
+        return OrderResponse.fromEntity(savedOrder);
+    }
+
+    @Transactional
+    public OrderResponse createCustomOrder(UUID adminId, CreateCustomOrderRequest request) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin user not found"));
+
+        List<Book> books = bookRepository.findAllById(request.getBookIds());
+
+        if (books.size() != request.getBookIds().size()) {
+            throw new RuntimeException("Some books were not found");
+        }
+
+        Order order = new Order(admin);
+        List<OrderBook> orderBooks = books.stream()
+                .map(book -> new OrderBook(order, book))
+                .collect(Collectors.toList());
+        order.setOrderBooks(orderBooks);
+        order.setCity(request.getCity());
+        order.setInstitution(request.getInstitution());
+        
+        // Custom order details
+        order.setCustomOrder(true);
+        order.setCustomCustomerName(request.getFullName());
+        order.setCustomCustomerEmail(request.getEmail());
+        order.setCustomCustomerPhone(request.getPhone());
+        order.setCustomNotes(request.getNotes());
+        
         Order savedOrder = orderRepository.save(order);
         return OrderResponse.fromEntity(savedOrder);
     }

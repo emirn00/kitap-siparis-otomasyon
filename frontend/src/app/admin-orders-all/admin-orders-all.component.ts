@@ -15,6 +15,7 @@ interface ApiOrderResponse {
   status: string;
   createdAt: string;
   updatedAt: string;
+  isCustomOrder: boolean;
 }
 
 type OrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELED';
@@ -38,6 +39,7 @@ interface AdminOrder {
   selectedBooks: string[];
   createdAt: Date;
   status: OrderStatus;
+  isCustomOrder: boolean;
 }
 
 @Component({
@@ -88,6 +90,13 @@ export class AdminOrdersAllComponent implements OnInit {
   addBookSearchTerm = '';
   editBooksError: string | null = null;
   editBooksSaving = false;
+
+  /** Önerilen kitaplar */
+  recommendedBooks: OrderBookItem[] = [];
+  loadingRecommendations = false;
+
+  /** Tüm kitaplar modalı kontrolü */
+  showAllBooksModal = false;
 
   /** Sipariş silme onayı */
   deletingOrderId: string | null = null;
@@ -154,7 +163,8 @@ export class AdminOrdersAllComponent implements OnInit {
       books,
       selectedBooks: books.map(b => b.requestName),
       createdAt: new Date(d.createdAt),
-      status: d.status as OrderStatus
+      status: d.status as OrderStatus,
+      isCustomOrder: d.isCustomOrder
     };
   }
 
@@ -214,7 +224,39 @@ export class AdminOrdersAllComponent implements OnInit {
     this.editingOrderId = order.id;
     this.editBooksList = order.books.map(b => ({ ...b }));
     this.editBooksError = null;
-    this.loadAllBooksForEdit();
+    this.fetchRecommendations();
+    // loadAllBooksForEdit() artık sadece modal açıldığında çağrılacak
+  }
+
+  fetchRecommendations(): void {
+    if (this.editBooksList.length === 0) {
+      this.recommendedBooks = [];
+      return;
+    }
+
+    this.loadingRecommendations = true;
+    const bookIds = this.editBooksList.map(b => b.id);
+    this.http.post<OrderBookItem[]>(`${this.booksUrl}/recommendations`, bookIds).subscribe({
+      next: (recs) => {
+        this.recommendedBooks = recs;
+        this.loadingRecommendations = false;
+      },
+      error: () => {
+        this.loadingRecommendations = false;
+      }
+    });
+  }
+
+  openAllBooksModal(): void {
+    this.showAllBooksModal = true;
+    this.addBookSearchTerm = '';
+    if (this.allBooks.length === 0) {
+      this.loadAllBooksForEdit();
+    }
+  }
+
+  closeAllBooksModal(): void {
+    this.showAllBooksModal = false;
   }
 
   /** Tüm kitapları API'den sayfa sayfa çeker (kitap ekle listesi için) */
@@ -252,11 +294,13 @@ export class AdminOrdersAllComponent implements OnInit {
 
   removeBookFromEdit(bookId: string): void {
     this.editBooksList = this.editBooksList.filter(b => b.id !== bookId);
+    this.fetchRecommendations();
   }
 
   addBookToEdit(book: OrderBookItem): void {
     if (this.editBooksList.some(b => b.id === book.id)) return;
     this.editBooksList = [...this.editBooksList, { ...book }];
+    this.fetchRecommendations();
   }
 
   getAvailableBooksToAdd(): OrderBookItem[] {
@@ -365,7 +409,8 @@ export class AdminOrdersAllComponent implements OnInit {
         books: [],
         selectedBooks: formValue.selectedBooks || [],
         createdAt: new Date(),
-        status: formValue.status || 'pending'
+        status: formValue.status || 'pending',
+        isCustomOrder: true
       };
 
       this.orders.unshift(newOrder);

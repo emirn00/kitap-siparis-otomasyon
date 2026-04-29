@@ -88,7 +88,12 @@
           <ng-container *ngFor="let order of paginatedOrders">
             <tr class="order-row">
               <td class="customer-cell">
-                <span class="name">{{ order.fullName }}</span>
+                <div class="name-wrapper">
+                  <span class="name">{{ order.fullName }}</span>
+                  <span class="custom-badge" *ngIf="order.isCustomOrder" title="Admin Tarafından Oluşturulan Özel Sipariş">
+                    <i class="fas fa-pen-nib"></i> ÖZEL
+                  </span>
+                </div>
                 <span class="email">{{ order.email }}</span>
               </td>
               <td>
@@ -136,13 +141,20 @@
                       <span (click)="removeBookFromEdit(book.id)" class="remove-tag-btn">×</span>
                     </span>
                   </div>
-                  <div *ngIf="!allBooksLoading" class="add-book-section">
-                    <input type="text" [(ngModel)]="addBookSearchTerm" placeholder="Kitap ara..." class="add-book-input">
-                    <div class="add-book-list">
-                      <button *ngFor="let bk of getFilteredBooksToAdd()" (click)="addBookToEdit(bk)" class="add-candidate-btn">
-                        + {{ bk.requestName }}
+                  <!-- Recommendations Section -->
+                  <div class="recommendations-container" *ngIf="recommendedBooks.length > 0">
+                    <h5 class="recommendation-title"><i class="fas fa-magic"></i> Önerilen Kitaplar</h5>
+                    <div class="recommendation-list">
+                      <button *ngFor="let bk of recommendedBooks" (click)="addBookToEdit(bk)" class="rec-book-btn">
+                        <i class="fas fa-plus"></i> {{ bk.requestName }}
                       </button>
                     </div>
+                  </div>
+
+                  <div class="all-books-action">
+                    <button class="open-all-books-btn" (click)="openAllBooksModal()">
+                      <i class="fas fa-search-plus"></i> Tüm Kitaplar Arasından Seç
+                    </button>
                   </div>
                   <div class="panel-actions">
                     <button class="small-action-btn approve" (click)="saveOrderBooks()" [disabled]="editBooksSaving">Kaydet</button>
@@ -219,6 +231,45 @@
     </div>
     <div class="modal-footer">
         <button class="close-action-btn" (click)="closeBooksModal()">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- All Books Selection Modal -->
+<div class="modal-overlay" *ngIf="showAllBooksModal" (click)="closeAllBooksModal()">
+  <div class="modal-content all-books-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3><i class="fas fa-book"></i> Tüm Kitaplar</h3>
+      <button class="close-modal-btn" (click)="closeAllBooksModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" [(ngModel)]="addBookSearchTerm" placeholder="Kitap adına veya ISBN'e göre ara...">
+      </div>
+
+      <div class="modal-all-books-grid" *ngIf="!allBooksLoading">
+        <div *ngFor="let bk of getFilteredBooksToAdd()" 
+             (click)="addBookToEdit(bk)" 
+             class="book-selection-item">
+          <div class="book-info">
+            <span class="book-name">{{ bk.requestName }}</span>
+          </div>
+          <i class="fas fa-plus-circle add-icon"></i>
+        </div>
+      </div>
+
+      <div class="loading-state" *ngIf="allBooksLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Kitaplar yükleniyor...</p>
+      </div>
+
+      <div class="no-results" *ngIf="!allBooksLoading && getFilteredBooksToAdd().length === 0">
+        <p>Kriterlere uygun kitap bulunamadı.</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="done-btn" (click)="closeAllBooksModal()">Tamam</button>
     </div>
   </div>
 </div>

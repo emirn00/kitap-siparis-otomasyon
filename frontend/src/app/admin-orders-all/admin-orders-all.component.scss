@@ -61,8 +61,26 @@ table.admin-table {
   }
 
   .customer-cell {
-    .name { display: block; font-weight: 700; margin-bottom: 2px; }
-    .email { display: block; font-size: 0.75rem; color: $text-secondary; }
+    .name-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .name { font-weight: 700; color: $text-main; }
+    .custom-badge {
+      background: #fdf2f2;
+      color: #c62828;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid #ffcdd2;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      i { font-size: 0.6rem; }
+    }
+    .email { display: block; font-size: 0.75rem; color: $text-secondary; margin-top: 2px; }
   }
 }
 
@@ -260,3 +278,129 @@ table.admin-table {
   }
 }
 .empty-state { text-align: center; padding: 3rem; .empty-icon { font-size: 3rem; color: #eee; margin-bottom: 1rem; } p { color: #999; margin: 0; } }
+
+// ─── Recommendations Styling ──────────────────────────────
+.recommendations-container {
+  background: #fdfdfd;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.recommendation-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.8rem;
+  color: #2c3e50;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  i { color: #f1c40f; }
+}
+
+.recommendation-list {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.rec-book-btn {
+  background: #fff;
+  border: 1px solid #cbd5e0;
+  color: #4a5568;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  &:hover {
+    border-color: $red;
+    color: $red;
+    background: #fff5f5;
+    transform: translateY(-2px);
+  }
+
+  i { font-size: 0.65rem; opacity: 0.7; }
+}
+
+.all-books-action {
+  margin-bottom: 1rem;
+  .open-all-books-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    color: #6c757d;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    &:hover {
+      background: #e9ecef;
+      border-color: #ced4da;
+      color: #495057;
+    }
+  }
+}
+
+// ─── All Books Modal Extras ──────────────────────────────
+.all-books-modal {
+  max-width: 750px !important;
+  width: 95% !important;
+
+  .modal-search-bar {
+    position: relative;
+    margin-bottom: 1.25rem;
+    i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #adb5bd; }
+    input { width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid #e9ecef; border-radius: 10px; outline: none; &:focus { border-color: $red; } }
+  }
+
+  .modal-all-books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 2px;
+  }
+
+  .book-selection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: $red;
+      background: #fff5f5;
+      .add-icon { color: $red; transform: scale(1.1); }
+    }
+
+    .book-name { font-size: 0.85rem; font-weight: 600; color: #343a40; }
+    .add-icon { color: #dee2e6; font-size: 1.15rem; transition: all 0.2s; }
+  }
+
+  .done-btn {
+    background: $red;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    &:hover { background: $red-dark; }
+  }
+}

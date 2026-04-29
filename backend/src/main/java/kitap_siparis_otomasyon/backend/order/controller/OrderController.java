@@ -1,11 +1,13 @@
 package kitap_siparis_otomasyon.backend.order.controller;
 
+import kitap_siparis_otomasyon.backend.order.dto.CreateCustomOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.CreateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.dto.OrderResponse;
 import kitap_siparis_otomasyon.backend.order.dto.UpdateOrderRequest;
 import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import kitap_siparis_otomasyon.backend.order.service.OrderService;
 import kitap_siparis_otomasyon.backend.user.entity.User;
+import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,16 +24,26 @@ import java.util.UUID;
 public class OrderController {
 
     private final OrderService orderService;
+    private final UserRepository userRepository;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, UserRepository userRepository) {
         this.orderService = orderService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<OrderResponse> createOrder(@AuthenticationPrincipal User user,
             @RequestBody CreateOrderRequest request) {
         OrderResponse response = orderService.createOrder(user.getId(), request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/custom")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<OrderResponse> createCustomOrder(@AuthenticationPrincipal User admin,
+            @RequestBody CreateCustomOrderRequest request) {
+        OrderResponse response = orderService.createCustomOrder(admin.getId(), request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -42,7 +54,7 @@ public class OrderController {
     }
 
     @GetMapping("/my-orders")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<OrderResponse>> getMyOrders(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(orderService.getOrdersByUserId(user.getId()));
     }

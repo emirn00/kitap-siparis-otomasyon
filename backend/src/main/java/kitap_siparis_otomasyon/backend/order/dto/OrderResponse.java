@@ -26,14 +26,14 @@ public class OrderResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean mailed;
+    private boolean isCustomOrder;
+    private String customNotes;
 
     public static OrderResponse fromEntity(Order order) {
         OrderResponse response = new OrderResponse();
         response.setId(order.getId());
         response.setUserId(order.getUser().getId());
-        response.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
-        response.setEmail(order.getUser().getEmail());
-        response.setPhone(order.getUser().getPhone());
+        
         response.setBooks(order.getOrderBooks().stream()
                 .map(OrderBookResponse::fromEntity)
                 .collect(Collectors.toList()));
@@ -42,7 +42,20 @@ public class OrderResponse {
         response.setStatus(order.getStatus());
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
-        response.setMailed(order.isMailed());
+        response.setMailed(order.getMailed() != null && order.getMailed());
+        response.setCustomOrder(order.getCustomOrder() != null && order.getCustomOrder());
+        response.setCustomNotes(order.getCustomNotes());
+
+        if (order.getCustomOrder() != null && order.getCustomOrder()) {
+            response.setUserName(order.getCustomCustomerName());
+            response.setEmail(order.getCustomCustomerEmail());
+            response.setPhone(order.getCustomCustomerPhone());
+        } else {
+            response.setUserName(order.getUser().getFirstName() + " " + order.getUser().getLastName());
+            response.setEmail(order.getUser().getEmail());
+            response.setPhone(order.getUser().getPhone());
+        }
+
         return response;
     }
 }

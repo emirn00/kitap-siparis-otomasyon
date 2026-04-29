@@ -1,122 +1,178 @@
-<mat-card class="form-card">
-  <mat-card-content>
-    <h2 class="section-title">{{ 'customOrderSectionTitle' | translate }}</h2>
-    <p class="section-description">{{ 'customOrderSectionDesc' | translate }}</p>
-
-    <!-- Alerts -->
-    <div *ngIf="successMessage" class="alert alert-success">
-      <i class="fas fa-check-circle"></i> {{ successMessage }}
+<div class="custom-order-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-icon">
+      <i class="fas fa-pen-nib"></i>
     </div>
-    <div *ngIf="errorMessage" class="alert alert-error">
-      <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
+    <div class="header-text">
+      <h2 class="title">{{ 'customOrderSectionTitle' | translate }}</h2>
+      <p class="subtitle">{{ 'customOrderSectionDesc' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- Left Column: Form -->
+    <div class="form-column">
+      <mat-card class="premium-card">
+        <form [formGroup]="customOrderForm" (ngSubmit)="onSubmit()">
+          
+          <!-- Section: Customer Info -->
+          <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-user-tie"></i> {{ 'personalInfo' | translate }}</h3>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ 'fullName' | translate }} *</mat-label>
+                <input matInput formControlName="fullName" [placeholder]="'fullNamePlaceholder' | translate">
+                <mat-error *ngIf="fullName?.invalid">{{ 'fullNameRequired' | translate }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row split">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'email' | translate }} *</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="example@email.com">
+                <mat-error *ngIf="email?.invalid">{{ 'validEmailEnter' | translate }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'phone' | translate }} *</mat-label>
+                <input matInput formControlName="phone" type="tel" placeholder="05XX XXX XX XX">
+                <mat-error *ngIf="phone?.invalid">{{ 'validPhoneEnter' | translate }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Section: Institution Info -->
+          <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-university"></i> {{ 'institutionInfo' | translate }}</h3>
+            
+            <div class="form-row split">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'school' | translate }} *</mat-label>
+                <input matInput formControlName="school" [placeholder]="'schoolNamePlaceholder' | translate">
+                <mat-error *ngIf="school?.invalid">{{ 'schoolRequired' | translate }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'city' | translate }} *</mat-label>
+                <input matInput formControlName="city" [placeholder]="'cityNamePlaceholder' | translate">
+                <mat-error *ngIf="city?.invalid">{{ 'cityRequired' | translate }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Section: Additional Info -->
+          <div class="form-section">
+            <h3 class="section-title"><i class="fas fa-sticky-note"></i> {{ 'notes' | translate }}</h3>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'notes' | translate }}</mat-label>
+              <textarea matInput formControlName="notes" rows="3" [placeholder]="'notesPlaceholder' | translate"></textarea>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button mat-raised-button color="warn" type="submit" [disabled]="submitting" class="submit-btn">
+              <i class="fas fa-save" *ngIf="!submitting"></i>
+              <mat-spinner diameter="20" *ngIf="submitting"></mat-spinner>
+              <span>{{ 'createOrder' | translate }}</span>
+            </button>
+          </div>
+        </form>
+      </mat-card>
     </div>
 
-    <form [formGroup]="customOrderForm" (ngSubmit)="onSubmit()">
-
-      <!-- Section: Kişisel Bilgiler -->
-      <div class="form-section">
-        <div class="form-section-header">
-          <div class="section-icon"><i class="fas fa-user"></i></div>
-          <h3 class="subsection-title">{{ 'personalInfo' | translate }}</h3>
-        </div>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'fullName' | translate }} *</mat-label>
-            <input matInput formControlName="fullName" [placeholder]="'fullNamePlaceholder' | translate">
-            <mat-error *ngIf="fullName?.hasError('required')">{{ 'fullNameRequired' | translate }}</mat-error>
-            <mat-error *ngIf="fullName?.hasError('minlength')">{{ 'fullNameMin' | translate }}</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'email' | translate }} *</mat-label>
-            <input matInput formControlName="email" type="email" placeholder="ornek@email.com">
-            <mat-error *ngIf="email?.hasError('required')">{{ 'emailRequiredMsg' | translate }}</mat-error>
-            <mat-error *ngIf="email?.hasError('email')">{{ 'validEmailEnter' | translate }}</mat-error>
-          </mat-form-field>
+    <!-- Right Column: Book Selection -->
+    <div class="selection-column">
+      <mat-card class="premium-card selection-card">
+        <div class="selection-header">
+          <h3 class="section-title"><i class="fas fa-book"></i> Seçili Kitaplar</h3>
+          <button type="button" class="add-books-btn" (click)="openBookModal()">
+            <i class="fas fa-plus-circle"></i> Kitap Ekle
+          </button>
         </div>
 
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'phone' | translate }} *</mat-label>
-            <input matInput formControlName="phone" type="tel" placeholder="05XX XXX XX XX">
-            <mat-error *ngIf="phone?.hasError('required')">{{ 'phoneRequiredMsg' | translate }}</mat-error>
-            <mat-error *ngIf="phone?.hasError('pattern')">{{ 'validPhoneEnter' | translate }}</mat-error>
-          </mat-form-field>
+        <div class="selected-books-list">
+          <div *ngIf="selectedBooks.length === 0" class="empty-selection">
+            <i class="fas fa-shopping-basket"></i>
+            <p>Henüz kitap seçilmedi. Lütfen listeden kitap ekleyin.</p>
+          </div>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'school' | translate }} *</mat-label>
-            <input matInput formControlName="school" [placeholder]="'schoolNamePlaceholder' | translate">
-            <mat-error *ngIf="school?.hasError('required')">{{ 'schoolRequired' | translate }}</mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'city' | translate }} *</mat-label>
-            <input matInput formControlName="city" [placeholder]="'cityNamePlaceholder' | translate">
-            <mat-error *ngIf="city?.hasError('required')">{{ 'cityRequired' | translate }}</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'status' | translate }}</mat-label>
-            <mat-select formControlName="status">
-              <mat-option value="pending">{{ 'statusPending' | translate }}</mat-option>
-              <mat-option value="processed">{{ 'statusProcessed' | translate }}</mat-option>
-              <mat-option value="completed">{{ 'statusCompleted' | translate }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <!-- Section: Kitap Bilgisi -->
-      <div class="form-section">
-        <div class="form-section-header">
-          <div class="section-icon books-icon"><i class="fas fa-book"></i></div>
-          <h3 class="subsection-title">{{ 'bookInfo' | translate }}</h3>
-        </div>
-
-        <mat-form-field appearance="outline" class="form-field full-width">
-          <mat-label>{{ 'workingBooksQuestion' | translate }} *</mat-label>
-          <textarea matInput formControlName="workingBooks" rows="3"
-            [placeholder]="'workingBooksPlaceholder' | translate"></textarea>
-          <mat-error *ngIf="workingBooks?.hasError('required')">{{ 'workingBooksRequired' | translate }}</mat-error>
-        </mat-form-field>
-
-        <div class="books-selection-section">
-          <label class="field-label"><i class="fas fa-check-square"></i> {{ 'selectedBooks' | translate }}</label>
-          <div class="books-selection-grid">
-            <label class="book-checkbox-item" *ngFor="let book of availableBooks"
-              [class.checked]="isBookSelected(book)">
-              <mat-checkbox [checked]="isBookSelected(book)" (change)="toggleBookSelection(book)" color="warn">
-                {{ book }}
-              </mat-checkbox>
-            </label>
+          <div class="book-tag-container" *ngIf="selectedBooks.length > 0">
+            <div class="book-item-card" *ngFor="let book of selectedBooks">
+              <span class="book-name">{{ book.requestName }}</span>
+              <button class="remove-btn" (click)="removeBook(book.id)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Section: Notlar -->
-      <div class="form-section">
-        <div class="form-section-header">
-          <div class="section-icon notes-icon"><i class="fas fa-sticky-note"></i></div>
-          <h3 class="subsection-title">{{ 'notes' | translate }}</h3>
+        <div class="selection-footer" *ngIf="selectedBooks.length > 0">
+          <div class="total-badge">
+            Toplam <strong>{{ selectedBooks.length }}</strong> Kitap
+          </div>
         </div>
+      </mat-card>
 
-        <mat-form-field appearance="outline" class="form-field full-width">
-          <mat-label>{{ 'notes' | translate }}</mat-label>
-          <textarea matInput formControlName="notes" rows="3"
-            [placeholder]="'notesPlaceholder' | translate"></textarea>
-        </mat-form-field>
+      <!-- Feedback Alerts -->
+      <div class="feedback-area">
+        <div *ngIf="successMessage" class="alert alert-success animate-fade-in">
+          <i class="fas fa-check-circle"></i> {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-error animate-fade-in">
+          <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Book Selection Modal -->
+<div class="modal-overlay" *ngIf="showBookModal" (click)="closeBookModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <i class="fas fa-search"></i>
+        <h3>Kitap Seçimi</h3>
+      </div>
+      <button class="close-modal-btn" (click)="closeBookModal()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="search-bar">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" [(ngModel)]="bookSearchTerm" placeholder="Kitap adına göre ara...">
       </div>
 
-      <!-- Submit -->
-      <div class="form-actions">
-        <button class="submit-btn" type="submit" [disabled]="customOrderForm.invalid">
-          <i class="fas fa-plus-circle"></i>
-          {{ 'createOrder' | translate }}
-        </button>
+      <div class="books-grid" *ngIf="!loadingBooks">
+        <div class="book-selectable-item" 
+             *ngFor="let book of filteredBooks" 
+             [class.selected]="isBookSelected(book)"
+             (click)="toggleBookSelection(book)">
+          <div class="selection-indicator">
+            <i class="fas fa-check-circle" *ngIf="isBookSelected(book)"></i>
+            <i class="far fa-circle" *ngIf="!isBookSelected(book)"></i>
+          </div>
+          <span class="book-label">{{ book.requestName }}</span>
+        </div>
       </div>
 
-    </form>
-  </mat-card-content>
-</mat-card>
+      <div class="loading-state" *ngIf="loadingBooks">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Kitaplar yükleniyor...</p>
+      </div>
+
+      <div class="no-results" *ngIf="!loadingBooks && filteredBooks.length === 0">
+        <p>Aradığınız kriterlere uygun kitap bulunamadı.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <div class="selection-info">
+        <strong>{{ selectedBooks.length }}</strong> kitap seçildi
+      </div>
+      <button class="done-btn" (click)="closeBookModal()">Tamam</button>
+    </div>
+  </div>
+</div>

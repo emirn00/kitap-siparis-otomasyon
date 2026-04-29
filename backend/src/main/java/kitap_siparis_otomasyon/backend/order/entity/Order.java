@@ -51,7 +51,22 @@ public class Order {
     private OrderStatus status = OrderStatus.PENDING;
 
     @Column(nullable = false)
-    private boolean mailed = false;
+    private Boolean mailed = false;
+
+    @Column(name = "is_custom_order", nullable = false  )
+    private Boolean customOrder = false;
+
+    @Column(name = "custom_customer_name")
+    private String customCustomerName;
+
+    @Column(name = "custom_customer_email")
+    private String customCustomerEmail;
+
+    @Column(name = "custom_customer_phone")
+    private String customCustomerPhone;
+
+    @Column(name = "custom_notes", columnDefinition = "TEXT")
+    private String customNotes;
 
     public Order() {
     }
