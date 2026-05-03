@@ -1,194 +1,283 @@
-<div class="order-form-container">
-  <div class="hueber-header">
-    <div class="header-left">
-      <button class="header-nav-btn" (click)="goToProfile()" type="button">
-        <i class="fas fa-user-circle"></i> {{ 'profile' | translate }}
-      </button>
-      <button class="header-nav-btn" routerLink="/orders" type="button">
-        <i class="fas fa-box-open"></i> {{ 'myOrdersButton' | translate }}
-      </button>
-    </div>
-    <div class="header-center">
-      <h1 class="hueber-logo">HUEBER</h1>
-      <h2 class="header-subtitle">{{ 'orderTitle' | translate }}</h2>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="logout-btn" (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i> {{ 'logout' | translate }}
-      </button>
-    </div>
-  </div>
-
-  <div class="welcome-section">
-    <div class="welcome-greeting">
-      <h2 class="welcome-title">Hoş Geldin, <span class="name">{{ userName }}</span> 👋</h2>
-      <div class="datetime-info">
-        <span class="date-badge"><i class="fas fa-calendar-alt"></i> {{ currentDate }}</span>
-        <span class="time-badge"><i class="fas fa-clock"></i> {{ currentTime }}</span>
+<div class="order-page-wrapper">
+  <!-- Modern Header -->
+  <header class="premium-header">
+    <div class="header-content">
+      <div class="brand-section">
+        <h1 class="logo-text">HUEBER<span>INTERAKTIV</span></h1>
       </div>
+      
+      <nav class="header-nav">
+        <button class="nav-link" (click)="goToProfile()">
+          <i class="fas fa-user-circle"></i>
+          <span>{{ 'profile' | translate }}</span>
+        </button>
+        <button class="nav-link" routerLink="/orders">
+          <i class="fas fa-box"></i>
+          <span>{{ 'myOrdersButton' | translate }}</span>
+        </button>
+        <button class="logout-link" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>{{ 'logout' | translate }}</span>
+        </button>
+      </nav>
     </div>
-  </div>
+  </header>
 
-  <mat-card class="form-card">
-    <div class="intro-section">
-      <p class="intro-text">
-        <strong>{{ 'orderIntro1' | translate }}</strong><br><br>
-        {{ 'orderIntro2' | translate }}<br><br>
-        <em>{{ 'orderIntro3' | translate }}</em><br><br>
-        <strong>{{ 'orderIntro4' | translate }}</strong><br>
-        Nurten Karadağ - 0552 614 58 57<br>
-        Merve Baycan - 0541 614 58 57
-      </p>
-    </div>
-
-    <mat-card-content>
-      <form [formGroup]="orderForm" *ngIf="!showSummary">
-        <!-- User Information (Auto-filled) -->
-        <div class="user-info-banner" *ngIf="userInfo">
-          <div class="info-group">
-            <span class="label">{{ 'fullName' | translate }}:</span>
-            <span class="value">{{ userInfo.fullName }}</span>
+  <main class="main-content">
+    <!-- Welcome Banner -->
+    <section class="welcome-banner">
+      <div class="banner-inner">
+        <div class="welcome-text">
+          <h2>Hoş Geldin, <span class="highlight">{{ userName }}</span> 👋</h2>
+          <p>Yeni Hueber Interaktiv kodlarınızı hemen sipariş edin.</p>
+        </div>
+        <div class="banner-info">
+          <div class="info-tag">
+            <i class="fas fa-calendar-day"></i>
+            <span>{{ currentDate }}</span>
           </div>
-          <div class="info-group">
-            <span class="label">{{ 'email' | translate }}:</span>
-            <span class="value">{{ userInfo.email }}</span>
-          </div>
-          <div class="info-group">
-            <span class="label">{{ 'phone' | translate }}:</span>
-            <span class="value">{{ userInfo.phoneNumber }}</span>
+          <div class="info-tag">
+            <i class="fas fa-clock"></i>
+            <span>{{ currentTime }}</span>
           </div>
         </div>
+      </div>
+    </section>
 
-        <div class="form-section">
-          <div class="form-row">
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'school' | translate }}</mat-label>
-              <input matInput formControlName="school" [placeholder]="'schoolPlaceholder' | translate">
-              <mat-error *ngIf="school?.hasError('required')">{{ 'requiredSchool' | translate }}</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="form-field">
-              <mat-label>{{ 'city' | translate }}</mat-label>
-              <input matInput formControlName="city" [placeholder]="'cityPlaceholder' | translate">
-              <mat-error *ngIf="city?.hasError('required')">{{ 'requiredCity' | translate }}</mat-error>
-            </mat-form-field>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <h3 class="section-title">{{ 'workingBooks' | translate }}</h3>
-
-          <mat-form-field appearance="outline" class="form-field full-width">
-            <mat-label>{{ 'workingBooksPlaceholder' | translate }}</mat-label>
-            <textarea matInput formControlName="workingBooks"
-              [placeholder]="'workingBooksPlaceholder' | translate" rows="3"></textarea>
-            <mat-error *ngIf="workingBooks?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-section">
-          <h3 class="section-title">{{ 'needCodes' | translate }}</h3>
-
-          <p *ngIf="booksLoading" class="books-loading">{{ 'booksLoading' | translate }}</p>
-          <p *ngIf="booksError" class="books-error">{{ booksError }}</p>
-
-          <div class="books-grid" *ngIf="!booksLoading && books.length > 0">
-            <mat-card class="book-card" *ngFor="let book of books">
-              <div class="book-image-container">
-                <img [src]="book.imageUrl" [alt]="book.name" class="book-image" (error)="onImageError($event)">
-                <div class="book-level-badge">{{ book.level }}</div>
-              </div>
-              <mat-checkbox [checked]="book.selectedForCodes" (change)="onBookChange(book, $event)" color="accent"
-                class="book-checkbox">
-                <span class="book-name">{{ book.name }}</span>
-              </mat-checkbox>
-            </mat-card>
-          </div>
-        </div>
-
-        <div class="form-actions">
-          <button mat-raised-button color="primary" (click)="onSubmit()"
-            [disabled]="orderForm.invalid || selectedBooksFormArray.length === 0" class="submit-button">
-            {{ 'continueBtn' | translate }}
-          </button>
-        </div>
-      </form>
-
-      <div *ngIf="showSummary" class="summary-section">
-        <h3 class="summary-title">{{ 'summaryTitle' | translate }}</h3>
-
-        <mat-card class="summary-card">
+    <div class="content-grid">
+      <!-- Order Form or Summary -->
+      <div class="order-card-container">
+        <mat-card class="premium-card">
           <mat-card-content>
-            <div class="summary-item" *ngIf="userInfo">
-              <div class="summary-content">
-                <strong>{{ 'fullName' | translate }}:</strong>
-                <span>{{ userInfo.fullName }}</span>
+            <form [formGroup]="orderForm" *ngIf="!showSummary">
+              <!-- Intro Section -->
+              <div class="form-intro">
+                <h3>{{ 'orderIntro1' | translate }}</h3>
+                <p>{{ 'orderIntro2' | translate }}</p>
+                <div class="info-alert">
+                  <i class="fas fa-info-circle"></i>
+                  <span>{{ 'orderIntro3' | translate }}</span>
+                </div>
               </div>
-            </div>
 
-            <div class="summary-item" *ngIf="userInfo">
-              <div class="summary-content">
-                <strong>{{ 'email' | translate }}:</strong>
-                <span>{{ userInfo.email }}</span>
+              <!-- User Details Banner -->
+              <div class="user-details-grid" *ngIf="userInfo">
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'fullName' | translate }}</span>
+                  <span class="detail-value">{{ userInfo.fullName }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'email' | translate }}</span>
+                  <span class="detail-value">{{ userInfo.email }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">{{ 'phone' | translate }}</span>
+                  <span class="detail-value">{{ userInfo.phoneNumber }}</span>
+                </div>
               </div>
-            </div>
 
-            <div class="summary-item" *ngIf="userInfo">
-              <div class="summary-content">
-                <strong>{{ 'phone' | translate }}:</strong>
-                <span>{{ userInfo.phoneNumber }}</span>
+              <!-- Institution Info -->
+              <div class="form-section">
+                <h4 class="section-subtitle"><i class="fas fa-building"></i> {{ 'institutionInfo' | translate }}</h4>
+                <div class="fields-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'school' | translate }}</mat-label>
+                    <input matInput formControlName="school" [placeholder]="'schoolPlaceholder' | translate">
+                    <mat-error *ngIf="school?.hasError('required')">{{ 'requiredSchool' | translate }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
+                    <mat-label>{{ 'city' | translate }}</mat-label>
+                    <input matInput formControlName="city" [placeholder]="'cityPlaceholder' | translate">
+                    <mat-error *ngIf="city?.hasError('required')">{{ 'requiredCity' | translate }}</mat-error>
+                  </mat-form-field>
+                </div>
               </div>
-            </div>
 
-            <div class="summary-item">
-              <div class="summary-content">
-                <strong>{{ 'school' | translate }}</strong>
-                <span>{{ orderForm.value.school }}</span>
+              <div class="form-section">
+                <h4 class="section-subtitle"><i class="fas fa-book-reader"></i> {{ 'workingBooks' | translate }}</h4>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ 'workingBooksPlaceholder' | translate }}</mat-label>
+                  <textarea matInput formControlName="workingBooks" rows="2"></textarea>
+                  <mat-error *ngIf="workingBooks?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
+                </mat-form-field>
               </div>
-            </div>
 
-            <div class="summary-item">
-              <div class="summary-content">
-                <strong>{{ 'city' | translate }}:</strong>
-                <span>{{ orderForm.value.city }}</span>
+              <!-- Book Selection Section -->
+              <div class="form-section">
+                <div class="section-header-flex">
+                  <h4 class="section-subtitle"><i class="fas fa-list-check"></i> {{ 'needCodes' | translate }}</h4>
+                  <div class="selection-count" *ngIf="selectedBooksFormArray.length > 0">
+                    {{ selectedBooksFormArray.length }} {{ 'booksSelected' | translate }}
+                  </div>
+                </div>
+
+                <!-- Filters Row -->
+                <div class="filter-actions-bar">
+                  <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" [(ngModel)]="searchTerm" [ngModelOptions]="{standalone: true}" 
+                           (input)="onSearchChange()" [placeholder]="'searchBookPlaceholder' | translate">
+                  </div>
+                </div>
+
+                <div *ngIf="booksLoading" class="loader-wrap">
+                  <mat-spinner diameter="40"></mat-spinner>
+                  <p>{{ 'booksLoading' | translate }}</p>
+                </div>
+
+                <div *ngIf="booksError" class="error-wrap">
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <p>{{ booksError }}</p>
+                </div>
+
+                <!-- Modern Book Grid -->
+                <div class="books-modern-grid" *ngIf="!booksLoading && filteredBooks.length > 0">
+                  <div class="book-item-card" *ngFor="let book of filteredBooks" 
+                       [class.selected]="book.selectedForCodes"
+                       (click)="onBookChange(book, !book.selectedForCodes)"
+                       [title]="book.name">
+                    <div class="book-visual">
+                      <img [src]="book.imageUrl" [alt]="book.name" (error)="onImageError($event)">
+                      <div class="book-overlay">
+                        <div class="check-icon">
+                          <i class="fas fa-check"></i>
+                        </div>
+                      </div>
+                      <div class="level-tag">{{ book.level }}</div>
+                    </div>
+                    <div class="book-info">
+                      <span class="book-title">{{ book.name }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="empty-books" *ngIf="!booksLoading && filteredBooks.length === 0">
+                  <i class="fas fa-search"></i>
+                  <p>{{ 'noResults' | translate }}</p>
+                </div>
               </div>
-            </div>
 
-            <mat-divider></mat-divider>
-
-            <div class="summary-item">
-              <div class="summary-content">
-                <strong>{{ 'workingBooks' | translate }}</strong>
-                <span>{{ orderForm.value.workingBooks }}</span>
+              <div class="form-footer">
+                <button mat-raised-button color="primary" (click)="onSubmit()"
+                        [disabled]="orderForm.invalid || selectedBooksFormArray.length === 0" 
+                        class="primary-cta">
+                  <span>{{ 'continueBtn' | translate }}</span>
+                  <i class="fas fa-arrow-right"></i>
+                </button>
               </div>
-            </div>
+            </form>
 
-            <mat-divider></mat-divider>
+            <!-- Summary View -->
+            <div *ngIf="showSummary" class="summary-wrapper">
+              <div class="summary-header">
+                <button class="back-link" (click)="onBack()">
+                  <i class="fas fa-chevron-left"></i> {{ 'back' | translate }}
+                </button>
+                <h3>{{ 'summaryTitle' | translate }}</h3>
+              </div>
 
-            <div class="summary-item books-summary">
-              <div class="summary-content">
-                <strong>{{ 'books' | translate }}:</strong>
-                <mat-list class="books-list">
-                  <mat-list-item *ngFor="let bookName of getSelectedBookNames()">
-                    <div matLine>{{ bookName }}</div>
-                  </mat-list-item>
-                </mat-list>
+              <div class="receipt-card">
+                <div class="receipt-header">
+                  <div class="receipt-logo">HUEBER</div>
+                  <div class="receipt-date">{{ currentDate }}</div>
+                </div>
+
+                <div class="receipt-body">
+                  <div class="receipt-section">
+                    <h5>{{ 'personalInfo' | translate }}</h5>
+                    <div class="receipt-row">
+                      <span class="r-label">{{ 'fullName' | translate }}</span>
+                      <span class="r-value">{{ userInfo?.fullName }}</span>
+                    </div>
+                    <div class="receipt-row">
+                      <span class="r-label">{{ 'email' | translate }}</span>
+                      <span class="r-value">{{ userInfo?.email }}</span>
+                    </div>
+                  </div>
+
+                  <div class="receipt-section">
+                    <h5>{{ 'institutionInfo' | translate }}</h5>
+                    <div class="receipt-row">
+                      <span class="r-label">{{ 'school' | translate }}</span>
+                      <span class="r-value">{{ orderForm.value.school }}</span>
+                    </div>
+                    <div class="receipt-row">
+                      <span class="r-label">{{ 'city' | translate }}</span>
+                      <span class="r-value">{{ orderForm.value.city }}</span>
+                    </div>
+                  </div>
+
+                  <div class="receipt-section">
+                    <h5>{{ 'workingBooks' | translate }}</h5>
+                    <p class="receipt-text">{{ orderForm.value.workingBooks }}</p>
+                  </div>
+
+                  <div class="receipt-section last">
+                    <h5>{{ 'selectedBooks' | translate }} ({{ selectedBooksFormArray.length }})</h5>
+                    <ul class="receipt-list">
+                      <li *ngFor="let name of getSelectedBookNames()">
+                        <i class="fas fa-check-circle"></i>
+                        {{ name }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="receipt-footer">
+                  <p>{{ 'orderIntro4' | translate }}</p>
+                </div>
+              </div>
+
+              <div *ngIf="orderError" class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ orderError }}
+              </div>
+
+              <div class="summary-cta-wrap">
+                <button mat-raised-button color="accent" (click)="onConfirm()" 
+                        [disabled]="orderSubmitting" class="confirm-cta">
+                  <span *ngIf="!orderSubmitting">{{ 'confirm' | translate }}</span>
+                  <span *ngIf="orderSubmitting">{{ 'save' | translate }}...</span>
+                  <mat-spinner diameter="20" *ngIf="orderSubmitting"></mat-spinner>
+                </button>
               </div>
             </div>
           </mat-card-content>
         </mat-card>
-
-        <div *ngIf="orderError" class="order-error">{{ orderError }}</div>
-        <div class="summary-actions">
-          <button mat-stroked-button color="primary" (click)="onBack()" class="back-button" [disabled]="orderSubmitting">
-            {{ 'back' | translate }}
-          </button>
-          <button mat-raised-button color="primary" (click)="onConfirm()" class="confirm-button"
-            [disabled]="orderSubmitting">
-            {{ orderSubmitting ? ('save' | translate) + '…' : ('confirm' | translate) }}
-          </button>
-        </div>
       </div>
-    </mat-card-content>
-  </mat-card>
+
+      <!-- Sidebar Support / Info -->
+      <aside class="sidebar-info">
+        <div class="info-widget support-widget">
+          <div class="widget-header">
+            <i class="fas fa-headset"></i>
+            <h4>{{ 'help' | translate }}</h4>
+          </div>
+          <p>Siparişinizle ilgili yardıma mı ihtiyacınız var?</p>
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="name">Nurten Karadağ</span>
+              <a href="tel:05526145857">0552 614 58 57</a>
+            </div>
+            <div class="contact-item">
+              <span class="name">Merve Baycan</span>
+              <a href="tel:05416145857">0541 614 58 57</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-widget tip-widget">
+          <div class="widget-header">
+            <i class="fas fa-lightbulb"></i>
+            <h4>İpucu</h4>
+          </div>
+          <p>Kitapları daha hızlı bulmak için üst kısımdaki arama çubuğunu veya seviye filtrelerini kullanabilirsiniz.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <p>&copy; {{ currentDate | date:'yyyy' }} Hueber Interaktiv. Tüm hakları saklıdır.</p>
+  </footer>
 </div>

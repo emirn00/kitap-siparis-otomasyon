@@ -175,7 +175,8 @@ export class AdminOrdersAllComponent implements OnInit {
 
     this.http.get<ApiOrderResponse[]>(this.apiUrl).subscribe({
       next: (data) => {
-        this.orders = data.map(d => this.mapApiOrderToAdmin(d));
+        this.orders = data.map(d => this.mapApiOrderToAdmin(d))
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         this.applyFilters();
         this.loading = false;
       },
@@ -201,7 +202,8 @@ export class AdminOrdersAllComponent implements OnInit {
 
     this.http.get<ApiOrderResponse[]>(byDateUrl).subscribe({
       next: (data) => {
-        this.orders = data.map(d => this.mapApiOrderToAdmin(d));
+        this.orders = data.map(d => this.mapApiOrderToAdmin(d))
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         this.applyFilters();
         this.loading = false;
       },

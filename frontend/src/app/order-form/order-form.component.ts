@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { AuthService } from '../auth/auth.service';
 import { OrderBookService } from './order-book.service';
 import { OrderApiService } from './order-api.service';
@@ -45,6 +44,11 @@ export class OrderFormComponent implements OnInit, OnDestroy {
   orderSubmitting = false;
   orderError: string | null = null;
 
+  /** Filtreleme ve Arama */
+  searchTerm = '';
+  selectedLevel = 'all';
+  filteredBooks: Book[] = [];
+
   private placeholderImage = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop';
 
   constructor(
@@ -86,16 +90,26 @@ export class OrderFormComponent implements OnInit, OnDestroy {
   loadBooksFromApi(): void {
     this.booksLoading = true;
     this.booksError = null;
-    this.orderBookService.getBooks(0, 100).subscribe({
+    this.orderBookService.getBooks(0, 500).subscribe({ // Increased limit to fetch more books for local filtering
       next: (res) => {
-        this.books = (res.content || []).map(b => ({
-          id: String(b.id),
-          name: b.requestName || '',
-          imageUrl: this.placeholderImage,
-          level: b.lisencodeName || b.orderName || '–',
-          selectedForWorking: false,
-          selectedForCodes: false
-        }));
+        this.books = (res.content || []).map(b => {
+          // Extract level only if it's likely a level (e.g., max 10 chars like "A1.1")
+          let level = '–';
+          const possibleLevel = (b.lisencodeName || b.orderName || '').trim();
+          if (possibleLevel && possibleLevel.length > 0 && possibleLevel.length <= 10) {
+            level = possibleLevel;
+          }
+
+          return {
+            id: String(b.id),
+            name: b.requestName || '',
+            imageUrl: this.placeholderImage,
+            level: level,
+            selectedForWorking: false,
+            selectedForCodes: false
+          };
+        });
+        this.applyFilters();
         this.booksLoading = false;
       },
       error: (err: HttpErrorResponse) => {
@@ -109,13 +123,38 @@ export class OrderFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  applyFilters(): void {
+    this.filteredBooks = this.books.filter(book => {
+      const matchesSearch = !this.searchTerm || 
+        book.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        book.level.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesLevel = this.selectedLevel === 'all' || book.level === this.selectedLevel;
+      
+      return matchesSearch && matchesLevel;
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onLevelChange(level: string): void {
+    this.selectedLevel = level;
+    this.applyFilters();
+  }
+
+  getLevels(): string[] {
+    const levels = new Set(this.books.map(b => b.level).filter(l => l && l !== '–'));
+    return Array.from(levels).sort();
+  }
+
   get selectedBooksFormArray(): FormArray {
     return this.orderForm.get('selectedBooks') as FormArray;
   }
 
-  onBookChange(book: Book, event: MatCheckboxChange): void {
+  onBookChange(book: Book, checked: boolean): void {
     const targetArray = this.selectedBooksFormArray;
-    const checked = !!event.checked;
     book.selectedForCodes = checked;
     if (checked) {
       targetArray.push(this.fb.control(book.id));
