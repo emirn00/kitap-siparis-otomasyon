@@ -8,55 +8,67 @@
       <i class="fas fa-exclamation-circle"></i> {{ errorMessage }}
     </div>
 
-    <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()">
+    <div class="add-book-header">
+      <div class="header-icon-box">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <div class="header-text">
+        <h2 class="modern-title">{{ 'newBook' | translate }}</h2>
+        <p class="modern-subtitle">{{ 'newBookDesc' | translate }}</p>
+      </div>
+    </div>
 
-      <!-- Form Section -->
-      <div class="form-section">
-        <div class="form-section-header">
-          <div class="section-icon book-icon"><i class="fas fa-book"></i></div>
-          <span>{{ 'newBook' | translate }}</span>
-        </div>
-        <p class="section-description">{{ 'newBookDesc' | translate }}</p>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'requestName' | translate }} *</mat-label>
-            <input matInput formControlName="requestName" [placeholder]="'requestName' | translate">
-            <mat-error *ngIf="requestName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'orderName' | translate }} *</mat-label>
-            <input matInput formControlName="orderName" [placeholder]="'orderName' | translate">
-            <mat-error *ngIf="orderName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-          </mat-form-field>
+    <form [formGroup]="addBookForm" (ngSubmit)="onSubmit()" class="modern-form">
+      <div class="form-grid">
+        <div class="form-group-modern">
+          <label class="modern-label"><i class="fas fa-bookmark"></i> {{ 'requestName' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" formControlName="requestName" [placeholder]="'requestName' | translate">
+            <div class="error-text" *ngIf="requestName?.invalid && requestName?.touched">
+              {{ 'requiredField' | translate }}
+            </div>
+          </div>
         </div>
 
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'lisencodeName' | translate }} *</mat-label>
-            <input matInput formControlName="lisencodeName" [placeholder]="'lisencodeName' | translate">
-            <mat-error *ngIf="lisencodeName?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-          </mat-form-field>
+        <div class="form-group-modern">
+          <label class="modern-label"><i class="fas fa-tags"></i> {{ 'orderName' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" formControlName="orderName" [placeholder]="'orderName' | translate">
+            <div class="error-text" *ngIf="orderName?.invalid && orderName?.touched">
+              {{ 'requiredField' | translate }}
+            </div>
+          </div>
+        </div>
 
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'isbn' | translate }} *</mat-label>
-            <input matInput formControlName="isbn" [placeholder]="'isbn' | translate">
-            <mat-error *ngIf="isbn?.hasError('required')">{{ 'requiredField' | translate }}</mat-error>
-          </mat-form-field>
+        <div class="form-group-modern">
+          <label class="modern-label"><i class="fas fa-key"></i> {{ 'lisencodeName' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" formControlName="lisencodeName" [placeholder]="'lisencodeName' | translate">
+            <div class="error-text" *ngIf="lisencodeName?.invalid && lisencodeName?.touched">
+              {{ 'requiredField' | translate }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group-modern">
+          <label class="modern-label"><i class="fas fa-barcode"></i> {{ 'isbn' | translate }}</label>
+          <div class="input-wrapper">
+            <input type="text" formControlName="isbn" [placeholder]="'isbn' | translate">
+            <div class="error-text" *ngIf="isbn?.invalid && isbn?.touched">
+              {{ 'requiredField' | translate }}
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Actions -->
-      <div class="form-actions">
-        <button class="submit-btn" type="submit" [disabled]="addBookForm.invalid">
-          <i class="fas fa-plus-circle"></i> {{ 'addBook' | translate }}
+      <div class="modern-form-actions">
+        <button class="modern-submit-btn" type="submit" [disabled]="addBookForm.invalid">
+          <i class="fas fa-save"></i> {{ 'addBook' | translate }}
         </button>
-        <a class="back-link" [routerLink]="['/admin/books']" [queryParams]="{ added: 'true' }">
+        <a class="modern-back-btn" [routerLink]="['/admin/books']">
           <i class="fas fa-arrow-left"></i> {{ 'goToBooks' | translate }}
         </a>
       </div>
-
     </form>
 
   </mat-card-content>

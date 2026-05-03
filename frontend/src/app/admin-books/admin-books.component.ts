@@ -33,7 +33,32 @@ export class AdminBooksComponent implements OnInit {
   }
 
   get pageNumbers(): number[] {
-    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const delta = 2; // Number of pages to show before and after current
+    const range: number[] = [];
+
+    for (
+      let i = Math.max(2, current - delta);
+      i <= Math.min(total - 1, current + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (current - delta > 2) {
+      range.unshift(-1); // Indicator for dots
+    }
+    range.unshift(1);
+
+    if (current + delta < total - 1) {
+      range.push(-2); // Indicator for dots
+    }
+    if (total > 1) {
+      range.push(total);
+    }
+
+    return range;
   }
 
   get pageRangeStart(): number {

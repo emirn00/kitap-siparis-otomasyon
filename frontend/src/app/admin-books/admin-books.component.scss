@@ -52,12 +52,13 @@
 .delete-confirm-panel { display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: #c62828; }
 
 /* Pagination */
-.pagination-container { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; border-top: 1px solid #eee; padding-top: 1.5rem; margin-top: 1rem;}
+.pagination-container { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; border-top: 1px solid #eee; padding-top: 1.5rem; margin-top: 1rem; position: relative; }
 .page-btn { padding: 0.5rem 0.9rem; border: 1px solid #eee; background: #fff; border-radius: 8px; font-weight: 600; color: #666; cursor: pointer; transition: all 0.2s; }
 .page-btn:hover:not(:disabled) { border-color: #d32f2f; color: #d32f2f; background: #fff0f0; }
 .page-btn.active { background: #d32f2f; color: #fff; border-color: #d32f2f; }
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.page-info { margin-left: auto; color: #888; font-size: 0.85rem; font-weight: 500; }
+.page-dots { padding: 0.5rem; color: #999; font-weight: 700; }
+.page-info { position: absolute; right: 0; color: #888; font-size: 0.85rem; font-weight: 500; }
 
 /* Empty State */
 .empty-state { padding: 4rem 2rem; text-align: center; color: #999; }
@@ -66,5 +67,5 @@
 /* Responsive */
 @media (max-width: 768px) {
   .table-top-actions { flex-direction: column; align-items: stretch; }
-  .page-info { width: 100%; margin-top: 0.5rem; text-align: center; }
+  .page-info { position: static; width: 100%; margin-top: 0.5rem; text-align: center; }
 }
