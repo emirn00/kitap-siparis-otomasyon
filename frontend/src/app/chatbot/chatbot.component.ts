@@ -25,10 +25,11 @@ export class ChatbotComponent {
   currentSessionId: string | undefined = undefined;
 
   quickActions = [
+    { label: '📊 Bugünün siparişleri', message: 'Bugün toplam kaç sipariş verildi?' },
+    { label: '⏳ Bekleyen siparişler', message: 'Bekleyen siparişleri listele.' },
+    { label: '🏆 En çok satanlar', message: 'En çok satan 5 kitabı listele.' },
+    { label: '👥 Yeni kullanıcılar', message: 'Bu ay kaç yeni kullanıcı kayıt oldu?' },
     { label: '📚 Kitap öner', message: 'Bana kitap önerir misin?' },
-    { label: '🕐 Çalışma saatleri', message: 'Çalışma saatleri nedir?' },
-    { label: '📦 Sipariş durumu', message: 'Sipariş durumunu nasıl sorgularım?' },
-    { label: '🆕 Yeni eklemeler', message: 'Son eklenen kitaplar neler?' },
     { label: '❓ Yardım', message: 'Neler yapabilirsin?' },
   ];
 

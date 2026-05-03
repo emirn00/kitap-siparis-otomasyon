@@ -47,6 +47,7 @@ import { UserOrdersComponent } from './user-orders/user-orders.component';
 import { BookCardComponent } from './admin-books/components/book-card/book-card.component';
 import { TranslatePipe } from './i18n/translate.pipe';
 import { ChatbotComponent } from './chatbot/chatbot.component';
+import { MarkdownPipe } from './chatbot/markdown.pipe';
 
 @NgModule({
   declarations: [
@@ -72,7 +73,8 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
     AdminBulkMailComponent,
     UserOrdersComponent,
     BookCardComponent,
-    ChatbotComponent
+    ChatbotComponent,
+    MarkdownPipe
   ],
   imports: [
     BrowserModule,

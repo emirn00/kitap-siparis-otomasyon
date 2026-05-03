@@ -31,7 +31,7 @@
     <div class="chat-messages" #scrollMe [scrollTop]="scrollMe.scrollHeight">
       <div *ngFor="let msg of messages" class="message-wrapper" [class.user]="msg.sender === 'user'">
         <div class="message" [class.user]="msg.sender === 'user'" [class.bot]="msg.sender === 'bot'">
-          <p>{{ msg.text }}</p>
+          <div [innerHTML]="msg.text | markdown"></div>
           <span class="time">{{ msg.timestamp | date:'HH:mm' }}</span>
         </div>
       </div>

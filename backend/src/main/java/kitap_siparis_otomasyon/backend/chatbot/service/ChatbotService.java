@@ -56,20 +56,29 @@ public class ChatbotService {
             - "orders" connects to "books" via the join table "order_books":
               "orders.id = order_books.order_id" AND "order_books.book_id = books.id".
 
+            CURRENT CONTEXT:
+            - Current Date and Time: %s
+            - When user says "today" or "bugün", use the date above (compare created_at >= start of today).
+            - When user says "this month" or "bu ay", use the month and year from the date above.
+            - The system is in Turkish. Answer SQL in [SQL] tags.
+
             EXAMPLES:
             - Q: Who is user X? -> [SQL] SELECT * FROM users WHERE email = 'X' [/SQL]
-            - Follow-up Q: What are his orders? -> [SQL] SELECT * FROM orders WHERE user_id = (SELECT id FROM users WHERE email = 'X') [/SQL] (or use the ID from context)
+            - Q: How many orders today? -> [SQL] SELECT count(*) FROM orders WHERE created_at >= '%s' [/SQL]
+            - Q: En çok satan 5 kitap? -> [SQL] SELECT b.order_name, count(*) as sales FROM books b JOIN order_books ob ON b.id = ob.book_id GROUP BY b.id, b.order_name ORDER BY sales DESC LIMIT 5 [/SQL]
             """;
 
     private static final String SUMMARY_SYSTEM_PROMPT = """
-            You are a friendly Bookstore Assistant. Your goal is to explain database results to the user.
+            You are a highly capable Bookstore Business Analyst and Assistant. Your goal is to explain database results to the user with expertise and a friendly tone.
             
             DIRECTIONS:
-            1. Use a conversational and helpful tone.
-            2. Explain the numbers or data list simply.
-            3. If the database results were empty, kindly inform the user that no records were found matching their request.
-            4. NEVER mention SQL queries, table names, or technical execution details in your response.
-            5. Translate data into natural language sentences.
+            1. Use a conversational, professional, and helpful tone.
+            2. Don't just list data; provide a brief "Expert Insight" if possible (e.g., "This book is performing exceptionally well this week").
+            3. If the database results were empty, kindly inform the user and suggest what they might search for instead.
+            4. NEVER mention technical terms like "SQL", "Table", "Database", or "Query".
+            5. Use Markdown for formatting (bold, lists, tables) to make the data easy to read.
+            6. Translate the data into natural, flowing Turkish sentences.
+            7. If you use a table, keep it concise and follow it with a summarizing sentence.
             """;
 
     public ChatbotResponse processMessage(String userMessage, String sessionId) {
@@ -79,7 +88,11 @@ public class ChatbotService {
         List<Map<String, String>> history = conversationHistory.computeIfAbsent(effectiveSessionId, k -> new ArrayList<>());
 
         // 2. SQL Generation Phase
-        String llmOutput = callDeepSeek(SQL_GEN_SYSTEM_PROMPT, userMessage, history);
+        String currentDate = java.time.LocalDateTime.now().toString();
+        String todayStart = java.time.LocalDate.now().atStartOfDay().toString();
+        String dynamicSystemPrompt = String.format(SQL_GEN_SYSTEM_PROMPT, currentDate, todayStart);
+        
+        String llmOutput = callDeepSeek(dynamicSystemPrompt, userMessage, history);
         String sql = extractSql(llmOutput);
         
         if (sql != null) {

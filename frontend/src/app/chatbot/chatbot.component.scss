@@ -223,27 +223,79 @@ $red-deep: #7f0000;
     &.user { align-items: flex-end; }
 
     .message {
-      max-width: 80%;
-      padding: 11px 15px;
+      max-width: 85%;
+      padding: 12px 16px;
       border-radius: 18px;
-      font-size: 0.9rem;
-      line-height: 1.58;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      word-wrap: break-word;
 
-      p { margin: 0; }
+      ::ng-deep {
+        p { margin: 0 0 8px 0; &:last-child { margin-bottom: 0; } }
+        
+        strong { font-weight: 700; color: inherit; }
+        
+        ul, ol {
+          margin: 8px 0;
+          padding-left: 20px;
+          li { margin-bottom: 4px; }
+        }
+
+        // Premium Table Styling
+        table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          margin: 12px 0;
+          border-radius: 12px;
+          overflow: hidden;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          background: rgba(255, 255, 255, 0.5);
+          backdrop-filter: blur(4px);
+
+          th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+          }
+
+          th {
+            background: rgba($red, 0.04);
+            color: $red-dark;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03rem;
+          }
+
+          tr:last-child td { border-bottom: none; }
+          
+          tr:hover td {
+            background: rgba($red, 0.02);
+          }
+        }
+      }
 
       &.bot {
-        background: #f2f3f8;
-        color: #1e2433;
-        border-bottom-left-radius: 5px;
-        border: 1px solid #e8eaf0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        background: #ffffff;
+        color: #2c3e50;
+        border-bottom-left-radius: 4px;
+        border: 1px solid rgba($red, 0.08);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       }
 
       &.user {
-        background: linear-gradient(135deg, #e53935, $red-dark);
+        background: linear-gradient(135deg, #e53935 0%, $red-dark 100%);
         color: white;
-        border-bottom-right-radius: 5px;
-        box-shadow: 0 3px 12px rgba($red, 0.28);
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 4px 15px rgba($red, 0.25);
+        
+        ::ng-deep table {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+          th { background: rgba(0, 0, 0, 0.1); color: white; }
+          td { border-color: rgba(255, 255, 255, 0.1); }
+        }
       }
 
       &.loading {
@@ -301,37 +353,45 @@ $red-deep: #7f0000;
     margin-bottom: 7px;
   }
 
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-
-    .chip {
-      background: #f5f5fb;
-      color: $red-dark;
-      border: 1.5px solid #e8d5d5;
-      border-radius: 20px;
-      padding: 4px 11px;
-      font-size: 0.76rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-      white-space: nowrap;
-
-      &:hover:not(:disabled) {
-        background: $red;
-        color: white;
-        border-color: $red;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba($red, 0.3);
-      }
-
-      &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+ 
+      .chip {
+        background: rgba($red, 0.04);
+        color: #444;
+        border: 1px solid rgba($red, 0.12);
+        border-radius: 12px;
+        padding: 6px 14px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+ 
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #e53935 0%, $red-dark 100%);
+          color: white;
+          border-color: transparent;
+          transform: translateY(-3px);
+          box-shadow: 0 6px 15px rgba($red, 0.3);
+        }
+ 
+        &:active:not(:disabled) {
+          transform: translateY(-1px);
+        }
+ 
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
       }
     }
-  }
 }
 
 // ─── Input Area ────────────────────────────────────────────
