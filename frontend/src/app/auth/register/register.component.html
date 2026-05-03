@@ -1,91 +1,108 @@
-<div class="container vh-100 d-flex align-items-center justify-content-center">
-  <div class="card shadow-lg register-card">
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle">
+          <i class="fas fa-user-plus"></i>
+        </div>
+        <h2 class="welcome-title">Hueber'a Hoşgeldiniz</h2>
+        <p class="welcome-subtitle">{{ 'register' | translate }}</p>
+      </div>
 
-    <div class="card-body p-4">
-      <h3 class="text-center mb-4 text-danger fw-bold">
-        {{ 'register' | translate }}
-      </h3>
+      <div class="auth-body">
+        <form [formGroup]="registerForm" (ngSubmit)="register()">
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firstName"
+                  formControlName="firstName"
+                  placeholder="John"
+                />
+                <label for="firstName">{{ 'firstName' | translate }}</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lastName"
+                  formControlName="lastName"
+                  placeholder="Doe"
+                />
+                <label for="lastName">{{ 'lastName' | translate }}</label>
+              </div>
+            </div>
+          </div>
 
-      <form [formGroup]="registerForm" (ngSubmit)="register()">
+          <div class="form-floating mb-3">
+            <input
+              type="email"
+              class="form-control"
+              id="regEmail"
+              formControlName="email"
+              placeholder="name@example.com"
+            />
+            <label for="regEmail">{{ 'email' | translate }}</label>
+          </div>
 
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label class="form-label">{{ 'firstName' | translate }}</label>
+          <div class="form-floating mb-3">
             <input
               type="text"
               class="form-control"
-              formControlName="firstName"
+              id="regPhone"
+              formControlName="phone"
+              placeholder="+90..."
             />
+            <label for="regPhone">{{ 'phone' | translate }}</label>
           </div>
 
-          <div class="col-md-6 mb-3">
-            <label class="form-label">{{ 'lastName' | translate }}</label>
+          <div class="form-floating mb-3">
             <input
-              type="text"
+              type="password"
               class="form-control"
-              formControlName="lastName"
+              id="regPassword"
+              formControlName="password"
+              placeholder="Password"
             />
+            <label for="regPassword">{{ 'password' | translate }}</label>
           </div>
+
+          <div class="form-floating mb-4">
+            <input
+              type="password"
+              class="form-control"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              placeholder="Confirm Password"
+            />
+            <label for="confirmPassword">{{ 'confirmPassword' | translate }}</label>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger-custom d-flex align-items-center mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <div>{{ errorMessage }}</div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-auth-submit w-100"
+            [disabled]="registerForm.invalid"
+          >
+            {{ 'register' | translate }}
+          </button>
+        </form>
+
+        <div class="auth-footer mt-4 text-center">
+          <span class="text-muted">{{ 'haveAccount' | translate }}</span>
+          <a routerLink="/login" class="auth-link ms-1">
+            {{ 'login' | translate }}
+          </a>
         </div>
-
-        <div class="mb-3">
-          <label class="form-label">{{ 'email' | translate }}</label>
-          <input
-            type="email"
-            class="form-control"
-            formControlName="email"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">{{ 'phone' | translate }}</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="phone"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">{{ 'password' | translate }}</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="password"
-          />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">{{ 'confirmPassword' | translate }}</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="confirmPassword"
-          />
-        </div>
-
-        <div *ngIf="errorMessage" class="alert alert-danger py-2">
-          {{ errorMessage }}
-        </div>
-
-        <button
-          type="submit"
-          class="btn btn-danger w-100 mt-2"
-          [disabled]="registerForm.invalid"
-        >
-          {{ 'register' | translate }}
-        </button>
-      </form>
-
-      <hr />
-
-      <p class="text-center mb-0">
-        {{ 'haveAccount' | translate }}
-        <a routerLink="/login" class="text-danger fw-semibold">
-          {{ 'login' | translate }}
-        </a>
-      </p>
+      </div>
     </div>
-
   </div>
 </div>

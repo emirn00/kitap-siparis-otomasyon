@@ -1,55 +1,59 @@
-<div class="container vh-100 d-flex align-items-center justify-content-center">
-  <div class="card shadow-lg login-card">
-
-    <div class="card-body p-4">
-      <h3 class="text-center mb-4 text-danger fw-bold">
-        {{ 'login' | translate }}
-      </h3>
-
-      <form (ngSubmit)="login()" #loginForm="ngForm">
-
-        <div class="mb-3">
-          <label class="form-label">{{ 'email' | translate }}</label>
-          <input
-            type="email"
-            class="form-control"
-            [(ngModel)]="email"
-            name="email"
-            required
-            placeholder="ornek@mail.com"
-          />
+<div class="auth-wrapper">
+  <div class="auth-content">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-circle">
+          <i class="fas fa-book-open"></i>
         </div>
+        <h2 class="welcome-title">Hueber'a Hoşgeldiniz</h2>
+        <p class="welcome-subtitle">{{ 'login' | translate }}</p>
+      </div>
 
-        <div class="mb-3">
-          <label class="form-label">{{ 'password' | translate }}</label>
-          <input
-            type="password"
-            class="form-control"
-            [(ngModel)]="password"
-            name="password"
-            required
-            placeholder="••••••••"
-          />
+      <div class="auth-body">
+        <form (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="form-floating mb-3">
+            <input
+              type="email"
+              class="form-control"
+              id="emailInput"
+              [(ngModel)]="email"
+              name="email"
+              required
+              placeholder="name@example.com"
+            />
+            <label for="emailInput">{{ 'email' | translate }}</label>
+          </div>
+
+          <div class="form-floating mb-4">
+            <input
+              type="password"
+              class="form-control"
+              id="passwordInput"
+              [(ngModel)]="password"
+              name="password"
+              required
+              placeholder="Password"
+            />
+            <label for="passwordInput">{{ 'password' | translate }}</label>
+          </div>
+
+          <div *ngIf="errorMessage" class="alert alert-danger-custom d-flex align-items-center mb-4">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <div>{{ errorMessage }}</div>
+          </div>
+
+          <button type="submit" class="btn btn-auth-submit w-100 mb-3">
+            {{ 'login' | translate }}
+          </button>
+        </form>
+
+        <div class="auth-footer mt-4 text-center">
+          <span class="text-muted">{{ 'noAccount' | translate }}</span>
+          <a routerLink="/register" class="auth-link ms-1">
+            {{ 'register' | translate }}
+          </a>
         </div>
-
-        <div *ngIf="errorMessage" class="alert alert-danger py-2">
-          {{ errorMessage }}
-        </div>
-
-        <button type="submit" class="btn btn-danger w-100 mt-3">
-          {{ 'login' | translate }}
-        </button>
-      </form>
-
-      <hr />
-
-      <p class="text-center mb-0">
-        {{ 'noAccount' | translate }}
-        <a routerLink="/register" class="text-danger fw-semibold">
-          {{ 'register' | translate }}
-        </a>
-      </p>
+      </div>
     </div>
-
   </div>
 </div>
