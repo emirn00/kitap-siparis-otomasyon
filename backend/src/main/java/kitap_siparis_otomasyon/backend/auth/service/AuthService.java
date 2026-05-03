@@ -7,6 +7,8 @@ import kitap_siparis_otomasyon.backend.security.JwtService;
 import kitap_siparis_otomasyon.backend.user.entity.Role;
 import kitap_siparis_otomasyon.backend.user.entity.User;
 import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
+import kitap_siparis_otomasyon.backend.notification.entity.SystemLog;
+import kitap_siparis_otomasyon.backend.notification.service.SystemLogService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +18,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final SystemLogService systemLogService;
 
     public AuthService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder , JwtService jwtService) {
+                       PasswordEncoder passwordEncoder , JwtService jwtService, SystemLogService systemLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.systemLogService = systemLogService;
     }
 
     public void register(RegisterRequest request) {
@@ -48,6 +52,12 @@ public class AuthService {
 
 
         userRepository.save(user);
+
+        systemLogService.log(
+                "Yeni Kullanıcı Kaydı",
+                user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ") sisteme kayıt oldu.",
+                SystemLog.LogType.USER_REGISTRATION
+        );
     }
 
 

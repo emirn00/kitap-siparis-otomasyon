@@ -11,6 +11,8 @@ import kitap_siparis_otomasyon.backend.order.entity.OrderBook;
 import kitap_siparis_otomasyon.backend.order.entity.OrderStatus;
 import kitap_siparis_otomasyon.backend.order.repository.OrderRepository;
 import kitap_siparis_otomasyon.backend.rabbitmq.OrderApprovalProducer;
+import kitap_siparis_otomasyon.backend.notification.entity.SystemLog;
+import kitap_siparis_otomasyon.backend.notification.service.SystemLogService;
 import kitap_siparis_otomasyon.backend.user.entity.User;
 import kitap_siparis_otomasyon.backend.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -31,13 +33,15 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderApprovalProducer orderApprovalProducer;
     private final kitap_siparis_otomasyon.backend.mail.service.EmailService emailService;
+    private final SystemLogService systemLogService;
 
-    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository, OrderApprovalProducer orderApprovalProducer, kitap_siparis_otomasyon.backend.mail.service.EmailService emailService) {
+    public OrderService(OrderRepository orderRepository, BookRepository bookRepository, UserRepository userRepository, OrderApprovalProducer orderApprovalProducer, kitap_siparis_otomasyon.backend.mail.service.EmailService emailService, SystemLogService systemLogService) {
         this.orderRepository = orderRepository;
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
         this.orderApprovalProducer = orderApprovalProducer;
         this.emailService = emailService;
+        this.systemLogService = systemLogService;
     }
 
     @Transactional
@@ -60,8 +64,16 @@ public class OrderService {
         order.setInstitution(request.getInstitution());
         order.setCustomOrder(false);
         Order savedOrder = orderRepository.save(order);
+
+        systemLogService.log(
+                "Yeni Sipariş Oluşturuldu",
+                user.getFirstName() + " " + user.getLastName() + " tarafından yeni bir sipariş oluşturuldu. Kurum: " + order.getInstitution(),
+                SystemLog.LogType.ORDER
+        );
+
         return OrderResponse.fromEntity(savedOrder);
     }
+
 
     @Transactional
     public OrderResponse createCustomOrder(UUID adminId, CreateCustomOrderRequest request) {
@@ -90,8 +102,16 @@ public class OrderService {
         order.setCustomNotes(request.getNotes());
         
         Order savedOrder = orderRepository.save(order);
+
+        systemLogService.log(
+                "Özel Sipariş Oluşturuldu",
+                "Admin (" + admin.getFirstName() + ") tarafından " + order.getCustomCustomerName() + " adına özel sipariş oluşturuldu.",
+                SystemLog.LogType.ORDER
+        );
+
         return OrderResponse.fromEntity(savedOrder);
     }
+
 
     @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {

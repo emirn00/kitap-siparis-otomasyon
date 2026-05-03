@@ -24,6 +24,8 @@ import kitap_siparis_otomasyon.backend.rabbitmq.EmailTaskMessage;
 import kitap_siparis_otomasyon.backend.rabbitmq.EmailTaskProducer;
 import kitap_siparis_otomasyon.backend.order.entity.Order;
 import kitap_siparis_otomasyon.backend.order.entity.OrderBook;
+import kitap_siparis_otomasyon.backend.notification.entity.SystemLog;
+import kitap_siparis_otomasyon.backend.notification.service.SystemLogService;
 
 @Service
 public class EmailService {
@@ -34,11 +36,13 @@ public class EmailService {
     private final EmailLogRepository emailLogRepository;
     private final RestClient restClient;
     private final EmailTaskProducer emailTaskProducer;
+    private final SystemLogService systemLogService;
 
-    public EmailService(MailgunConfig mailgunConfig, EmailLogRepository emailLogRepository, EmailTaskProducer emailTaskProducer) {
+    public EmailService(MailgunConfig mailgunConfig, EmailLogRepository emailLogRepository, EmailTaskProducer emailTaskProducer, SystemLogService systemLogService) {
         this.mailgunConfig = mailgunConfig;
         this.emailLogRepository = emailLogRepository;
         this.emailTaskProducer = emailTaskProducer;
+        this.systemLogService = systemLogService;
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.mailgun.net/v3")
                 .build();
@@ -68,6 +72,12 @@ public class EmailService {
             emailLog.setStatus(EmailStatus.SENT);
             emailLog.setSentAt(LocalDateTime.now());
             emailLogRepository.save(emailLog);
+
+            systemLogService.log(
+                    "E-posta Gönderildi",
+                    to + " adresine '" + subject + "' konulu e-posta başarıyla gönderildi.",
+                    SystemLog.LogType.MAIL
+            );
 
             log.info("Email sent successfully to: {}", to);
         } catch (Exception e) {
@@ -158,6 +168,12 @@ public class EmailService {
         // Queue the task
         EmailTaskMessage task = new EmailTaskMessage(savedLog.getId(), to, subject, body);
         emailTaskProducer.sendEmailTask(task);
+
+        systemLogService.log(
+                "Sipariş Kodları Sıraya Alındı",
+                order.getUser().getFullName() + " kullanıcısının sipariş kodları e-posta gönderimi için sıraya alındı. Alıcı: " + to,
+                SystemLog.LogType.MAIL
+        );
         
         log.info("Order codes email for orderId {} queued for recipient: {}", order.getId(), to);
     }
