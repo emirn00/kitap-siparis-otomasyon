@@ -42,9 +42,24 @@
       </div>
     </div>
 
+    <!-- Smart Query Builder -->
+    <div class="query-builder">
+      <span class="quick-label">Sistem Analizi</span>
+      <div class="query-controls">
+        <select [(ngModel)]="selectedPeriod" class="query-select">
+          <option *ngFor="let p of periods" [value]="p.value">{{ p.label }}</option>
+        </select>
+        <select [(ngModel)]="selectedDataType" class="query-select">
+          <option *ngFor="let t of dataTypes" [value]="t.value">{{ t.label }}</option>
+        </select>
+        <button class="query-btn" (click)="generateAndSendQuery()" [disabled]="isLoading">
+          <i class="fas fa-search-plus"></i> Sorgula
+        </button>
+      </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="quick-actions">
-      <span class="quick-label">Hızlı Sorular</span>
       <div class="chips">
         <button
           *ngFor="let action of quickActions"

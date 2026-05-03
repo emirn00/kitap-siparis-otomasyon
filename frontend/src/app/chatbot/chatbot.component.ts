@@ -25,12 +25,27 @@ export class ChatbotComponent {
   currentSessionId: string | undefined = undefined;
 
   quickActions = [
-    { label: '📊 Bugünün siparişleri', message: 'Bugün toplam kaç sipariş verildi?' },
-    { label: '⏳ Bekleyen siparişler', message: 'Bekleyen siparişleri listele.' },
-    { label: '🏆 En çok satanlar', message: 'En çok satan 5 kitabı listele.' },
-    { label: '👥 Yeni kullanıcılar', message: 'Bu ay kaç yeni kullanıcı kayıt oldu?' },
-    { label: '📚 Kitap öner', message: 'Bana kitap önerir misin?' },
-    { label: '❓ Yardım', message: 'Neler yapabilirsin?' },
+    { label: '📊 Bugünün Siparişleri', message: 'Bugün toplam kaç sipariş verildi ve detayları neler?' },
+    { label: '👥 Bugünün Kayıtları', message: 'Bugün kaç yeni kullanıcı kayıt oldu?' },
+    { label: '📧 Mail Trafiği', message: 'Bugün gönderilen e-postaların durumu nedir?' },
+  ];
+
+  // Dynamic Query Builder
+  selectedPeriod = 'today';
+  selectedDataType = 'orders';
+
+  periods = [
+    { value: 'today', label: 'Bugün' },
+    { value: 'week', label: 'Son 1 Hafta' },
+    { value: 'month', label: 'Son 1 Ay' },
+    { value: 'year', label: 'Son 1 Yıl' }
+  ];
+
+  dataTypes = [
+    { value: 'orders', label: 'Siparişler' },
+    { value: 'registrations', label: 'Kullanıcı Kayıtları' },
+    { value: 'emails', label: 'E-posta Gönderimleri' },
+    { value: 'logs', label: 'Tüm Sistem Logları' }
   ];
 
   constructor(
@@ -42,6 +57,14 @@ export class ChatbotComponent {
     this.authService.loginState$.subscribe(() => {
       this.isAdmin = this.authService.getUserRole() === 'ADMIN';
     });
+  }
+
+  generateAndSendQuery() {
+    const periodLabel = this.periods.find(p => p.value === this.selectedPeriod)?.label;
+    const typeLabel = this.dataTypes.find(t => t.value === this.selectedDataType)?.label;
+    
+    const message = `${periodLabel} dönemindeki ${typeLabel} hakkında detaylı bir rapor sunar mısın?`;
+    this.sendQuickAction(message);
   }
 
   toggleChat() {
