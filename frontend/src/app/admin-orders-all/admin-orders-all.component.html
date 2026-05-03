@@ -5,24 +5,56 @@
       <p class="section-description">{{ 'ordersSectionDesc' | translate }}</p>
     </div>
 
-    <!-- Date Filter Bar -->
-    <div class="date-filter-bar">
-      <div class="date-input-group">
-        <label class="date-label">{{ 'startDate' | translate }}</label>
-        <input type="date" class="date-native-input" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+    <!-- Modern Filter Section -->
+    <div class="modern-filter-container" *ngIf="!loading">
+      <div class="filter-top-row">
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (input)="onSearch()" 
+            [placeholder]="'searchOrdersPlaceholder' | translate"
+            class="modern-search-input"
+          >
+        </div>
+        <div class="status-select-wrapper">
+          <i class="fas fa-filter status-icon"></i>
+          <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="modern-status-select">
+            <option value="all">{{ 'all' | translate }}</option>
+            <option value="PENDING">{{ 'statusPending' | translate }}</option>
+            <option value="COMPLETED">{{ 'statusCompleted' | translate }}</option>
+            <option value="CANCELED">{{ 'statusCanceled' | translate }}</option>
+          </select>
+        </div>
       </div>
 
-      <div class="date-input-group">
-        <label class="date-label">{{ 'endDate' | translate }}</label>
-        <input type="date" class="date-native-input" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+      <div class="filter-bottom-row">
+        <div class="date-picker-group">
+          <div class="date-input-modern">
+            <span class="date-label-modern">{{ 'startDate' | translate }}</span>
+            <div class="date-relative">
+              <i class="fas fa-calendar-alt"></i>
+              <input type="date" [(ngModel)]="startDate" [ngModelOptions]="{ standalone: true }">
+            </div>
+          </div>
+          <div class="date-input-modern">
+            <span class="date-label-modern">{{ 'endDate' | translate }}</span>
+            <div class="date-relative">
+              <i class="fas fa-calendar-alt"></i>
+              <input type="date" [(ngModel)]="endDate" [ngModelOptions]="{ standalone: true }">
+            </div>
+          </div>
+        </div>
+        <div class="filter-btn-group">
+          <button class="modern-filter-btn primary" (click)="fetchOrdersByDate()" [disabled]="!startDate || !endDate || loading">
+            <i class="fas fa-check-circle"></i> {{ 'fetchByDate' | translate }}
+          </button>
+          <button class="modern-filter-btn ghost" (click)="resetDateFilter()" [disabled]="loading">
+            <i class="fas fa-history"></i> {{ 'allOrders' | translate }}
+          </button>
+        </div>
       </div>
-
-      <button class="filter-btn primary-btn" (click)="fetchOrdersByDate()" [disabled]="!startDate || !endDate || loading">
-        <i class="fas fa-calendar-check"></i> {{ 'fetchByDate' | translate }}
-      </button>
-      <button class="filter-btn ghost-btn" (click)="resetDateFilter()" [disabled]="loading">
-        <i class="fas fa-sync-alt"></i> {{ 'allOrders' | translate }}
-      </button>
     </div>
 
     <!-- Stats Section -->
@@ -51,25 +83,6 @@
       <p>{{ 'loading' | translate }}</p>
     </div>
     <div *ngIf="error" class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-
-    <!-- Search + Status Filter -->
-    <div class="filters-row" *ngIf="!loading">
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'search' | translate }}</mat-label>
-        <input matInput [(ngModel)]="searchTerm" (input)="onSearch()" [placeholder]="'searchOrdersPlaceholder' | translate">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'status' | translate }}</mat-label>
-        <mat-select [(ngModel)]="statusFilter" (selectionChange)="onStatusFilterChange()">
-          <mat-option value="all">{{ 'all' | translate }}</mat-option>
-          <mat-option value="PENDING">{{ 'statusPending' | translate }}</mat-option>
-          <mat-option value="COMPLETED">{{ 'statusCompleted' | translate }}</mat-option>
-          <mat-option value="CANCELED">{{ 'statusCanceled' | translate }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
 
     <!-- Orders Table -->
     <div class="table-container" *ngIf="!loading && paginatedOrders.length > 0">
