@@ -52,11 +52,15 @@ export class ChatbotComponent {
     private chatbotService: ChatbotService,
     private authService: AuthService
   ) {
-    this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+    this.checkAdminStatus();
 
     this.authService.loginState$.subscribe(() => {
-      this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+      this.checkAdminStatus();
     });
+  }
+
+  private checkAdminStatus() {
+    this.isAdmin = this.authService.isLoggedIn() && this.authService.getUserRole() === 'ADMIN';
   }
 
   generateAndSendQuery() {

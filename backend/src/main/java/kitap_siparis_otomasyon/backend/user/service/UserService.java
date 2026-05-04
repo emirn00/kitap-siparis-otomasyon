@@ -64,6 +64,7 @@ public class UserService {
                 user.getLastName(),
                 user.getEmail(),
                 user.getPhone(),
-                user.getRole().name());
+                user.getRole().name(),
+                user.getCreatedAt());
     }
 }

@@ -1,5 +1,6 @@
 package kitap_siparis_otomasyon.backend.user.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record UserResponse(
@@ -8,6 +9,7 @@ public record UserResponse(
         String lastName,
         String email,
         String phone,
-        String role
+        String role,
+        LocalDateTime createdAt
 ) {}
 
