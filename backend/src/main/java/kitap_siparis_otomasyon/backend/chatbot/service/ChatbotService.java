@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +29,8 @@ public class ChatbotService {
     @Value("${deepseek.api-url}")
     private String apiUrl;
 
-    private final Map<String, List<Map<String, String>>> conversationHistory = new ConcurrentHashMap<>();
+    private final Map<String, List<Map<String, String>>> sqlConversationHistory = new ConcurrentHashMap<>();
+    private final Map<String, List<Map<String, String>>> summaryConversationHistory = new ConcurrentHashMap<>();
     private static final int MAX_HISTORY_SIZE = 10;
 
     private static final String SQL_GEN_SYSTEM_PROMPT = """
@@ -48,8 +51,27 @@ public class ChatbotService {
             SCHEMA:
             - Table "users": (id UUID, first_name VARCHAR, last_name VARCHAR, email VARCHAR, phone VARCHAR, role VARCHAR)
             - Table "books": (id UUID, request_name VARCHAR, order_name VARCHAR, isbn VARCHAR, lisencode_name VARCHAR)
+              * DEFINITION: This table holds ALL REGISTERED BOOKS in the system.
             - Table "orders": (id UUID, user_id UUID, city VARCHAR, institution VARCHAR, created_at TIMESTAMP, status VARCHAR)
-            - Table "order_books": (order_id UUID, book_id UUID) -- Join table connecting orders and books
+              * DEFINITION: This table holds the order headers.
+            - Table "order_books": (order_id UUID, book_id UUID)
+              * DEFINITION: This is the join table. It represents the actual books that have been ordered inside the orders.
+            - Table "system_logs": (id UUID, title VARCHAR, message TEXT, type VARCHAR, created_at TIMESTAMP)
+              * DEFINITION: Holds system activity logs. `type` can be 'ORDER', 'MAIL', 'USER_REGISTRATION', 'SYSTEM'.
+            - Table "email_logs": (id UUID, recipient_email VARCHAR, subject VARCHAR, body TEXT, activation_code VARCHAR, status VARCHAR, error_message VARCHAR, sent_at TIMESTAMP, created_at TIMESTAMP)
+              * DEFINITION: Holds email sending logs and traffic. `status` can be 'QUEUED', 'SENT', 'FAILED'.
+            
+            IMPORTANT LOGIC & VOCABULARY MATCHING (Turkish):
+            - If user asks "Sistemde kayıtlı kaç kitap var?" or "Kaç adet kitap var?":
+              -> Query the `books` table: `SELECT count(*) FROM books`
+            - If user asks "Toplam kaç kitap sipariş edildi?" or "Sipariş edilen kitap sayısı?":
+              -> Query the `order_books` table: `SELECT count(*) FROM order_books`
+            - If user asks "Kaç adet sipariş var?":
+              -> Query the `orders` table: `SELECT count(*) FROM orders`
+            - If user asks about "E-posta gönderimleri", "Mail trafiği", "Gönderilen mailler":
+              -> Query the `email_logs` table: `SELECT * FROM email_logs`
+            - If user asks about "Sistem logları", "Kayıt logları", "Sistem analizi":
+              -> Query the `system_logs` table: `SELECT * FROM system_logs`
 
             RELATIONSHIPS:
             - "orders" connects to "users" via "orders.user_id = users.id".
@@ -84,15 +106,16 @@ public class ChatbotService {
     public ChatbotResponse processMessage(String userMessage, String sessionId) {
         String effectiveSessionId = (sessionId == null || sessionId.isBlank()) ? "default" : sessionId;
         
-        // 1. Get History
-        List<Map<String, String>> history = conversationHistory.computeIfAbsent(effectiveSessionId, k -> new ArrayList<>());
+        // 1. Get Histories
+        List<Map<String, String>> sqlHistory = sqlConversationHistory.computeIfAbsent(effectiveSessionId, k -> new ArrayList<>());
+        List<Map<String, String>> summaryHistory = summaryConversationHistory.computeIfAbsent(effectiveSessionId, k -> new ArrayList<>());
 
         // 2. SQL Generation Phase
         String currentDate = java.time.LocalDateTime.now().toString();
         String todayStart = java.time.LocalDate.now().atStartOfDay().toString();
         String dynamicSystemPrompt = String.format(SQL_GEN_SYSTEM_PROMPT, currentDate, todayStart);
         
-        String llmOutput = callDeepSeek(dynamicSystemPrompt, userMessage, history);
+        String llmOutput = callDeepSeek(dynamicSystemPrompt, userMessage, sqlHistory);
         String sql = extractSql(llmOutput);
         
         if (sql != null) {
@@ -106,11 +129,12 @@ public class ChatbotService {
                         Database Results: %s
                         """, userMessage, results.toString());
                         
-                    // 3. Summary Phase (No need for history here, just summarize current results)
-                    String finalReply = callDeepSeek(SUMMARY_SYSTEM_PROMPT, summaryMessage, null);
+                    // 3. Summary Phase
+                    String finalReply = callDeepSeek(SUMMARY_SYSTEM_PROMPT, summaryMessage, summaryHistory);
                     
-                    // 4. Update History with natural language interaction
-                    updateHistory(effectiveSessionId, userMessage, finalReply);
+                    // 4. Update Histories
+                    updateHistory(sqlConversationHistory, effectiveSessionId, userMessage, "[SQL] " + sql + " [/SQL]");
+                    updateHistory(summaryConversationHistory, effectiveSessionId, userMessage, finalReply);
                     
                     return new ChatbotResponse(finalReply, effectiveSessionId);
                 } catch (Exception e) {
@@ -128,18 +152,19 @@ public class ChatbotService {
             }
             
             // Conversation without SQL
-            updateHistory(effectiveSessionId, userMessage, llmOutput);
+            updateHistory(sqlConversationHistory, effectiveSessionId, userMessage, llmOutput);
+            updateHistory(summaryConversationHistory, effectiveSessionId, userMessage, llmOutput);
             return new ChatbotResponse(llmOutput, effectiveSessionId);
         }
     }
 
-    private void updateHistory(String sessionId, String userMsg, String assistantMsg) {
-        List<Map<String, String>> history = conversationHistory.computeIfAbsent(sessionId, k -> new ArrayList<>());
+    private void updateHistory(Map<String, List<Map<String, String>>> historyMap, String sessionId, String userMsg, String assistantMsg) {
+        List<Map<String, String>> history = historyMap.computeIfAbsent(sessionId, k -> new ArrayList<>());
         history.add(Map.of("role", "user", "content", userMsg));
         history.add(Map.of("role", "assistant", "content", assistantMsg));
         
         if (history.size() > MAX_HISTORY_SIZE * 2) {
-            conversationHistory.put(sessionId, new ArrayList<>(history.subList(history.size() - (MAX_HISTORY_SIZE * 2), history.size())));
+            historyMap.put(sessionId, new ArrayList<>(history.subList(history.size() - (MAX_HISTORY_SIZE * 2), history.size())));
         }
     }
 
@@ -196,12 +221,26 @@ public class ChatbotService {
             }
         }
         
-        String[] allowedTables = {"users", "books", "orders", "order_books"};
+        String[] allowedTables = {"users", "books", "orders", "order_books", "system_logs", "email_logs"};
         boolean mentionsAllowedTable = false;
-        for (String table : allowedTables) {
-            if (normalizedSql.contains(table.toUpperCase())) {
-                mentionsAllowedTable = true;
-                break;
+        
+        // Daha güvenli kontrol: Sadece FROM ve JOIN sonrasındaki tablo isimlerine bak.
+        Pattern tablePattern = Pattern.compile("(?i)(?:FROM|JOIN)\\s+([A-Za-z0-9_]+)");
+        Matcher matcher = tablePattern.matcher(sql);
+        
+        while (matcher.find()) {
+            String extractedTable = matcher.group(1).toLowerCase();
+            boolean isValidTable = false;
+            for (String table : allowedTables) {
+                if (extractedTable.equals(table)) {
+                    isValidTable = true;
+                    mentionsAllowedTable = true;
+                    break;
+                }
+            }
+            if (!isValidTable) {
+                // İzin verilmeyen bir tablo tespit edildi
+                return false;
             }
         }
         

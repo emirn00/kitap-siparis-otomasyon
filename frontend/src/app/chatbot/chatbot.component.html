@@ -58,17 +58,6 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="quick-actions">
-      <div class="chips">
-        <button
-          *ngFor="let action of quickActions"
-          class="chip"
-          (click)="sendQuickAction(action.message)"
-          [disabled]="isLoading"
-        >{{ action.label }}</button>
-      </div>
-    </div>
 
     <!-- Input -->
     <div class="chat-input">

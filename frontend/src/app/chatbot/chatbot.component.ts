@@ -24,11 +24,6 @@ export class ChatbotComponent {
   isLoading = false;
   currentSessionId: string | undefined = undefined;
 
-  quickActions = [
-    { label: '📊 Bugünün Siparişleri', message: 'Bugün toplam kaç sipariş verildi ve detayları neler?' },
-    { label: '👥 Bugünün Kayıtları', message: 'Bugün kaç yeni kullanıcı kayıt oldu?' },
-    { label: '📧 Mail Trafiği', message: 'Bugün gönderilen e-postaların durumu nedir?' },
-  ];
 
   // Dynamic Query Builder
   selectedPeriod = 'today';
