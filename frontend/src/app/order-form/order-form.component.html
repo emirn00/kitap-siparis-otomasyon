@@ -132,8 +132,8 @@
                 </div>
 
                 <!-- Modern Book Grid -->
-                <div class="books-modern-grid" *ngIf="!booksLoading && filteredBooks.length > 0">
-                  <div class="book-item-card" *ngFor="let book of filteredBooks" 
+                <div class="books-modern-grid" *ngIf="!booksLoading && paginatedBooks.length > 0">
+                  <div class="book-item-card" *ngFor="let book of paginatedBooks" 
                        [class.selected]="book.selectedForCodes"
                        (click)="onBookChange(book, !book.selectedForCodes)"
                        [title]="book.name">
@@ -150,6 +150,16 @@
                       <span class="book-title">{{ book.name }}</span>
                     </div>
                   </div>
+                </div>
+
+                <div class="pagination-controls" *ngIf="!booksLoading && filteredBooks.length > pageSize" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 15px;">
+                  <button mat-icon-button (click)="prevPage()" [disabled]="currentPage === 1" type="button" style="background: rgba(0,0,0,0.05); border-radius: 50%;">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <span class="page-info" style="font-weight: 500; font-size: 1.1rem; color: #444;">Sayfa {{ currentPage }} / {{ totalPages }}</span>
+                  <button mat-icon-button (click)="nextPage()" [disabled]="currentPage === totalPages" type="button" style="background: rgba(0,0,0,0.05); border-radius: 50%;">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
                 </div>
 
                 <div class="empty-books" *ngIf="!booksLoading && filteredBooks.length === 0">

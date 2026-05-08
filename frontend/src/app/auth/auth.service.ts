@@ -27,12 +27,25 @@ export class AuthService {
   }
 
 
+  private decodeJwtPayload(token: string): any {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      return null;
+    }
+  }
+
   getUserRole(): string | null {
     const token = localStorage.getItem('token');
     if (!token) return null;
 
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.role;
+    const payload = this.decodeJwtPayload(token);
+    return payload ? payload.role : null;
   }
 
   getUserInfo(): { email: string; fullName: string; phoneNumber: string } | null {
@@ -40,7 +53,8 @@ export class AuthService {
     if (!token) return null;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = this.decodeJwtPayload(token);
+      if (!payload) return null;
       return {
         email: payload.email,
         fullName: payload.fullName,
@@ -58,7 +72,8 @@ export class AuthService {
     }
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = this.decodeJwtPayload(token);
+      if (!payload) return false;
       const exp = payload.exp * 1000;
       return Date.now() < exp;
     } catch (e) {

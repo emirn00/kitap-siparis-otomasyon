@@ -44,10 +44,18 @@ export class OrderFormComponent implements OnInit, OnDestroy {
   orderSubmitting = false;
   orderError: string | null = null;
 
-  /** Filtreleme ve Arama */
+  /** Filtreleme, Arama ve Sayfalama */
   searchTerm = '';
   selectedLevel = 'all';
   filteredBooks: Book[] = [];
+  
+  paginatedBooks: Book[] = [];
+  currentPage = 1;
+  pageSize = 12;
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredBooks.length / this.pageSize));
+  }
 
   private placeholderImage = 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=400&fit=crop';
 
@@ -133,6 +141,28 @@ export class OrderFormComponent implements OnInit, OnDestroy {
       
       return matchesSearch && matchesLevel;
     });
+    this.currentPage = 1;
+    this.updatePaginatedBooks();
+  }
+
+  updatePaginatedBooks(): void {
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedBooks = this.filteredBooks.slice(start, end);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedBooks();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedBooks();
+    }
   }
 
   onSearchChange(): void {
