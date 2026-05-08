@@ -16,10 +16,6 @@ public class EmailTaskConsumer {
     @RabbitListener(queues = RabbitMQConfig.EMAIL_QUEUE)
     public void receiveEmailTask(EmailTaskMessage message) {
         System.out.println("Processing async email task for: " + message.getTo());
-        try {
-            emailService.processAsyncEmail(message);
-        } catch (Exception e) {
-            System.err.println("CRITICAL: Failed to process async email task for " + message.getTo() + ": " + e.getMessage());
-        }
+        emailService.processAsyncEmail(message);
     }
 }
